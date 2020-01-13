@@ -1,7 +1,10 @@
 import { config as loadConfig, DotenvConfigOutput } from 'dotenv';
+import { resolve } from 'path';
 
-if (process.env.NODE_ENV === 'development') {
-  const config: DotenvConfigOutput = loadConfig();
+if (process.env.NODE_ENV !== 'production') {
+  const config: DotenvConfigOutput = loadConfig({
+    path: resolve(process.cwd(), process.env.NODE_ENV === 'test' ? 'test.env' : '.env'),
+  });
 
   if (config.error) {
     throw new Error('Cannot load environment variables');
@@ -13,10 +16,6 @@ if (process.env.NODE_ENV === 'development') {
  * in the application
  */
 export default {
-  /**
-   * Port number for the server to listen from
-   */
-  port: Number(process.env.PORT) || 3000,
   /**
    * Database URL connection string
    */

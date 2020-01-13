@@ -8,36 +8,36 @@
 
 import {
   AnnouncementRepositoryTypeORM,
-} from '../../src/repository/announcement';
-import { CategoryRepositoryTypeORM } from '../../src/repository/category';
-import { connectToDatabase } from '../../src/database/connection';
+} from '../../../src/repository/announcement';
+import { CategoryRepositoryTypeORM } from '../../../src/repository/category';
+import { connectToDatabase } from '../../../src/database/connection';
 import chai from 'chai';
-import { CategoryEntity } from '../../src/database/model/category';
+import { CategoryEntity } from '../../../src/database/model/category';
 import { Connection, Repository } from 'typeorm';
-import { Category } from '../../src/entity/category';
-import { StateRepositoryTypeORM } from '../../src/repository/state';
-import { State } from '../../src/entity/state';
-import { StateEntity } from '../../src/database/model/state';
-import { ServerError } from '../../src/utils/error';
+import { Category } from '../../../src/entity/category';
+import { StateRepositoryTypeORM } from '../../../src/repository/state';
+import { State } from '../../../src/entity/state';
+import { StateEntity } from '../../../src/database/model/state';
+import { ServerError } from '../../../src/utils/error';
 import { readFileSync } from 'fs';
 
 const expect = chai.expect;
 
-let connection: Connection;
-
-before(async () => {
-  connection = await connectToDatabase();
-
-  const testScript = readFileSync('script.sql').toString();
-
-  await connection.query(testScript);
-});
-
-after(async () => {
-  connection.close();
-});
-
 describe('Repository integration test', () => {
+  let connection: Connection;
+
+  before(async () => {
+    connection = await connectToDatabase();
+  
+    const testScript = readFileSync('setup.for.test.sql').toString();
+  
+    await connection.query(testScript);
+  });
+  
+  after(async () => {
+    connection.close();
+  });
+
   describe('Announcement repository test', () => {
     let customRepo: AnnouncementRepositoryTypeORM;
     let categoryRepo: Repository<Category>;

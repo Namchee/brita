@@ -4,17 +4,17 @@ import {
   createButtonBody,
   createButtonMessage,
   createCarouselMessage,
-} from './../../src/services/bot/base';
+} from './messages';
 import { expect } from 'chai';
-import { ServerError } from '../../src/utils/error';
+import { ServerError } from '../../../utils/error';
 
-describe('Message generator testing', () => {
+describe('Message generator unit test', () => {
   describe('createTextBody', () => {
-    it('should create a new message body', () => {
+    it('should create a new text body', () => {
       const textBody = createTextBody('Test text');
 
-      expect(textBody.text).to.equal('Test text');
       expect(textBody.type).to.equal('text');
+      expect(textBody.text).to.equal('Test text');
     });
   });
 
@@ -71,8 +71,7 @@ describe('Message generator testing', () => {
   describe('createCarouselMessage', () => {
     it('should create a new carousel message', () => {
       const textBody = createTextBody('Test text');
-      const buttonBody = createButtonBody('Test label', 'Test text');
-      const buttonMessage = createCarouselMessage([textBody, buttonBody]);
+      const buttonMessage = createCarouselMessage([textBody, textBody]);
 
       expect(buttonMessage.type).to.equal('carousel');
       expect(buttonMessage.body.length).to.equal(2);

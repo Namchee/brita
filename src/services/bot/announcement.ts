@@ -3,12 +3,14 @@ import {
   BotServiceParameters,
   BotServiceResult,
   HandlerParameters,
+} from './base';
+import {
   createTextBody,
   createButtonMessage,
   createButtonBody,
   createTextMessage,
   createCarouselMessage,
-} from './base';
+} from './messaging/messages';
 import { AnnouncementRepository } from '../../repository/announcement';
 import { ServerError, UserError } from '../../utils/error';
 import { REPLY, LOGIC_ERROR } from './reply';

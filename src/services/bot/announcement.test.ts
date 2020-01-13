@@ -1,15 +1,14 @@
 import {
   AnnouncementRepositoryTypeORM,
-} from '../../src/repository/announcement';
-import { CategoryRepositoryTypeORM } from '../../src/repository/category';
-import { BotAnnouncementService } from '../../src/services/bot/announcement';
+} from '../../repository/announcement';
+import { CategoryRepositoryTypeORM } from '../../repository/category';
+import { BotAnnouncementService } from './announcement';
 import chai from 'chai';
 import chaiPromise from 'chai-as-promised';
-import { } from 'mocha';
-import { Category } from '../../src/entity/category';
-import { getManager } from 'typeorm';
-import sinon from 'sinon';
-import { ServerError } from '../../src/utils/error';
+import { Category } from '../../entity/category';
+import sinon, { SinonSandbox } from 'sinon';
+import * as typeorm from 'typeorm';
+import { ServerError } from '../../utils/error';
 
 chai.use(chaiPromise);
 
@@ -66,13 +65,23 @@ const processedAnnouncement = [
   'Announcement One\n\nThis is announcement one',
 ];
 
-describe('Bot service test', () => {
+describe('Bot service unit test', () => {
   describe('Announcement service test', () => {
     let botService: BotAnnouncementService;
+    let sandbox: SinonSandbox;
 
     before(() => {
+      sandbox = sinon.createSandbox();
+
+      const connection: any = sinon.createStubInstance(typeorm.Connection);
+      let manager: any;
+
+      connection.transaction.callsFake(async (fn: any) => fn(manager));
+
+      sinon.stub(typeorm, 'getConnection').returns(connection);
+
       const announcementRepositoryMock = new AnnouncementRepositoryTypeORM(
-        getManager(),
+        manager,
       );
 
       sinon.stub(announcementRepositoryMock, 'findByCategory')
@@ -82,7 +91,7 @@ describe('Bot service test', () => {
         .returns(Promise.resolve([]));
 
       const categoryRepositoryMock = new CategoryRepositoryTypeORM(
-        getManager(),
+        manager,
       );
 
       sinon.stub(categoryRepositoryMock, 'findAll')
@@ -98,6 +107,10 @@ describe('Bot service test', () => {
         announcementRepositoryMock,
         categoryRepositoryMock,
       );
+    });
+
+    after(() => {
+      sandbox.restore();
     });
 
     it('should throw a server error caused by negative state', async () => {

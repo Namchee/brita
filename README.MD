@@ -1,5 +1,7 @@
 # Brita
 
+[![Code Style: Google](https://img.shields.io/badge/code%20style-google-blueviolet.svg)](https://github.com/google/gts)
+
 Brita is a small scale application to manage announcements
 The announcements are then consumble by popular chat clients (e.g: [LINE](https://line.me/))
 
@@ -8,7 +10,7 @@ The announcements are then consumble by popular chat clients (e.g: [LINE](https:
 1. Announcement management system with categories
 2. Consumable chat client API
 
-## Prerequisites 
+## Prerequisites
 
 1. NodeJS version >=10.15
 2. NPM version >=6.13
@@ -17,7 +19,7 @@ The announcements are then consumble by popular chat clients (e.g: [LINE](https:
 
 ## Command List
 
-```
+```md
 test -> Do automated testing, uses mocha as test runner. See test folder for more info
 ```
 
@@ -27,4 +29,4 @@ test -> Do automated testing, uses mocha as test runner. See test folder for mor
 
 ## License
 
-This project is licensed under GNU GPLv3 license
+This project is licensed under GNU GPLv3 license.

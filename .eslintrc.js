@@ -5,10 +5,10 @@ module.exports = {
     'mocha': true,
   },
   'extends': [
-    'google',
     'eslint:recommended',
     'plugin:@typescript-eslint/eslint-recommended',
-    'plugin:@typescript-eslint/recommended'
+    'plugin:@typescript-eslint/recommended',
+    'google',
   ],
   'globals': {
     'Atomics': 'readonly',
@@ -32,7 +32,6 @@ module.exports = {
       'warn',
       'windows',
     ],
-    'new-cap': 'off',
     'object-curly-spacing': [
       'error',
       'always',
@@ -45,7 +44,6 @@ module.exports = {
       },
     ],
     'require-jsdoc': 'off',
-    'camelcase': 'off',
     '@typescript-eslint/camelcase': 'off',
     'no-invalid-this': 'off',
     'babel/no-invalid-this': 'off',

@@ -1,4 +1,6 @@
-package-lock.json
-node_modules/
-*.env
-*.sql
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
