@@ -2,7 +2,7 @@ import { LambdaHandler } from './base';
 import { APIGatewayEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { StateRepository } from '../repository/state';
 import { BotService, BotServiceParameters } from '../services/bot/base';
-import Sentry from '@sentry/node';
+import * as Sentry from '@sentry/node';
 import { formatMessages } from '../services/bot/messaging/formatter';
 import {
   createTextMessage,
@@ -75,8 +75,8 @@ export class BotEndpointHandler implements LambdaHandler {
         return {
           statusCode: 400,
           body: JSON.stringify({
-            data: message,
-            error: null,
+            data: null,
+            error: message,
           }),
         };
       }
@@ -136,8 +136,8 @@ export class BotEndpointHandler implements LambdaHandler {
         return {
           statusCode: 400,
           body: JSON.stringify({
-            data: message,
-            error: null,
+            data: null,
+            error: message,
           }),
         };
       }
@@ -152,6 +152,17 @@ export class BotEndpointHandler implements LambdaHandler {
     state: number,
     text: string,
   ): Promise<boolean> {
+    const exist = await this.stateRepository.findById(userId);
+
+    if (!exist) {
+      return await this.stateRepository.create(
+        userId,
+        serviceId,
+        state,
+        text,
+      );
+    }
+
     if (state === 0) {
       return await this.stateRepository.delete(userId);
     } else {

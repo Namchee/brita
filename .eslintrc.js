@@ -44,6 +44,7 @@ module.exports = {
       },
     ],
     'require-jsdoc': 'off',
+    'new-cap': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'no-invalid-this': 'off',
     'babel/no-invalid-this': 'error',

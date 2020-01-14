@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "cross-env NODE_ENV=test mocha './test/**/*.ts'",
-    "test:unit": "mocha './src/**/*.ts'"
+    "test:unit": "nyc mocha './src/**/*.ts'"
   },
   "author": "Namchee",
   "license": "ISC",
@@ -47,6 +47,7 @@
     "faker": "^4.1.0",
     "mocha": "^6.2.2",
     "mocha-parallel-tests": "^2.2.2",
+    "nyc": "^15.0.0",
     "serverless": "^1.60.5",
     "serverless-offline": "^5.12.1",
     "serverless-webpack": "^5.3.1",
