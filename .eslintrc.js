@@ -44,8 +44,8 @@ module.exports = {
       },
     ],
     'require-jsdoc': 'off',
-    '@typescript-eslint/camelcase': 'off',
+    '@typescript-eslint/no-explicit-any': 'off',
     'no-invalid-this': 'off',
-    'babel/no-invalid-this': 'off',
+    'babel/no-invalid-this': 'error',
   },
 };

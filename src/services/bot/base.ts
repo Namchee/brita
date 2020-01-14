@@ -6,7 +6,6 @@ import { Message } from './messaging/messages';
 export interface BotServiceParameters {
   state: number;
   text: string;
-  provider?: string;
   account?: string;
 }
 
@@ -15,7 +14,6 @@ export interface BotServiceParameters {
  */
 export interface HandlerParameters {
   text: string;
-  provider?: string;
   account?: string;
 }
 
@@ -68,6 +66,6 @@ export abstract class BotService {
   }
 
   public abstract handle(
-    params: BotServiceParameters
+    params: BotServiceParameters,
   ): Promise<BotServiceResult>;
 }

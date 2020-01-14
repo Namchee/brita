@@ -28,12 +28,12 @@ describe('Repository integration test', () => {
 
   before(async () => {
     connection = await connectToDatabase();
-  
+
     const testScript = readFileSync('setup.for.test.sql').toString();
-  
+
     await connection.query(testScript);
   });
-  
+
   after(async () => {
     connection.close();
   });

@@ -13,7 +13,7 @@ import {
 } from './messaging/messages';
 import { AnnouncementRepository } from '../../repository/announcement';
 import { ServerError, UserError } from '../../utils/error';
-import { REPLY, LOGIC_ERROR } from './reply';
+import { REPLY, LOGIC_ERROR } from '../../utils/messaging/reply';
 import { CategoryRepository } from '../../repository/category';
 import { Category } from '../../entity/category';
 
