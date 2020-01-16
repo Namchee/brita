@@ -5,4 +5,6 @@ jspm_packages
 # Serverless directories
 .serverless
 
-.nyc_output
+.nyc_output/
+
+*.env

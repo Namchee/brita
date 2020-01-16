@@ -8,18 +8,21 @@
 
 import {
   AnnouncementRepositoryTypeORM,
-} from '../../../src/repository/announcement';
-import { CategoryRepositoryTypeORM } from '../../../src/repository/category';
-import { connectToDatabase } from '../../../src/database/connection';
+} from '../../src/repository/announcement';
+import { CategoryRepositoryTypeORM } from '../../src/repository/category';
+import { connectToDatabase } from '../../src/database/connection';
 import chai from 'chai';
-import { CategoryEntity } from '../../../src/database/model/category';
+import chaiPromise from 'chai-as-promised';
+import { CategoryEntity } from '../../src/database/model/category';
 import { Connection, Repository } from 'typeorm';
-import { Category } from '../../../src/entity/category';
-import { StateRepositoryTypeORM } from '../../../src/repository/state';
-import { State } from '../../../src/entity/state';
-import { StateEntity } from '../../../src/database/model/state';
-import { ServerError } from '../../../src/utils/error';
+import { Category } from '../../src/entity/category';
+import { StateRepositoryTypeORM } from '../../src/repository/state';
+import { State } from '../../src/entity/state';
+import { StateEntity } from '../../src/database/model/state';
+import { ServerError } from '../../src/utils/error';
 import { readFileSync } from 'fs';
+
+chai.use(chaiPromise);
 
 const expect = chai.expect;
 
@@ -181,7 +184,7 @@ describe('Repository integration test', () => {
       it('should be rejected because state already exist', async () => {
         const query = repo.create('id', 'pengumuman', 1, 'pengumuman One');
 
-        expect(query).to.be.rejectedWith(ServerError);
+        expect(query).to.eventually.be.rejectedWith(ServerError);
       });
     });
 

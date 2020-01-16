@@ -3,7 +3,9 @@ import { resolve } from 'path';
 
 if (process.env.NODE_ENV !== 'production') {
   const config: DotenvConfigOutput = loadConfig({
-    path: resolve(process.cwd(), process.env.NODE_ENV === 'test' ? 'test.env' : '.env'),
+    path: resolve(
+      process.cwd(), process.env.NODE_ENV === 'test' ? 'test.env' : '.env',
+    ),
   });
 
   if (config.error) {
@@ -20,4 +22,5 @@ export default {
    * Database URL connection string
    */
   dbUrl: process.env.DB_URL || '',
+  dsn: process.env.DSN || '',
 };
