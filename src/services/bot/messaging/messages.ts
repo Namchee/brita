@@ -13,6 +13,7 @@ export interface MessageBody {
 }
 
 export interface ButtonBody extends MessageBody {
+  type: 'button';
   label: string;
 }
 

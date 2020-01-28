@@ -1,17 +1,64 @@
 import { Message, ButtonBody } from './messages';
-import {
-  LineMessage,
-  TextMessage,
-  LineMessageComponent,
-  TextMessageComponent,
-  LineAction,
-  ButtonMessageComponent,
-  BoxContainer,
-  BubbleMessage,
-  FlexMessage,
-  CarouselMessage,
-} from './types';
 import { ServerError } from '../../../utils/error';
+import {
+  Message as LineMessage,
+  TextMessage,
+  FlexMessage,
+  FlexButton,
+  FlexText,
+  FlexBubble,
+  FlexComponent,
+  FlexCarousel,
+  FlexContainer,
+} from '@line/bot-sdk';
+
+function generateLineTextMessage(text: string): TextMessage {
+  return {
+    type: 'text',
+    text,
+  };
+}
+
+function generateTextComponent(text: string): FlexText {
+  return generateLineTextMessage(text) as FlexText;
+}
+
+function generateButtonComponent(label: string, text: string): FlexButton {
+  return {
+    type: 'button',
+    action: {
+      type: 'message',
+      text,
+      label,
+    },
+  };
+}
+
+function generateBubbleContainer(contents: FlexComponent[]): FlexBubble {
+  return {
+    type: 'bubble',
+    body: {
+      type: 'box',
+      layout: 'vertical',
+      contents,
+    },
+  };
+}
+
+function generateCarouselContainer(contents: FlexBubble[]): FlexCarousel {
+  return {
+    type: 'carousel',
+    contents,
+  };
+}
+
+function generateFlexMessage(contents: FlexContainer): FlexMessage {
+  return {
+    type: 'flex',
+    altText: '\0',
+    contents,
+  };
+}
 
 function generateLineMessage(
   message: Message,
@@ -22,41 +69,35 @@ function generateLineMessage(
       throw new ServerError('A basic message can only contain 1 body');
     }
 
-    return new TextMessage(message.body[0].text);
+    return generateLineTextMessage(message.body[0].text);
   }
   case 'buttons': {
-    const messageComponents: LineMessageComponent[] = [];
+    const messageComponents = message.body.map((content) => {
+      if (content.type === 'button') {
+        const buttonBody = content as ButtonBody;
 
-    for (const content of message.body) {
-      if (content.type === 'text') {
-        messageComponents.push(new TextMessageComponent(content.text));
-      } else if (content.type === 'button') {
-        const contentBody = content as ButtonBody;
-
-        const action = new LineAction(contentBody.label, content.text);
-        const buttonComponent = new ButtonMessageComponent(action);
-
-        messageComponents.push(buttonComponent);
+        return generateButtonComponent(buttonBody.label, buttonBody.text);
       }
-    }
 
-    const boxContainer = new BoxContainer(messageComponents);
-    const bubbleMessage = new BubbleMessage(boxContainer);
+      return generateTextComponent(content.text);
+    });
 
-    return new FlexMessage(bubbleMessage);
+    const boxContainer = generateBubbleContainer(messageComponents);
+
+    return generateFlexMessage(boxContainer);
   }
   case 'carousel': {
-    const messages: BubbleMessage[] = [];
+    const messages = message.body.map((content) => {
+      if (content.type === 'button') {
+        throw new ServerError('A carousel can only contain text(s)');
+      }
 
-    for (const content of message.body) {
-      const boxContainer = new BoxContainer(
-        [new TextMessageComponent(content.text)],
-      );
+      const textComponent = generateTextComponent(content.text);
+      return generateBubbleContainer([textComponent]);
+    });
 
-      messages.push(new BubbleMessage(boxContainer));
-    }
-
-    return new CarouselMessage(messages);
+    const carouselContainer = generateCarouselContainer(messages);
+    return generateFlexMessage(carouselContainer);
   }
   default:
     throw new ServerError('Illegal message type', 500);

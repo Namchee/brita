@@ -2,7 +2,7 @@ import { ServiceMock, StateRepositoryMock } from './bot.endpoint.test.util';
 import Sentry from '@sentry/node';
 import sinon from 'sinon';
 import { BotService } from '../services/bot/base';
-import { BotEndpointHandler } from './bot.endpoint';
+import { BotEndpointHandler } from './line.controller';
 import { expect } from 'chai';
 import { StateRepository } from '../repository/state';
 

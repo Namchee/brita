@@ -21,4 +21,8 @@ export interface State extends Entity {
    * Accumulated user text
    */
   text: string;
+  /**
+   * Last request activity
+   */
+  lastUpdate: Date;
 }

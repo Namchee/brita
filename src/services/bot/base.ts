@@ -1,4 +1,5 @@
 import { Message } from './messaging/messages';
+import axios from 'axios';
 
 /**
  * An interface which defines parameters for Bot service

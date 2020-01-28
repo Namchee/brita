@@ -23,4 +23,5 @@ export default {
    */
   dbUrl: process.env.DB_URL || '',
   dsn: process.env.DSN || '',
+  expirationTime: process.env.EXPIRATION_TIME || (1000 * 3 * 60), // 3 menit
 };

@@ -8,7 +8,9 @@ export enum REPLY {
   AMOUNT_TOO_MUCH = 'Jumlah pengumuman yang anda minta terlalu banyak.',
   ANNOUNCEMENT_SERVED = 'Berikut adalah daftar pengumuman yang sesuai kriteria.',
   AMOUNT_NOT_NUMBER = 'Jumlah yang anda masukkan bukanlah angka.',
-  AMOUNT_TOO_LITTLE = 'Jumlah yang anda minta terlalu sedikit (min. 1).'
+  AMOUNT_TOO_LITTLE = 'Jumlah yang anda minta terlalu sedikit (min. 1).',
+  SERVER_ERROR = 'Terjadi masalah pada server, mohon coba lagi lain kali.',
+  REQUEST_EXPIRED = 'Mohon maaf, namun sesi permintaan anda habis. Silahkan mengulangi permintaan anda',
 }
 
 export enum LOGIC_ERROR {

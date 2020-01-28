@@ -5,7 +5,6 @@ import {
   createButtonMessage,
   createCarouselMessage,
 } from './messages';
-import { expect } from 'chai';
 import { ServerError } from '../../../utils/error';
 
 describe('Message generator unit test', () => {
@@ -13,8 +12,8 @@ describe('Message generator unit test', () => {
     it('should create a new text body', () => {
       const textBody = createTextBody('Test text');
 
-      expect(textBody.type).to.equal('text');
-      expect(textBody.text).to.equal('Test text');
+      expect(textBody.type).toEqual('text');
+      expect(textBody.text).toEqual('Test text');
     });
   });
 
@@ -22,17 +21,17 @@ describe('Message generator unit test', () => {
     it('should create a new button body', () => {
       const buttonBody = createButtonBody('Test label', 'Test text');
 
-      expect(buttonBody.type).to.equal('button');
-      expect(buttonBody.label).to.equal('Test label');
-      expect(buttonBody.text).to.equal('Test text');
+      expect(buttonBody.type).toEqual('button');
+      expect(buttonBody.label).toEqual('Test label');
+      expect(buttonBody.text).toEqual('Test text');
     });
 
     it('should create a new button body with trimmed label', () => {
       const buttonBody = createButtonBody('Test label Test label', 'Test text');
 
-      expect(buttonBody.type).to.equal('button');
-      expect(buttonBody.label).to.equal('Test label Test labe');
-      expect(buttonBody.text).to.equal('Test text');
+      expect(buttonBody.type).toEqual('button');
+      expect(buttonBody.label).toEqual('Test label Test labe');
+      expect(buttonBody.text).toEqual('Test text');
     });
   });
 
@@ -41,14 +40,14 @@ describe('Message generator unit test', () => {
       const textBody = createTextBody('Test text');
       const textMessage = createTextMessage(textBody);
 
-      expect(textMessage.type).to.equal('basic');
-      expect(textMessage.body.length).to.equal(1);
+      expect(textMessage.type).toEqual('basic');
+      expect(textMessage.body.length).toEqual(1);
     });
 
     it('should throw an error because ilegal body type', () => {
       const buttonBody = createButtonBody('Test label', 'Test text');
 
-      expect(() => createTextMessage(buttonBody)).to.throw(ServerError);
+      expect(() => createTextMessage(buttonBody)).toThrowError(ServerError);
     });
   });
 
@@ -57,14 +56,14 @@ describe('Message generator unit test', () => {
       const buttonBody = createButtonBody('Test label', 'Test text');
       const buttonMessage = createButtonMessage([buttonBody, buttonBody]);
 
-      expect(buttonMessage.type).to.equal('buttons');
-      expect(buttonMessage.body.length).to.equal(2);
+      expect(buttonMessage.type).toEqual('buttons');
+      expect(buttonMessage.body.length).toEqual(2);
     });
 
     it('should throw an error because there is no button body', () => {
       const textBody = createTextBody('Test text');
 
-      expect(() => createButtonMessage([textBody])).to.throw(ServerError);
+      expect(() => createButtonMessage([textBody])).toThrowError(ServerError);
     });
   });
 
@@ -73,8 +72,8 @@ describe('Message generator unit test', () => {
       const textBody = createTextBody('Test text');
       const buttonMessage = createCarouselMessage([textBody, textBody]);
 
-      expect(buttonMessage.type).to.equal('carousel');
-      expect(buttonMessage.body.length).to.equal(2);
+      expect(buttonMessage.type).toEqual('carousel');
+      expect(buttonMessage.body.length).toEqual(2);
     });
   });
 });

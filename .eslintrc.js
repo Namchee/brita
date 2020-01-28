@@ -19,10 +19,6 @@ module.exports = {
     'ecmaVersion': 2018,
     'sourceType': 'module',
   },
-  'plugins': [
-    'babel',
-    'graphql',
-  ],
   'rules': {
     'indent': [
       'error',
@@ -47,6 +43,6 @@ module.exports = {
     'new-cap': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'no-invalid-this': 'off',
-    'babel/no-invalid-this': 'error',
+    'require-atomic-updates': 'off',
   },
 };

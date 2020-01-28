@@ -15,14 +15,14 @@ CREATE TABLE IF NOT EXISTS announcement (
 CREATE TABLE IF NOT EXISTS category (
 	id SERIAL PRIMARY KEY,
 	"name" VARCHAR(25) UNIQUE NOT NULL,
-	"desc" varchar(100) NOT NULL
+	"desc" VARCHAR(100) NOT NULL
 );
 
 CREATE INDEX "category_name_index" ON category((lower("name")));
 
 CREATE TABLE announcement_categories (
-	announcement_id INTEGER REFERENCES announcement(id) ON DELETE CASCADE NOT NULL,
-	category_id INTEGER REFERENCES category(id) ON DELETE CASCADE NOT NULL
+	announcement_id INT REFERENCES announcement(id) ON DELETE CASCADE NOT NULL,
+	category_id INT REFERENCES category(id) ON DELETE CASCADE NOT NULL
 );
 
 CREATE VIEW category_with_count AS

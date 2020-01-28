@@ -21,5 +21,9 @@ export const StateEntity = new EntitySchema<State>({
       type: String,
       nullable: false,
     },
+    lastUpdate: {
+      type: Date,
+      nullable: false,
+    },
   },
 });

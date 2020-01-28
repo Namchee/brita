@@ -1,11 +1,10 @@
 import { StateRepositoryTypeORM } from './repository/state';
-import { APIGatewayEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
 import { connectToDatabase } from './database/connection';
 import { BotService } from './services/bot/base';
 import { BotAnnouncementService } from './services/bot/announcement';
 import { AnnouncementRepositoryTypeORM } from './repository/announcement';
 import { CategoryRepositoryTypeORM } from './repository/category';
-import { BotEndpointHandler } from './controllers/bot.endpoint';
+import { BotEndpointHandler } from './controllers/line.controller';
 import { init } from '@sentry/node';
 import config from './config/config';
 

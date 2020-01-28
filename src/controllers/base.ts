@@ -1,13 +1,5 @@
-import { APIGatewayEvent, APIGatewayProxyResult, Context } from 'aws-lambda';
+import { Next, Context } from 'koa';
 
-export interface LambdaHandler {
-  handler(
-    event: APIGatewayEvent,
-    context: Context,
-  ): Promise<APIGatewayProxyResult | void>;
-}
-
-export interface Response {
-  data: object;
-  error: object;
+export interface Controller {
+  handleRequest(ctx: Context, next: Next): Promise<void>;
 }
