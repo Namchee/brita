@@ -32,10 +32,6 @@ export interface AnnouncementRepository
    * @param {boolean} important Announcement's importance
    * @param {Category[]} categories Announcement's categories
    * @return {Promise<Announcement>} The newly created Announcement
-   * @throw An error:
-   * 1. Server Error, if it violates the `length`
-   * (title, content, categories) constraint
-   * 2. User Error, if it violates the `unique` title constraint
    */
   create(
     title: string,
@@ -43,7 +39,7 @@ export interface AnnouncementRepository
     date: Date,
     important: boolean,
     categories: Category[],
-  ): Promise<Announcement>;
+  ): Promise<Announcement | null>;
 }
 
 /**
@@ -120,10 +116,6 @@ export class AnnouncementRepositoryTypeORM
    * @param {boolean} important Announcement's importance
    * @param {Category[]} categories Announcement's categories
    * @return {Promise<Announcement>} The newly created Announcement
-   * @throw An error:
-   * 1. Server Error, if it violates the `length`
-   * (title, content, categories) constraint
-   * 2. User Error, if it violates the `unique` title constraint
    */
   public create = async (
     title: string,
@@ -131,7 +123,7 @@ export class AnnouncementRepositoryTypeORM
     validUntil: Date,
     important: boolean,
     categories: Category[],
-  ): Promise<Announcement> => {
+  ): Promise<Announcement | null> => {
     return await this.repository.save({
       title,
       content,

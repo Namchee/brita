@@ -81,11 +81,7 @@ export function createTextMessage(textBody: MessageBody): Message {
  * @return {Message} Interactive button message
  */
 export function createButtonMessage(body: MessageBody[]): Message {
-  const hasButtonInside = body.some(
-    (obj: MessageBody) => obj.type === 'button',
-  );
-
-  if (!hasButtonInside) {
+  if (!body.some((obj: MessageBody) => obj.type === 'button')) {
     throw new ServerError(
       'A button message should contain at least one "button" body',
     );

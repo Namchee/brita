@@ -1,63 +1,11 @@
-import {
-  AnnouncementRepositoryTypeORM,
-} from '../../repository/announcement';
-import { CategoryRepositoryTypeORM } from '../../repository/category';
 import { BotAnnouncementService } from './announcement';
-import chai from 'chai';
-import chaiPromise from 'chai-as-promised';
-import { Category } from '../../entity/category';
-import sinon, { SinonSandbox } from 'sinon';
-import * as typeorm from 'typeorm';
 import { ServerError } from '../../utils/error';
-
-chai.use(chaiPromise);
-
-const assert = chai.assert;
-
-const tommorow = new Date();
-tommorow.setDate(tommorow.getDate() + 1);
-
-const categories: Category[] = [
-  {
-    id: 1,
-    name: 'One',
-    desc: 'This is category one',
-  },
-  {
-    id: 2,
-    name: 'Two',
-    desc: 'This is category two',
-  },
-  {
-    id: 3,
-    name: 'Three',
-    desc: 'This is category three',
-  },
-];
-
-const announcements = [
-  {
-    id: 1,
-    title: 'Announcement One',
-    content: 'This is announcement one',
-    validUntil: new Date(),
-    important: false,
-  },
-  {
-    id: 2,
-    title: 'Announcement Two',
-    content: 'This is announcement two',
-    validUntil: new Date(),
-    important: true,
-  },
-  {
-    id: 3,
-    title: 'Announcement Three',
-    content: 'This is announcement three',
-    validUntil: tommorow,
-    important: true,
-  },
-];
+import {
+  AnnouncementRepositoryMock,
+  CategoryRepositoryMock,
+} from './announcement.test.util';
+import { CategoryRepository } from '../../repository/category';
+import { AnnouncementRepository } from '../../repository/announcement';
 
 const processedAnnouncement = [
   'Announcement Two\n\nThis is announcement two',
@@ -67,63 +15,34 @@ const processedAnnouncement = [
 
 describe('Bot service unit test', () => {
   describe('Announcement service test', () => {
+    let announcementRepository: AnnouncementRepository;
+    let categoryRepository: CategoryRepository;
     let botService: BotAnnouncementService;
-    let sandbox: SinonSandbox;
 
-    before(() => {
-      sandbox = sinon.createSandbox();
+    beforeAll(() => {
+      announcementRepository = new AnnouncementRepositoryMock();
 
-      const connection: any = sinon.createStubInstance(typeorm.Connection);
-      let manager: any;
-
-      connection.transaction.callsFake(async (fn: any) => fn(manager));
-
-      sinon.stub(typeorm, 'getConnection').returns(connection);
-
-      const announcementRepositoryMock = new AnnouncementRepositoryTypeORM(
-        manager,
-      );
-
-      sinon.stub(announcementRepositoryMock, 'findByCategory')
-        .withArgs(categories[0])
-        .returns(Promise.resolve(announcements))
-        .withArgs(categories[2])
-        .returns(Promise.resolve([]));
-
-      const categoryRepositoryMock = new CategoryRepositoryTypeORM(
-        manager,
-      );
-
-      sinon.stub(categoryRepositoryMock, 'findAll')
-        .returns(Promise.resolve(categories));
-
-      sinon.stub(categoryRepositoryMock, 'findByName')
-        .withArgs(categories[0].name)
-        .returns(Promise.resolve(categories[0]))
-        .withArgs(categories[2].name)
-        .returns(Promise.resolve(null));
+      categoryRepository = new CategoryRepositoryMock();
 
       botService = new BotAnnouncementService(
-        announcementRepositoryMock,
-        categoryRepositoryMock,
+        announcementRepository,
+        categoryRepository,
       );
     });
 
-    after(() => {
-      sandbox.restore();
+    afterEach(() => {
+      jest.clearAllMocks();
     });
 
-    it('should throw a server error caused by negative state', async () => {
+    it('should throw a server error caused by negative state', () => {
       const serviceParams = {
         state: -1,
         text: '',
       };
 
-      assert.isRejected(
-        botService.handle(serviceParams),
-        ServerError,
-        'ServerError: Invalid state of -1',
-      );
+      expect(botService.handle(serviceParams))
+        .rejects
+        .toBeInstanceOf(ServerError);
     });
 
     describe('First handler testing', () => {
@@ -133,14 +52,14 @@ describe('Bot service unit test', () => {
           text: 'subscribe',
         };
 
-        assert.isRejected(
-          botService.handle(serviceParams),
-          ServerError,
-          'ServerError: Incorrect service mapping',
-        );
+        expect(botService.handle(serviceParams))
+          .rejects
+          .toBeInstanceOf(ServerError);
       });
 
       it('should return a list of categories', async () => {
+        const spy = jest.spyOn(categoryRepository, 'findAll');
+
         const serviceParams = {
           state: 0,
           text: 'pengumuman',
@@ -148,7 +67,9 @@ describe('Bot service unit test', () => {
 
         const result = await botService.handle(serviceParams);
 
-        assert.strictEqual(result.state, 1, 'The result state should be 1');
+        expect(result.state).toBe(1);
+        expect(result.message.length).toBe(1);
+        expect(spy.mock.calls.length).toBe(1);
       });
     });
 
@@ -161,10 +82,13 @@ describe('Bot service unit test', () => {
 
         const result = await botService.handle(serviceParams);
 
-        assert.strictEqual(result.state, -2, 'The current state should be -2');
+        expect(result.state).toBe(-2);
+        expect(result.message.length).toBe(1);
       });
 
       it('should request an amount of categories requested', async () => {
+        const spy = jest.spyOn(categoryRepository, 'findByName');
+
         const serviceParams = {
           state: 1,
           text: 'pengumuman One',
@@ -172,22 +96,22 @@ describe('Bot service unit test', () => {
 
         const result = await botService.handle(serviceParams);
 
-        assert.strictEqual(result.state, 2, 'The result state should be 2');
+        expect(result.state).toBe(2);
+        expect(result.message.length).toBe(1);
+        expect(spy.mock.calls.length).toBe(1);
       });
     });
 
-    describe('Third handler testing', async () => {
+    describe('Third handler testing', () => {
       it('should throw a server error because category not found', async () => {
         const serviceParams = {
           state: 2,
           text: 'pengumuman Three 10',
         };
 
-        assert.isRejected(
-          botService.handle(serviceParams),
-          ServerError,
-          'ServerError: Breach of flow, should be killed earlier',
-        );
+        expect(botService.handle(serviceParams))
+          .rejects
+          .toBeInstanceOf(ServerError);
       });
 
       it(
@@ -200,7 +124,8 @@ describe('Bot service unit test', () => {
 
           const result = await botService.handle(serviceParams);
 
-          assert.strictEqual(result.state, -2, 'The result state should be -2');
+          expect(result.state).toBe(-2);
+          expect(result.message.length).toBe(1);
         },
       );
 
@@ -214,7 +139,8 @@ describe('Bot service unit test', () => {
 
           const result = await botService.handle(serviceParams);
 
-          assert.strictEqual(result.state, -2, 'The result state should be -2');
+          expect(result.state).toBe(-2);
+          expect(result.message.length).toBe(1);
         },
       );
 
@@ -228,7 +154,8 @@ describe('Bot service unit test', () => {
 
           const result = await botService.handle(serviceParams);
 
-          assert.strictEqual(result.state, -2, 'The result state should be -2');
+          expect(result.state).toBe(-2);
+          expect(result.message.length).toBe(1);
         },
       );
 
@@ -240,21 +167,14 @@ describe('Bot service unit test', () => {
 
         const result = await botService.handle(serviceParams);
 
-        assert.strictEqual(result.state, 0, 'The state should be 0');
+        expect(result.state).toBe(0);
 
         const announcementText = result.message[1].body;
 
-        assert.strictEqual(
-          announcementText.length,
-          3,
-          'There should be 3 announcement',
-        );
+        expect(announcementText.length).toBe(3);
 
         for (let i = 0; i < announcementText.length; i++) {
-          assert.strictEqual(
-            announcementText[i].text,
-            processedAnnouncement[i],
-          );
+          expect(announcementText[i].text).toBe(processedAnnouncement[i]);
         }
       });
 
@@ -266,21 +186,14 @@ describe('Bot service unit test', () => {
 
         const result = await botService.handle(serviceParams);
 
-        assert.strictEqual(result.state, 0, 'The state should be 0');
+        expect(result.state).toBe(0);
 
         const announcementText = result.message[1].body;
 
-        assert.strictEqual(
-          announcementText.length,
-          2,
-          'There should be 2 announcement',
-        );
+        expect(announcementText.length).toBe(2);
 
         for (let i = 0; i < announcementText.length; i++) {
-          assert.strictEqual(
-            announcementText[i].text,
-            processedAnnouncement[i],
-          );
+          expect(announcementText[i].text).toBe(processedAnnouncement[i]);
         }
       });
     });
@@ -295,17 +208,9 @@ describe('Bot service unit test', () => {
 
         const result = await botService.handle(serviceParams);
 
-        assert.strictEqual(
-          result.state,
-          1,
-          'The service should maintain previous successful state',
-        );
+        expect(result.state).toBe(1);
 
-        assert.strictEqual(
-          result.message.length,
-          2,
-          'The service should only push 2 messages',
-        );
+        expect(result.message.length).toBe(2);
       });
 
       it('should handle the state until it reached second state', async () => {
@@ -316,7 +221,8 @@ describe('Bot service unit test', () => {
 
         const result = await botService.handle(serviceParams);
 
-        assert.strictEqual(result.state, 2, 'The result state should be 2');
+        expect(result.state).toBe(2);
+        expect(result.message.length).toBe(1);
       });
 
       it('should handle the state until it finished the request', async () => {
@@ -327,21 +233,14 @@ describe('Bot service unit test', () => {
 
         const result = await botService.handle(serviceParams);
 
-        assert.strictEqual(result.state, 0, 'The state should be 0');
+        expect(result.state).toBe(0);
 
         const announcementText = result.message[1].body;
 
-        assert.strictEqual(
-          announcementText.length,
-          2,
-          'There should be 2 announcement',
-        );
+        expect(announcementText.length).toBe(2);
 
         for (let i = 0; i < announcementText.length; i++) {
-          assert.strictEqual(
-            announcementText[i].text,
-            processedAnnouncement[i],
-          );
+          expect(announcementText[i].text).toBe(processedAnnouncement[i]);
         }
       });
     });
@@ -355,21 +254,14 @@ describe('Bot service unit test', () => {
 
         const result = await botService.handle(serviceParams);
 
-        assert.strictEqual(result.state, 0, 'The state should be 0');
+        expect(result.state).toBe(0);
 
         const announcementText = result.message[1].body;
 
-        assert.strictEqual(
-          announcementText.length,
-          2,
-          'There should be 2 announcement',
-        );
+        expect(announcementText.length).toBe(2);
 
         for (let i = 0; i < announcementText.length; i++) {
-          assert.strictEqual(
-            announcementText[i].text,
-            processedAnnouncement[i],
-          );
+          expect(announcementText[i].text).toBe(processedAnnouncement[i]);
         }
       });
     });

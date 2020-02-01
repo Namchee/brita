@@ -7,13 +7,7 @@ import {
   createCarouselMessage,
 } from './messages';
 import { formatMessages } from './formatter';
-import { assert } from 'chai';
-import {
-  TextMessage,
-  FlexMessage,
-  CarouselMessage,
-  LineMessage,
-} from './types';
+import { FlexMessage, Message as LineMessage, TextMessage } from '@line/bot-sdk';
 
 describe('Line message formatter unit test', () => {
   const textMessage: Message = createTextMessage(createTextBody('Text'));
@@ -33,48 +27,26 @@ describe('Line message formatter unit test', () => {
   it('should return a preformatted line text message', () => {
     const message = formatMessages([textMessage]);
 
-    assert.instanceOf(message, TextMessage, 'Should return a `TextMessage`');
-
-    const lineMessage = message as LineMessage;
-
-    assert.equal(lineMessage.type, 'text', 'Should return a text type');
+    expect(Array.isArray(message)).toBe(false);
   });
 
   it('should return a preformatted line buttons flex message', () => {
     const message = formatMessages([buttonsMessage]);
 
-    assert.instanceOf(message, FlexMessage, 'Should return a `FlexMessage`');
-
-    const lineMessage = message as LineMessage;
-
-    assert.equal(lineMessage.type, 'flex', 'should return a flex type');
+    expect(Array.isArray(message)).toBe(false);
+    expect((message as FlexMessage).contents.type).toBe('bubble');
   });
 
   it('should return a preformatted carousel message', () => {
     const message = formatMessages([carouselMessage]);
 
-    assert.instanceOf(
-      message,
-      CarouselMessage,
-      'should return a `CarouselMessage`',
-    );
-
-    const lineMessage = message as LineMessage;
-
-    assert.equal(
-      lineMessage.type,
-      'carousel',
-      'should return a carousel type',
-    );
+    expect(Array.isArray(message)).toBe(false);
+    expect((message as FlexMessage).contents.type).toBe('carousel');
   });
 
   it('should return a preformatted push messages', () => {
     const messages = formatMessages(pushMessage);
 
-    assert.instanceOf(messages, Array, 'should return an array');
-
-    for (const message of messages as LineMessage[]) {
-      assert.instanceOf(message, LineMessage, 'should return a LineMessage');
-    }
+    expect(messages).toBeInstanceOf(Array);
   });
 });

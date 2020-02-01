@@ -5,14 +5,13 @@
   "main": "index.js",
   "scripts": {
     "refresh": "rm -rf node_modules/ && npm i",
-    "test:unit": "jest './src/**/*.test.ts'"
+    "test:unit": "jest"
   },
   "author": "Namchee",
   "license": "ISC",
   "dependencies": {
     "@line/bot-sdk": "^6.8.4",
     "@sentry/node": "^5.11.0",
-    "axios": "^0.19.2",
     "koa": "^2.11.0",
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^8.0.6",

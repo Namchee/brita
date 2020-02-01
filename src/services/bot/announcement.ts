@@ -16,7 +16,6 @@ import { ServerError, UserError } from '../../utils/error';
 import { REPLY, LOGIC_ERROR } from '../../utils/messaging/reply';
 import { CategoryRepository } from '../../repository/category';
 import { Category } from '../../entity/category';
-import axios from 'axios';
 
 /**
  * A class which provides service for handling announcement fetching
@@ -33,7 +32,10 @@ export class BotAnnouncementService extends BotService {
    * @param {CategoryRepository} categoryRepository An instance of
    * category repository
    */
-  public constructor() {
+  public constructor(
+    announcementRepository: AnnouncementRepository,
+    categoryRepository: CategoryRepository,
+  ) {
     super('pengumuman', false);
 
     this.handler = [
@@ -41,6 +43,9 @@ export class BotAnnouncementService extends BotService {
       this.handleSecondState,
       this.handleThirdState,
     ];
+
+    this.announcementRepository = announcementRepository;
+    this.categoryRepository = categoryRepository;
   }
 
   /**
@@ -120,10 +125,7 @@ export class BotAnnouncementService extends BotService {
       throw new ServerError(LOGIC_ERROR.INCORRECT_MAPPING);
     }
 
-    const categories = await axios.get(
-      '/api/categories/find_all',
-      { timeout: 3000 },
-    );
+    const categories = await this.categoryRepository.findAll();
 
     const buttons = categories.map((category: Category) => {
       return createButtonBody(category.name, category.name);

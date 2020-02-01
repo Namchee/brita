@@ -1,8 +1,9 @@
+/*
 import {
   BotService,
   BotServiceResult,
   BotServiceParameters,
-} from '../services/bot/base';
+} from './bot/base';
 import { StateRepository } from '../repository/state';
 import { State } from '../entity/state';
 import { UserError, ServerError } from '../utils/error';
@@ -78,3 +79,4 @@ export class StateRepositoryMock implements StateRepository {
     return true;
   }
 }
+*/
