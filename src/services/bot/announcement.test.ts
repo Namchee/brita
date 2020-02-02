@@ -3,6 +3,7 @@ import { ServerError } from '../../utils/error';
 import {
   AnnouncementRepositoryMock,
   CategoryRepositoryMock,
+  categories,
 } from './announcement.test.util';
 import { CategoryRepository } from '../../repository/category';
 import { AnnouncementRepository } from '../../repository/announcement';
@@ -103,6 +104,13 @@ describe('Bot service unit test', () => {
     });
 
     describe('Third handler testing', () => {
+      let misc: Map<string, any>;
+
+      beforeAll(() => {
+        misc = new Map();
+        misc.set('category', categories[0]);
+      });
+
       it('should throw a server error because category not found', async () => {
         const serviceParams = {
           state: 2,
@@ -163,6 +171,7 @@ describe('Bot service unit test', () => {
         const serviceParams = {
           state: 2,
           text: 'pengumuman One 3',
+          misc: misc,
         };
 
         const result = await botService.handle(serviceParams);
@@ -182,6 +191,7 @@ describe('Bot service unit test', () => {
         const serviceParams = {
           state: 2,
           text: 'pengumuman One 2',
+          misc: misc,
         };
 
         const result = await botService.handle(serviceParams);
@@ -223,6 +233,7 @@ describe('Bot service unit test', () => {
 
         expect(result.state).toBe(2);
         expect(result.message.length).toBe(1);
+        expect(result.misc).toBeDefined();
       });
 
       it('should handle the state until it finished the request', async () => {

@@ -2,6 +2,7 @@ import { Context, Next } from 'koa';
 import { Controller } from './base';
 import { BotServiceHub } from '../services/bot.hub';
 import { ServerError } from '../utils/error';
+import Sentry from '@sentry/node';
 
 export class LineController implements Controller {
   private readonly serviceHub: BotServiceHub;
@@ -23,7 +24,7 @@ export class LineController implements Controller {
       ctx.response.body = botQueryResult;
     } catch (err) {
       if (err instanceof ServerError) {
-        // call sentry
+        Sentry.captureException(err);
       }
 
       ctx.response.status = 500;

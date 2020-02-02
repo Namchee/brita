@@ -22,7 +22,8 @@ export interface State extends Entity {
    */
   text: string;
   /**
-   * Last request activity
+   * Miscellanous object needed by particular services,
+   * Useful for caching data
    */
-  lastUpdate: Date;
+  misc?: Map<string, any>;
 }

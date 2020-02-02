@@ -3,7 +3,7 @@
 export enum REPLY {
   INPUT_CATEGORY = 'Mohon masukkan kategori pengumuman yang anda inginkan.',
   UNKNOWN_CATEGORY = 'Kategori yang anda masukkan tidak ada.',
-  UNIDENTIFIABLE = 'Permintaan yang anda minta tidak dapat dipahami, mohon coba lagi.',
+  UNIDENTIFIABLE = 'Permintaan yang anda minta tidak dapat dipahami. Mungkin saja karena permintaan anda sudah expired. Silahkan mengulangi permintaan anda.',
   INPUT_AMOUNT = 'Mohon masukkan jumlah pengumuman yang diinginkan (maks: 10).',
   AMOUNT_TOO_MUCH = 'Jumlah pengumuman yang anda minta terlalu banyak.',
   ANNOUNCEMENT_SERVED = 'Berikut adalah daftar pengumuman yang sesuai kriteria.',

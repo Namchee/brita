@@ -59,14 +59,17 @@ export class AnnouncementRepositoryMock implements AnnouncementRepository {
     return category.id === categories[0].id ? announcements : [];
   }
 
+  // we don't need this
   public create = async () => {
     return null;
   }
 
+  // we don't need this
   public delete = async () => {
     return true;
   }
 
+  // we don't need this
   public update = async () => {
     return true;
   }
@@ -81,14 +84,17 @@ export class CategoryRepositoryMock implements CategoryRepository {
     return (name === categories[0].name) ? categories[0] : null;
   }
 
+  // we don't need this
   create = async () => {
     return null;
   }
 
+  // we don't need this
   delete = async () => {
     return true;
   }
 
+  // we don't need this
   update = async () => {
     return true;
   }

@@ -1,6 +1,35 @@
-describe('dummy test', () => {
-  it('should pass', () => {
-    expect(true).toBe(true);
+import { Client } from '@line/bot-sdk';
+import { ServiceMock } from './bot.hub.test.util';
+import { BotService } from './bot/base';
+
+jest.mock('@line/bot-sdk', () => ({
+  Client: jest.fn().mockImplementation(() => ({
+    replyMessage: jest.fn().mockImplementation(() => Promise.resolve()),
+    pushMessage: jest.fn().mockImplementation(() => Promise.resolve()),
+  })),
+}));
+
+describe('Bot hub unit test', () => {
+  let client: Client;
+
+  beforeAll(() => {
+    client = new Client({ channelAccessToken: 'a', channelSecret: 'b' });
+    const serviceMap = new Map<string, BotService>();
+    const serviceMock = new ServiceMock();
+
+    serviceMap.set(serviceMock.identifier, serviceMock);
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
+
+  it('should pass', async () => {
+    const reply = await client.replyMessage('a', []);
+
+    console.log(reply);
+
+    expect(client.replyMessage).toBeCalledTimes(1);
   });
 });
 

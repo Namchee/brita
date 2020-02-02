@@ -1,5 +1,4 @@
 DROP VIEW IF EXISTS category_with_count;
-DROP TABLE IF EXISTS "state";
 DROP TABLE IF EXISTS announcement_categories;
 DROP TABLE IF EXISTS announcement;
 DROP TABLE IF EXISTS category;
@@ -41,13 +40,6 @@ CREATE VIEW category_with_count AS
 	FROM
 		category;
 		
-CREATE TABLE IF NOT EXISTS "state" (
-	id TEXT PRIMARY KEY NOT NULL,
-	service VARCHAR(25) NOT NULL,
-	"state" SMALLINT NOT NULL,
-	text TEXT NOT NULL
-);
-		
 INSERT INTO announcement (title, "content", valid_until, important)
 VALUES ('Test title', 'Test content', 'January 27, 2020', true);
 
@@ -71,6 +63,3 @@ VALUES (1, 2);
 
 INSERT INTO announcement_categories
 VALUES (2, 2);
-
-INSERT INTO "state" ("id", service, "state", text)
-VALUES ('id', 'pengumuman', 1, 'pengumuman One');

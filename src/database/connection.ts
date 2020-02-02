@@ -1,5 +1,5 @@
 import { createConnection, Connection } from 'typeorm';
-import config from './../config/config';
+import config from '../config/env';
 
 /**
  * Connects to a database based on configuration URL

@@ -1,17 +1,14 @@
 import { StateRepository } from '../repository/state';
-import { BotService, BotServiceParameters } from './bot/base';
+import { BotService } from './bot/base';
 import {
   WebhookEvent,
   MessageAPIResponseBase,
   Client,
-  Message,
+  Message as LineMessage,
   MessageEvent,
 } from '@line/bot-sdk';
-import { State } from '../entity/state';
-import config from '../config/config';
-import { formatMessages } from './utils/formatter';
-import { createTextMessage, createTextBody } from './utils/messages';
-import { LineMessage } from './utils/types';
+import { formatMessages } from './bot/messaging/formatter';
+import { createTextMessage, createTextBody } from './bot/messaging/messages';
 import { REPLY } from '../utils/messaging/reply';
 import { ServerError, UserError } from '../utils/error';
 
@@ -40,16 +37,6 @@ export class BotServiceHub {
     let service: BotService | undefined;
 
     if (userState) {
-      if (this.checkRequestExpiration(userState)) {
-        await this.stateRepository.delete(userId);
-
-        const message = formatMessages([
-          createTextMessage(createTextBody(REPLY.REQUEST_EXPIRED)),
-        ]);
-
-        return this.sendMessage(event, message);
-      }
-
       service = this.serviceMap.get(userState.service);
     } else {
       const command = text.split(' ')[0];
@@ -75,12 +62,10 @@ export class BotServiceHub {
       const realText = text + userState?.text;
 
       const queryResult = await service.handle(
-        this.buildServiceParameters(
-          service,
-          userId,
+        {
           state,
-          realText,
-        ),
+          text: realText,
+        },
       );
 
       await this.updateUserState(
@@ -88,7 +73,7 @@ export class BotServiceHub {
         service.identifier,
         queryResult.state,
         realText,
-        new Date(),
+        queryResult.misc,
       );
 
       const message = formatMessages(queryResult.message);
@@ -112,7 +97,7 @@ export class BotServiceHub {
     serviceId: string,
     state: number,
     text: string,
-    lastUpdate: Date,
+    misc?: Map<string, any>,
   ): Promise<boolean> {
     const exist = await this.stateRepository.findById(userId);
 
@@ -122,6 +107,7 @@ export class BotServiceHub {
         serviceId,
         state,
         text,
+        misc,
       );
     }
 
@@ -133,28 +119,9 @@ export class BotServiceHub {
         service: serviceId,
         state,
         text,
-        lastUpdate,
+        misc,
       });
     }
-  }
-
-  private buildServiceParameters(
-    service: BotService,
-    userId: string,
-    state: number,
-    text: string,
-  ): BotServiceParameters {
-    return {
-      state,
-      text,
-      account: service.userRelated ? userId : undefined,
-    };
-  }
-
-  private checkRequestExpiration(state: State): boolean {
-    const lastUpdate = state.lastUpdate.getTime();
-
-    return Date.now() - lastUpdate > config.expirationTime;
   }
 
   private sendMessage = (
@@ -164,10 +131,10 @@ export class BotServiceHub {
     if (Array.isArray(message)) {
       return this.client.pushMessage(
         event.source.userId || '',
-        message as Message[],
+        message,
       );
     } else {
-      return this.client.replyMessage(event.replyToken, message as Message);
+      return this.client.replyMessage(event.replyToken, message);
     }
   }
 }

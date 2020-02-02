@@ -1,4 +1,3 @@
-/*
 import {
   BotService,
   BotServiceResult,
@@ -10,7 +9,7 @@ import { UserError, ServerError } from '../utils/error';
 
 export class ServiceMock extends BotService {
   public constructor() {
-    super('pengumuman', false);
+    super('pengumuman');
   }
 
   public async handle(
@@ -36,6 +35,7 @@ export class ServiceMock extends BotService {
   }
 }
 
+/*
 export class StateRepositoryMock implements StateRepository {
   async findById(id: string): Promise<State | null> {
     if (id === '1' || id === '1000') {

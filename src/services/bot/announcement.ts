@@ -36,7 +36,7 @@ export class BotAnnouncementService extends BotService {
     announcementRepository: AnnouncementRepository,
     categoryRepository: CategoryRepository,
   ) {
-    super('pengumuman', false);
+    super('pengumuman');
 
     this.handler = [
       this.handleFirstState,
@@ -60,6 +60,7 @@ export class BotAnnouncementService extends BotService {
     {
       state,
       text,
+      misc,
     }: BotServiceParameters,
   ): Promise<BotServiceResult> => {
     if (state > 2 || state < 0) {
@@ -77,7 +78,8 @@ export class BotAnnouncementService extends BotService {
 
     for (let i = state; i < handlerLen && i < fragmentLen; i++) {
       try {
-        result = await this.handler[i]({ text });
+        result = await this.handler[i]({ text, misc });
+        misc = result.misc ? result.misc : misc;
       } catch (err) {
         if (err instanceof UserError) {
           if (result.state !== -1) {
@@ -160,6 +162,11 @@ export class BotAnnouncementService extends BotService {
       throw new UserError(REPLY.UNKNOWN_CATEGORY);
     }
 
+    const cache = new Map<string, any>();
+
+    delete category.desc; // we don't need this
+    cache.set('category', category);
+
     return {
       state: 2,
       message: [
@@ -167,6 +174,7 @@ export class BotAnnouncementService extends BotService {
           createTextBody(REPLY.INPUT_AMOUNT),
         ),
       ],
+      misc: cache,
     };
   }
 
@@ -176,18 +184,12 @@ export class BotAnnouncementService extends BotService {
   private handleThirdState = async (
     {
       text,
+      misc,
     }: HandlerParameters,
   ): Promise<BotServiceResult> => {
     const fragments = text.split(' ');
 
-    const categoryName = fragments[1];
     const amount = Number(fragments[2]);
-
-    const category = await this.categoryRepository.findByName(categoryName);
-
-    if (!category) {
-      throw new ServerError(LOGIC_ERROR.BREACH_OF_FLOW);
-    }
 
     if (isNaN(amount)) {
       throw new UserError(REPLY.AMOUNT_NOT_NUMBER);
@@ -199,6 +201,16 @@ export class BotAnnouncementService extends BotService {
 
     if (amount > 10) {
       throw new UserError(REPLY.AMOUNT_TOO_MUCH);
+    }
+
+    if (!misc || !misc.has('category')) {
+      throw new ServerError('Cached data for bot service does not exist');
+    }
+
+    const category = misc.get('category');
+
+    if (!category) {
+      throw new ServerError(LOGIC_ERROR.BREACH_OF_FLOW);
     }
 
     const announcements = await this.announcementRepository

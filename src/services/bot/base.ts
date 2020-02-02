@@ -1,5 +1,4 @@
 import { Message } from './messaging/messages';
-import axios from 'axios';
 
 /**
  * An interface which defines parameters for Bot service
@@ -7,7 +6,7 @@ import axios from 'axios';
 export interface BotServiceParameters {
   state: number;
   text: string;
-  account?: string;
+  misc?: Map<string, any>;
 }
 
 /**
@@ -15,7 +14,7 @@ export interface BotServiceParameters {
  */
 export interface HandlerParameters {
   text: string;
-  account?: string;
+  misc?: Map<string, any>;
 }
 
 /**
@@ -34,6 +33,12 @@ export interface BotServiceResult {
    * It is designed as an array to support multiple messages pushing
    */
   message: Message[];
+  /**
+   * Miscellanous data
+   *
+   * Useful for caching or keeping extra state
+   */
+  misc?: Map<string, any>;
 }
 
 export type BotServiceHandler = (
@@ -47,7 +52,6 @@ export type BotServiceHandler = (
  */
 export abstract class BotService {
   public readonly identifier: string;
-  public readonly userRelated: boolean;
   protected handler: BotServiceHandler[];
 
   /**
@@ -58,12 +62,8 @@ export abstract class BotService {
    * if the service requires user information or not
    * @param {BotServiceHandler[]} handler Array of `ServiceHandler`
    */
-  public constructor(
-    identifier: string,
-    userRelated: boolean,
-  ) {
+  public constructor(identifier: string) {
     this.identifier = identifier;
-    this.userRelated = userRelated;
   }
 
   public abstract handle(

@@ -1,12 +1,5 @@
-import { Repository, TypeORMRepository } from './base';
+import { Repository } from './base';
 import { State } from '../entity/state';
-import {
-  EntityRepository,
-  EntityManager,
-  Repository as BaseRepository,
-} from 'typeorm';
-import { StateEntity } from '../database/model/state';
-import { ServerError } from '../utils/error';
 
 /**
  * An interface which describes state repository behavior
@@ -21,7 +14,7 @@ export interface StateRepository extends Repository<State> {
    * As id is unique, it will only return one unique state
    *
    * @param {string} id User's ID
-   * @return {Promise<State>} User's state, or `null` if not found
+   * @return {Promise<State | null>} User's state, or `null` if not found
    */
   findById(id: string): Promise<State | null>;
   /**
@@ -30,6 +23,7 @@ export interface StateRepository extends Repository<State> {
    * @param {string} service Service identifier
    * @param {number} state Service's state
    * @param {string} text Accumulated user request text
+   * @param {Map<string, any> =} misc Miscellanous data for services
    * @return {Promise<boolean>} `true` if insertion is successful,
    * `false` otherwise
    */
@@ -38,114 +32,88 @@ export interface StateRepository extends Repository<State> {
     service: string,
     state: number,
     text: string,
+    misc?: Map<string, any>,
   ): Promise<boolean>;
 }
 
-@EntityRepository(StateEntity)
-export class StateRepositoryTypeORM extends TypeORMRepository<State>
-  implements StateRepository {
-  public constructor(manager: EntityManager) {
-    super(manager);
-  }
+export class StateRepositoryVolatile implements StateRepository {
+  private readonly stateContainer: Map<string, State>;
 
   /**
-   * Get the default typeORM repository for state entity
-   *
-   * @return {BaseRepository<State>} Default typeORM repository for
-   * state entity
+   * Constructor for in-memory state repository
    */
-  protected get repository(): BaseRepository<State> {
-    return this.manager.getRepository(StateEntity);
+  public constructor() {
+    this.stateContainer = new Map();
   }
 
   /**
-   * Get a state based on user's id.
-   *
-   * As id is unique, it will only return one unique state
+   * Finds a user state by its ID
    *
    * @param {string} id User's ID
-   * @return {Promise<State>} User's state, or `null` if not found
+   * @return {Promise<State | null>} User's state if it exists,
+   * `null` otherwise
    */
   public findById = async (id: string): Promise<State | null> => {
-    const state = await this.repository
-      .createQueryBuilder('state')
-      .where('id = :id', { id })
-      .getOne();
+    const state = this.stateContainer.get(id);
 
-    return state ? state : null;
+    return state || null;
   }
 
   /**
-   * Creates a new user state and insert it into the database
+   * Creates a new user state in database
+   *
    * @param {string} id User's ID
    * @param {string} service Service identifier
-   * @param {number} state Service's state
-   * @param {string} text Accumulated user request text
-   * @return {Promise<boolean>} `true` if insertion is successful,
-   * `false` otherwise
+   * @param {number} state State number
+   * @param {string} text Accumulated text
+   * @param {Map<string, any> =} misc Miscellanous data
+   * @return {Promise<boolean>} `true` if insertion successful,
+   * `false` otherwise (e.g: It already exist)
    */
   public create = async (
     id: string,
     service: string,
     state: number,
     text: string,
+    misc?: Map<string, any>,
   ): Promise<boolean> => {
-    const exist = await this.repository.count({ id });
-
-    if (exist > 0) {
-      throw new ServerError('User state already exist');
+    if (this.stateContainer.has(id)) {
+      return false;
     }
 
-    const insertionResult = await this.repository.save({
+    this.stateContainer.set(
       id,
-      service,
-      state,
-      text,
-    });
-
-    return !!insertionResult;
-  }
-
-  /**
-   * Deletes a user's state from the database
-   *
-   * Usually, a user's state is deleted when the state identifier
-   * from service result is zero
-   *
-   * @param {string} id User's ID
-   * @return {Promise<boolean>} `true` if deletion is successful
-   * `false` otherwise
-   */
-  public delete = async (id: string): Promise<boolean> => {
-    const deleteResult = await this.repository.delete({ id });
-
-    return !!deleteResult.affected;
-  }
-
-  /**
-   * Updates a user's state with given parameters
-   *
-   * The service identifier is NOT updated, as you cannot do it
-   * before finishing the current request or expire it
-   * @param {State} obj State object
-   * @return {Promise<boolean>} `true` if update is successful,
-   * `false` otherwise
-   */
-  public update = async (
-    {
-      id,
-      state,
-      text,
-    }: State,
-  ): Promise<boolean> => {
-    const updateResult = await this.repository.update(
-      { id },
-      {
-        state,
-        text,
-      },
+      { id, service, state, text, misc },
     );
 
-    return !!updateResult.affected;
+    return this.stateContainer.has(id);
+  }
+
+  /**
+   * Deletes a user's state from database
+   *
+   * @param {string} id User's ID
+   * @return {Promise<boolean>} `true` if deletion completed
+   * successfully, `false` otherwise
+   */
+  public delete = async (id: string): Promise<boolean> => {
+    return this.stateContainer.delete(id);
+  }
+
+  /**
+   * Updates a user's state in the database
+   *
+   * @param {State} state User's state
+   * @return {Promise<boolean>} `true` if update completed
+   * successfully, `false` otherwise
+   */
+  public update = async (state: State): Promise<boolean> => {
+    if (!this.stateContainer.has(state.id)) {
+      return false;
+    }
+
+    this.stateContainer.set(state.id, state);
+
+    return true;
   }
 }

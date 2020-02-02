@@ -6,7 +6,7 @@ import { AnnouncementRepositoryTypeORM } from './repository/announcement';
 import { CategoryRepositoryTypeORM } from './repository/category';
 import { BotEndpointHandler } from './controllers/line.controller';
 import { init } from '@sentry/node';
-import config from './config/config';
+import config from './config/env';
 
 let endpointHandler: BotEndpointHandler;
 

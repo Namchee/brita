@@ -7,7 +7,7 @@ import {
   createCarouselMessage,
 } from './messages';
 import { formatMessages } from './formatter';
-import { FlexMessage, Message as LineMessage, TextMessage } from '@line/bot-sdk';
+import { FlexMessage, Message as LineMessage } from '@line/bot-sdk';
 
 describe('Line message formatter unit test', () => {
   const textMessage: Message = createTextMessage(createTextBody('Text'));
@@ -48,5 +48,11 @@ describe('Line message formatter unit test', () => {
     const messages = formatMessages(pushMessage);
 
     expect(messages).toBeInstanceOf(Array);
+
+    const lineMessages = messages as LineMessage[];
+
+    expect(lineMessages[0].type).toBe('text');
+    expect(lineMessages[1].type).toBe('flex');
+    expect((lineMessages[1] as FlexMessage).contents.type).toBe('bubble');
   });
 });
