@@ -1,13 +1,13 @@
 import { Context, Next } from 'koa';
 import { Controller } from './base';
-import { BotServiceHub } from '../services/bot.hub';
+import { LineBotServiceHub } from '../services/bot.hub';
 import { ServerError } from '../utils/error';
 import Sentry from '@sentry/node';
 
 export class LineController implements Controller {
-  private readonly serviceHub: BotServiceHub;
+  private readonly serviceHub: LineBotServiceHub;
 
-  public constructor(serviceHub: BotServiceHub) {
+  public constructor(serviceHub: LineBotServiceHub) {
     this.serviceHub = serviceHub;
   }
 

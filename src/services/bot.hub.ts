@@ -12,10 +12,20 @@ import { createTextMessage, createTextBody } from './bot/messaging/messages';
 import { REPLY } from '../utils/messaging/reply';
 import { ServerError, UserError } from '../utils/error';
 
-export class BotServiceHub {
+export class LineBotServiceHub {
   private readonly client: Client;
   private readonly serviceMap: Map<string, BotService>;
   private readonly stateRepository: StateRepository;
+
+  public constructor(
+    client: Client,
+    serviceMap: Map<string, BotService>,
+    stateRepository: StateRepository,
+  ) {
+    this.client = client;
+    this.serviceMap = serviceMap;
+    this.stateRepository = stateRepository;
+  }
 
   public async handleBotQuery(
     event: WebhookEvent,
@@ -59,7 +69,9 @@ export class BotServiceHub {
     }
 
     try {
-      const realText = text + userState?.text;
+      const realText = userState ?
+        `${userState.text} ${text}` :
+        text;
 
       const queryResult = await service.handle(
         {
@@ -102,6 +114,10 @@ export class BotServiceHub {
     const exist = await this.stateRepository.findById(userId);
 
     if (!exist) {
+      if (state === 0) {
+        return true;
+      }
+
       return await this.stateRepository.create(
         userId,
         serviceId,
@@ -109,18 +125,18 @@ export class BotServiceHub {
         text,
         misc,
       );
-    }
-
-    if (state === 0) {
-      return await this.stateRepository.delete(userId);
     } else {
-      return await this.stateRepository.update({
-        id: userId,
-        service: serviceId,
-        state,
-        text,
-        misc,
-      });
+      if (state === 0) {
+        return await this.stateRepository.delete(userId);
+      } else {
+        return await this.stateRepository.update({
+          id: userId,
+          service: serviceId,
+          state,
+          text,
+          misc,
+        });
+      }
     }
   }
 
