@@ -4,17 +4,14 @@ import { LineBotServiceHub } from '../services/bot.hub';
 import { ServerError } from '../utils/error';
 import Sentry from '@sentry/node';
 
-export class LineController implements Controller {
+export class LineBotController implements Controller {
   private readonly serviceHub: LineBotServiceHub;
 
   public constructor(serviceHub: LineBotServiceHub) {
     this.serviceHub = serviceHub;
   }
 
-  public handleRequest = async (
-    ctx: Context,
-    next: Next,
-  ): Promise<void> => {
+  public handleRequest = async (ctx: Context, next: Next): Promise<void> => {
     try {
       const botQueryResult = await Promise.all(
         ctx.body.events.map(this.serviceHub.handleBotQuery),
@@ -28,6 +25,7 @@ export class LineController implements Controller {
       }
 
       ctx.response.status = 500;
+      ctx.response.body = null;
     }
   }
 }
