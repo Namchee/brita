@@ -249,3 +249,39 @@ export function createSavedStateBuggyServiceNameEvent(): WebhookEvent {
     },
   };
 }
+
+export function createSavedStateUnfinishedStateEvent(): WebhookEvent {
+  return {
+    replyToken,
+    type: 'message',
+    mode: 'active',
+    timestamp: 1,
+    message: {
+      type: 'text',
+      text: '2',
+      id: '1',
+    },
+    source: {
+      type: 'user',
+      userId: '1',
+    },
+  };
+}
+
+export function createSavedStateFinishedStateEvent(): WebhookEvent {
+  return {
+    replyToken,
+    type: 'message',
+    mode: 'active',
+    timestamp: 1,
+    message: {
+      type: 'text',
+      text: '1',
+      id: '1',
+    },
+    source: {
+      type: 'user',
+      userId: '1',
+    },
+  };
+}

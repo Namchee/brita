@@ -8,3 +8,5 @@ jspm_packages
 .nyc_output/
 
 *.env
+
+.vscode

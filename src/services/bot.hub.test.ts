@@ -10,6 +10,8 @@ import {
   createUnsavedStatePushMessagesEvent,
   createUnsavedStateServerErrorEvent,
   createSavedStateBuggyServiceNameEvent,
+  createSavedStateUnfinishedStateEvent,
+  createSavedStateFinishedStateEvent,
 } from './bot.hub.test.util';
 import { BotService } from './bot/base';
 import { StateRepository } from '../repository/state';
@@ -54,7 +56,7 @@ describe('Bot hub unit test', () => {
   });
 
   describe('On correct LINE webhook event', () => {
-    describe('On unsaved state', () => {
+    describe('Message handling tests', () => {
       it(
         'should reply with unidentifiable message when service does not exist',
         async () => {
@@ -74,18 +76,6 @@ describe('Bot hub unit test', () => {
 
         expect(result).toBe(undefined);
         expect(client.replyMessage).toHaveBeenCalledTimes(1);
-      });
-
-      it('should reply correctly and save the state', async () => {
-        jest.spyOn(stateRepository, 'create');
-
-        const event = createUnsavedStateUnfinishedStateEvent();
-
-        const result = await hub.handleBotQuery(event);
-
-        expect(result).toBe(undefined);
-        expect(client.replyMessage).toHaveBeenCalledTimes(1);
-        expect(stateRepository.create).toHaveBeenCalledTimes(1);
       });
 
       it('should push messages', async () => {
@@ -113,23 +103,14 @@ describe('Bot hub unit test', () => {
       });
     });
 
-    describe('On saved state', () => {
-      it('should throw a server error with wrong service name', () => {
+    describe('State handling tests', () => {
+      it('should throw a server error caused by wrong service name', () => {
         const event = createSavedStateBuggyServiceNameEvent();
 
         expect(hub.handleBotQuery(event)).rejects.toBeInstanceOf(ServerError);
       });
 
-      it('should reply correctly', async () => {
-        const event = createUnsavedStateFinishedStateEvent();
-
-        const result = await hub.handleBotQuery(event);
-
-        expect(result).toBe(undefined);
-        expect(client.replyMessage).toHaveBeenCalledTimes(1);
-      });
-
-      it('should reply correctly and save the state', async () => {
+      it('should create new user state', async () => {
         jest.spyOn(stateRepository, 'create');
 
         const event = createUnsavedStateUnfinishedStateEvent();
@@ -141,28 +122,28 @@ describe('Bot hub unit test', () => {
         expect(stateRepository.create).toHaveBeenCalledTimes(1);
       });
 
-      it('should push messages', async () => {
-        const event = createUnsavedStatePushMessagesEvent();
+      it('should update user state correctly', async () => {
+        jest.spyOn(stateRepository, 'update');
+
+        const event = createSavedStateUnfinishedStateEvent();
 
         const result = await hub.handleBotQuery(event);
 
         expect(result).toBe(undefined);
-        expect(client.pushMessage).toBeCalledTimes(1);
+        expect(stateRepository.update).toHaveBeenCalledTimes(1);
+        expect(client.replyMessage).toHaveBeenCalledTimes(1);
       });
 
-      it('should still reply on user error', async () => {
-        const event = createUnsavedStateUserErrorEvent();
+      it('should delete user state correctly', async () => {
+        jest.spyOn(stateRepository, 'delete');
+
+        const event = createSavedStateFinishedStateEvent();
 
         const result = await hub.handleBotQuery(event);
 
         expect(result).toBe(undefined);
-        expect(client.replyMessage).toBeCalledTimes(1);
-      });
-
-      it('should throw a server error', () => {
-        const event = createUnsavedStateServerErrorEvent();
-
-        expect(hub.handleBotQuery(event)).rejects.toBeInstanceOf(ServerError);
+        expect(stateRepository.delete).toHaveBeenCalledTimes(1);
+        expect(client.replyMessage).toHaveBeenCalledTimes(1);
       });
     });
   });
