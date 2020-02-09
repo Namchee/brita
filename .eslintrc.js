@@ -48,5 +48,6 @@ module.exports = {
     '@typescript-eslint/no-explicit-any': 'off',
     'no-invalid-this': 'off',
     'require-atomic-updates': 'off',
+    '@typescript-eslint/no-var-requires': 'off'
   },
 };

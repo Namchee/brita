@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS category (
 	"desc" VARCHAR(100) NOT NULL
 );
 
-CREATE INDEX "category_name_index" ON category((lower("name")));
+CREATE INDEX "category_name_index" ON category USING HASH ("name");
 
 CREATE TABLE announcement_categories (
 	announcement_id INT REFERENCES announcement(id) ON DELETE CASCADE NOT NULL,
