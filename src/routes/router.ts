@@ -14,7 +14,7 @@ import { ControllerList } from '../utils/bootstrap';
  */
 async function lineMiddleware(ctx: Context, next: Next): Promise<any> {
   const channelSecret = config.secretToken;
-  const body = JSON.stringify(ctx.body); // Request body string
+  const body = JSON.stringify(ctx.body);
 
   const signature = crypto
     .createHmac('SHA256', channelSecret)

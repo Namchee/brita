@@ -9,12 +9,16 @@ import { LineBotServiceHub } from '../services/bot.hub';
 import { Client } from '@line/bot-sdk';
 import config from './../config/env';
 
+/**
+ * An interface which describes key-value mapping for bootstrapped
+ * controllers returned by bootstrap function
+ */
 export interface ControllerList {
   lineController: LineBotController;
 }
 
 /**
- * A function which bootstrap all application dependency
+ * Bootstrap all application dependency
  * and return list of controllers
  *
  * @param {Connection} conn TypeORM connection instance

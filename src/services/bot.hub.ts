@@ -12,11 +12,25 @@ import { createTextMessage, createTextBody } from './bot/messaging/messages';
 import { REPLY } from '../utils/messaging/reply';
 import { ServerError, UserError } from '../utils/error';
 
+/**
+ * LINE bot service hub
+ *
+ * It controls state handling and service mapping for supported
+ * LINE requests
+ */
 export class LineBotServiceHub {
   private readonly client: Client;
   private readonly serviceMap: Map<string, BotService>;
   private readonly stateRepository: StateRepository;
 
+  /**
+   * Constructor for LineBotServiceHub
+   * @param {Client} client LINE messaging API client
+   * @param {Map<string, BotService>} serviceMap A `Map` which 'maps' an
+   * identifier to correct services
+   * @param {StateRepository} stateRepository A concrete implementation
+   * of `StateRepository`
+   */
   public constructor(
     client: Client,
     serviceMap: Map<string, BotService>,
@@ -27,6 +41,13 @@ export class LineBotServiceHub {
     this.stateRepository = stateRepository;
   }
 
+  /**
+   * Handles bot queries and respond with approriate messages
+   *
+   * @param {WebhookEvent} event LINE webhook event
+   * @return {Promise<MessageAPIResponseBase | null>} Proper respond or
+   * `null` when supplied with unsupported events
+   */
   public async handleBotQuery(
     event: WebhookEvent,
   ): Promise<MessageAPIResponseBase | null> {

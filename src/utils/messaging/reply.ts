@@ -1,5 +1,8 @@
 /* eslint-disable max-len */
 
+/**
+ * An `enum` which contains all default REPLY messages
+ */
 export enum REPLY {
   INPUT_CATEGORY = 'Mohon masukkan kategori pengumuman yang anda inginkan.',
   UNKNOWN_CATEGORY = 'Kategori yang anda masukkan tidak ada.',
@@ -13,6 +16,9 @@ export enum REPLY {
   REQUEST_EXPIRED = 'Mohon maaf, namun sesi permintaan anda habis. Silahkan mengulangi permintaan anda',
 }
 
+/**
+ * An `enum` which contains all logical flow error messages
+ */
 export enum LOGIC_ERROR {
   INCORRECT_MAPPING = 'Incorrect service mapping',
   INCORRECT_LOGIC = 'Logic error',

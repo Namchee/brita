@@ -1,6 +1,9 @@
 import { EntitySchema, EntitySchemaColumnOptions } from 'typeorm';
 import { Category } from '../../entity/category';
 
+/**
+ * TypeORM base schema for Category entity
+ */
 const baseSchema = {
   id: {
     type: Number,
@@ -21,6 +24,9 @@ const baseSchema = {
   } as EntitySchemaColumnOptions,
 };
 
+/**
+ * TypeORM entity schema for Category entity
+ */
 export const CategoryEntity = new EntitySchema<Category>({
   name: 'category',
   tableName: 'category',
@@ -29,6 +35,10 @@ export const CategoryEntity = new EntitySchema<Category>({
   },
 });
 
+/**
+ * TypeORM entity schema for Category VIEW, which includes COUNT
+ * on it
+ */
 export const CategoryWithCount = new EntitySchema<Category>({
   name: 'category_with_count',
   tableName: 'category_with_count',

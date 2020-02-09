@@ -1,6 +1,9 @@
 import { EntitySchema } from 'typeorm';
 import { Announcement } from '../../entity/announcement';
 
+/**
+ * TypeORM entity schema for Announcement entity
+ */
 export const AnnouncementEntity = new EntitySchema<Announcement>({
   name: 'announcement',
   tableName: 'announcement',
@@ -42,7 +45,7 @@ export const AnnouncementEntity = new EntitySchema<Announcement>({
         },
         inverseJoinColumn: {
           name: 'category_id',
-        }
+        },
       },
       target: 'category',
     },

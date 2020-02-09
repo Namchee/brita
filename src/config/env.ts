@@ -1,12 +1,7 @@
 import { config as loadConfig, DotenvConfigOutput } from 'dotenv';
-import { resolve } from 'path';
 
 if (process.env.NODE_ENV !== 'production') {
-  const config: DotenvConfigOutput = loadConfig({
-    path: resolve(
-      process.cwd(), process.env.NODE_ENV === 'test' ? 'test.env' : '.env',
-    ),
-  });
+  const config: DotenvConfigOutput = loadConfig();
 
   if (config.error) {
     throw new Error('Cannot load environment variables');
@@ -15,7 +10,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 /**
  * Useful environment variables which is (typically) used
- * in the application
+ * by the application
  */
 export default {
   /**

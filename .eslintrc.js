@@ -19,6 +19,9 @@ module.exports = {
     'ecmaVersion': 2018,
     'sourceType': 'module',
   },
+  'plugins': [
+    'jsdoc',
+  ],
   'rules': {
     'indent': [
       'error',
@@ -40,6 +43,7 @@ module.exports = {
       },
     ],
     'require-jsdoc': 'off',
+    'valid-jsdoc': 'off',
     'new-cap': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'no-invalid-this': 'off',

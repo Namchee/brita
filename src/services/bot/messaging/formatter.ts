@@ -104,6 +104,12 @@ function generateLineMessage(
   }
 }
 
+/**
+ * Formats messages to LINE-compatible message objects
+ *
+ * @param {Message[]} messages Array of `Message`(s)
+ * @return {LineMessage | LineMessage[]} A LINE-compatible message object(s)
+ */
 export function formatMessages(
   messages: Message[],
 ): LineMessage | LineMessage[] {
