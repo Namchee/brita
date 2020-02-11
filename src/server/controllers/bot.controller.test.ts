@@ -40,10 +40,6 @@ jest.mock('./../services/bot.hub', () => ({
   })),
 }));
 
-jest.mock('@sentry/node', () => ({
-  captureException: jest.fn().mockImplementation(() => 'caught'),
-}));
-
 describe('Controller unit test', () => {
   describe('LINE Controller unit test', () => {
     const client = new Client({ channelAccessToken: 'a', channelSecret: 'b' });
@@ -73,10 +69,14 @@ describe('Controller unit test', () => {
 
     it('should respond with 500', async () => {
       const spy = jest.spyOn(serviceHub, 'handleBotQuery');
+      const app = {
+        emit: jest.fn().mockImplementation(() => null),
+      };
 
       const ctx: any = {
         body: sampleEvent,
         response: {},
+        app,
       };
 
       spy.mockImplementationOnce(() => {
@@ -87,6 +87,7 @@ describe('Controller unit test', () => {
 
       expect(ctx.response.status).toBe(500);
       expect(ctx.response.body).toBeNull;
+      expect(app.emit).toBeCalledTimes(1);
     });
   });
 });
