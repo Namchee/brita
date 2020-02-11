@@ -1,8 +1,6 @@
 import { Context, Next } from 'koa';
 import { Controller } from 'controllers/base';
 import { LineBotServiceHub } from 'services/bot.hub';
-import { ServerError } from 'utils/error';
-import Sentry from '@sentry/node';
 
 /**
  * Controller for handling LINE webhook endpoint
@@ -34,12 +32,10 @@ export class LineBotController implements Controller {
       ctx.response.status = 200;
       ctx.response.body = botQueryResult;
     } catch (err) {
-      if (err instanceof ServerError) {
-        Sentry.captureException(err);
-      }
-
       ctx.response.status = 500;
       ctx.response.body = null;
+
+      ctx.app.emit('error', err, ctx);
     }
   }
 }

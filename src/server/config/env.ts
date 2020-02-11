@@ -14,6 +14,13 @@ if (process.env.NODE_ENV !== 'production') {
  */
 export default {
   /**
+   * Application port
+   *
+   * This variable will be used by the app to listen specific events
+   * sent to this port number
+   */
+  port: process.env.PORT || 8080,
+  /**
    * Database URL connection string
    */
   dbUrl: process.env.DB_URL || '',

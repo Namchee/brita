@@ -1,25 +1,28 @@
+import { createApp } from './app';
 import Koa from 'koa';
-import bodyParser from 'koa-bodyparser';
-import { connectToDatabase } from './database/connection';
-import { generateRoutes } from 'routes/router';
-import { bootstrapApp } from 'utils/bootstrap';
+import logger from 'koa-morgan';
+import { init, captureException } from '@sentry/node';
+import config from 'config/env';
 
-/**
- * Creates a new Koa application
- *
- * Technically, app-as-function is silly IMO.
- * But, exporting `Promise` is easier with functions
- *
- * @return {Promise<Koa>} A new Koa application with predefined routes
- */
-export async function createApp(): Promise<Koa> {
-  const conn = await connectToDatabase();
-
-  const router = generateRoutes(bootstrapApp(conn));
-
-  const app = new Koa();
-  app.use(bodyParser());
-  app.use(router.routes());
-
-  return app;
+function errorHandler(err: Error): void {
+  if (process.env.NODE_ENV === 'development') {
+    console.error(err);
+  } else {
+    captureException(err);
+  }
 }
+
+createApp().then((app: Koa) => {
+  const port = config.port;
+
+  if (process.env.NODE_ENV === 'production') {
+    init({ dsn: config.dsn });
+  } else {
+    app.use(logger('dev'));
+  }
+
+  app.on('error', errorHandler);
+  app.listen(port, () => {
+    console.log(`App listening on ${port}`);
+  });
+});

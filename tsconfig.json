@@ -10,7 +10,7 @@
     // "jsx": "preserve",                     /* Specify JSX code generation: 'preserve', 'react-native', or 'react'. */
     // "declaration": true,                   /* Generates corresponding '.d.ts' file. */
     // "declarationMap": true,                /* Generates a sourcemap for each corresponding '.d.ts' file. */
-    "sourceMap": true, /* Generates corresponding '.map' file. */
+    // "sourceMap": true, /* Generates corresponding '.map' file. */
     // "outFile": "./index",                       /* Concatenate and emit output to single file. */
     "outDir": "./build", /* Redirect output structure to the directory. */
     // "rootDir": "./",                       /* Specify the root directory of input files. Use to control the output directory structure with --outDir. */
@@ -57,35 +57,42 @@
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true, /* Disallow inconsistently-cased references to the same file. */
     "resolveJsonModule": true,
-    "baseUrl": "./src",
+    "baseUrl": "./src/server",
     "paths": {
       "controllers/*": [
-        "server/controllers/*"
+        "controllers/*"
       ],
       "model/*": [
-        "server/database/model/*"
+        "database/model/*"
       ],
       "entity/*": [
-        "server/entity/*"
+        "entity/*"
       ],
       "repository/*": [
-        "server/repository/*"
+        "repository/*"
       ],
       "services/*": [
-        "server/services/*"
+        "services/*"
       ],
       "botServices/*": [
-        "server/services/bot/*"
+        "services/bot/*"
       ],
       "utils/*": [
-        "server/utils/*"
+        "utils/*"
       ],
       "config/*": [
-        "server/config/*"
+        "config/*"
       ],
       "routes/*": [
-        "server/routes/*"
+        "routes/*"
       ]
     }
-  }
+  },
+  "include": [
+    "src/server/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/server/**/*.test.ts"
+  ]
 }
