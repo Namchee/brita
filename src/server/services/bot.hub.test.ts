@@ -12,11 +12,11 @@ import {
   createSavedStateBuggyServiceNameEvent,
   createSavedStateUnfinishedStateEvent,
   createSavedStateFinishedStateEvent,
-} from 'services/bot.hub.test.util';
-import { BotService } from 'botServices/base';
-import { StateRepository } from 'repository/state';
-import { LineBotServiceHub } from 'services/bot.hub';
-import { ServerError } from 'utils/error';
+} from './bot.hub.test.util';
+import { BotService } from './bot/base';
+import { StateRepository } from './../repository/state';
+import { LineBotServiceHub } from './bot.hub';
+import { ServerError } from './../utils/error';
 
 jest.mock('@line/bot-sdk', () => ({
   Client: jest.fn().mockImplementation(() => ({

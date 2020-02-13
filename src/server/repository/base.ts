@@ -1,5 +1,5 @@
 import { EntityManager, Repository as BaseRepository } from 'typeorm';
-import { Entity } from 'entity/base';
+import { Entity } from './../entity/base';
 
 /**
  * Base typeORM repository class.

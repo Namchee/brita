@@ -1,13 +1,13 @@
 import { Client } from '@line/bot-sdk';
 import { Connection } from 'typeorm';
-import { AnnouncementRepositoryTypeORM } from 'repository/announcement';
-import { CategoryRepositoryTypeORM } from 'repository/category';
-import { StateRepositoryVolatile } from 'repository/state';
-import { BotAnnouncementService } from 'botServices/announcement';
-import { LineBotController } from 'controllers/bot.controller';
-import { BotService } from 'botServices/base';
-import { LineBotServiceHub } from 'services/bot.hub';
-import config from 'config/env';
+import { AnnouncementRepositoryTypeORM } from './../repository/announcement';
+import { CategoryRepositoryTypeORM } from './../repository/category';
+import { StateRepositoryVolatile } from './../repository/state';
+import { BotAnnouncementService } from './../services/bot/announcement';
+import { LineBotController } from './../controllers/bot.controller';
+import { BotService } from './../services/bot/base';
+import { LineBotServiceHub } from './../services/bot.hub';
+import config from './../config/env';
 
 /**
  * An interface which describes key-value mapping for bootstrapped

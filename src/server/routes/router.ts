@@ -1,8 +1,8 @@
 import Router from 'koa-router';
 import { Context, Next } from 'koa';
 import crypto from 'crypto';
-import config from 'config/env';
-import { ControllerList } from 'utils/bootstrap';
+import config from './../config/env';
+import { ControllerList } from './../utils/bootstrap';
 
 /**
  * Koa middleware for LINE client signature validation

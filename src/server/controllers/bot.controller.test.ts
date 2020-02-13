@@ -1,7 +1,7 @@
 import { Client } from '@line/bot-sdk';
-import { LineBotServiceHub } from 'services/bot.hub';
-import { LineBotController } from 'controllers/bot.controller';
-import { StateRepositoryVolatile } from 'repository/state';
+import { LineBotServiceHub } from './../services/bot.hub';
+import { LineBotController } from './bot.controller';
+import { StateRepositoryVolatile } from './../repository/state';
 
 const sampleEvent = {
   'destination': 'xxxxxxxxxx',

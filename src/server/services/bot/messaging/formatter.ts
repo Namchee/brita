@@ -10,7 +10,7 @@ import {
   FlexContainer,
 } from '@line/bot-sdk';
 import { Message, ButtonBody } from './messages';
-import { ServerError } from 'utils/error';
+import { ServerError } from './../../../utils/error';
 
 function generateLineTextMessage(text: string): TextMessage {
   return {

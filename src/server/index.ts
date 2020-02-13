@@ -1,8 +1,8 @@
-import { createApp } from './app';
 import Koa from 'koa';
 import logger from 'koa-morgan';
 import { init, captureException } from '@sentry/node';
-import config from 'config/env';
+import { createApp } from './app';
+import config from './config/env';
 
 function errorHandler(err: Error): void {
   if (process.env.NODE_ENV === 'development') {

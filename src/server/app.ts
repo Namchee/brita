@@ -1,8 +1,8 @@
 import Koa from 'koa';
 import bodyParser from 'koa-bodyparser';
 import { connectToDatabase } from './database/connection';
-import { generateRoutes } from 'routes/router';
-import { bootstrapApp } from 'utils/bootstrap';
+import { generateRoutes } from './routes/router';
+import { bootstrapApp } from './utils/bootstrap';
 
 /**
  * Creates a new Koa application

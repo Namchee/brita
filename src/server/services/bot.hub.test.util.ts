@@ -1,16 +1,16 @@
+import { WebhookEvent } from '@line/bot-sdk';
 import {
   BotService,
   BotServiceResult,
   BotServiceParameters,
-} from 'botServices/base';
-import { StateRepository } from 'repository/state';
-import { State } from 'entity/state';
-import { UserError, ServerError } from 'utils/error';
-import { WebhookEvent } from '@line/bot-sdk';
+} from './bot/base';
+import { StateRepository } from './../repository/state';
+import { State } from './../entity/state';
+import { UserError, ServerError } from './../utils/error';
 import {
   createTextMessage,
   createTextBody,
-} from 'botServices/messaging/messages';
+} from './bot/messaging/messages';
 
 const fakeMessage = createTextMessage(createTextBody(''));
 

@@ -3,10 +3,10 @@ import {
   EntityManager,
   Repository as BaseRepository,
 } from 'typeorm';
-import { Announcement } from 'entity/announcement';
-import { TypeORMRepository, EntityRepository } from 'repository/base';
-import { Category } from 'entity/category';
-import { AnnouncementEntity } from 'model/announcement';
+import { Announcement } from './../entity/announcement';
+import { TypeORMRepository, EntityRepository } from './base';
+import { Category } from './../entity/category';
+import { AnnouncementEntity } from './../database/model/announcement';
 
 /**
  * Interface for Announcement repository
@@ -32,6 +32,7 @@ export interface AnnouncementRepository
    * @param {boolean} important Announcement's importance
    * @param {Category[]} categories Announcement's categories
    * @return {Promise<Announcement>} The newly created Announcement
+   * or `null` if duplicate properties exists
    */
   create(
     title: string,
@@ -116,6 +117,7 @@ export class AnnouncementRepositoryTypeORM
    * @param {boolean} important Announcement's importance
    * @param {Category[]} categories Announcement's categories
    * @return {Promise<Announcement>} The newly created Announcement
+   * or `null` if duplicate property exists
    */
   public create = async (
     title: string,
@@ -124,13 +126,19 @@ export class AnnouncementRepositoryTypeORM
     important: boolean,
     categories: Category[],
   ): Promise<Announcement | null> => {
-    return await this.repository.save({
-      title,
-      content,
-      validUntil,
-      important,
-      categories,
-    });
+    try {
+      const insertResult = await this.repository.insert({
+        title,
+        content,
+        validUntil,
+        important,
+        categories,
+      });
+
+      return (insertResult.generatedMaps[0]) as Announcement;
+    } catch (err) {
+      return null; // hopefully, dupes issues
+    }
   }
 
   /**

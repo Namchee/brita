@@ -1,12 +1,12 @@
-import { BotAnnouncementService } from 'botServices/announcement';
-import { ServerError } from 'utils/error';
+import { BotAnnouncementService } from './announcement';
+import { ServerError } from './../../utils/error';
 import {
   AnnouncementRepositoryMock,
   CategoryRepositoryMock,
   categories,
-} from 'botServices/announcement.test.util';
-import { CategoryRepository } from 'repository/category';
-import { AnnouncementRepository } from 'repository/announcement';
+} from './announcement.test.util';
+import { CategoryRepository } from './../../repository/category';
+import { AnnouncementRepository } from './../../repository/announcement';
 
 const processedAnnouncement = [
   'Announcement Two\n\nThis is announcement two',

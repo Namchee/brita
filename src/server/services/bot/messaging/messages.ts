@@ -1,4 +1,4 @@
-import { ServerError } from 'utils/error';
+import { ServerError } from './../../../utils/error';
 
 /**
  * Message Body

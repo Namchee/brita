@@ -1,5 +1,5 @@
 import { createConnection, Connection } from 'typeorm';
-import config from 'config/env';
+import config from './../config/env';
 
 /**
  * Connects to a database based on configuration URL
@@ -10,6 +10,6 @@ export function connectToDatabase(): Promise<Connection> {
   return createConnection({
     type: 'postgres',
     url: config.dbUrl,
-    entities: ['model/*.ts'],
+    entities: ['./src/server/database/model/*.ts'],
   });
 }

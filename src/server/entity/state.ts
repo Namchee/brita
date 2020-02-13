@@ -1,4 +1,4 @@
-import { Entity } from 'entity/base';
+import { Entity } from './base';
 
 /**
  * An interface which represents single user state

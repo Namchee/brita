@@ -3,9 +3,12 @@ import {
   EntityRepository as BaseEntityRepository,
   Repository,
 } from 'typeorm';
-import { TypeORMRepository, EntityRepository } from 'repository/base';
-import { Category } from 'entity/category';
-import { CategoryEntity, CategoryWithCount } from 'model/category';
+import { TypeORMRepository, EntityRepository } from './base';
+import { Category } from './../entity/category';
+import {
+  CategoryEntity,
+  CategoryWithCount,
+} from './../database/model/category';
 
 /**
  * An interface for category repository
@@ -103,11 +106,20 @@ export class CategoryRepositoryTypeORM
    * @param {string} desc Description for the category
    * @return {Category} The newly inserted category
    */
-  public create = async (name: string, desc: string): Promise<Category> => {
-    return await this.repository.save({
-      name,
-      desc,
-    });
+  public create = async (
+    name: string,
+    desc: string,
+  ): Promise<Category | null> => {
+    try {
+      const insertResult = await this.repository.insert({
+        name,
+        desc,
+      });
+
+      return (insertResult.generatedMaps[0]) as Category;
+    } catch (err) {
+      return null;
+    }
   }
 
   /**

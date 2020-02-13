@@ -1,4 +1,4 @@
-import { Message } from 'botServices/messaging/messages';
+import { Message } from './messaging/messages';
 
 /**
  * An interface which defines parameters for Bot service

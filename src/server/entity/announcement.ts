@@ -1,5 +1,5 @@
-import { Entity } from 'entity/base';
-import { Category } from 'entity/category';
+import { Entity } from './base';
+import { Category } from './category';
 
 /**
  * An interface which represents single Announcement entity

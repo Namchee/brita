@@ -5,15 +5,15 @@ import {
   Message as LineMessage,
   MessageEvent,
 } from '@line/bot-sdk';
-import { StateRepository } from 'repository/state';
-import { BotService } from 'botServices/base';
-import { formatMessages } from 'botServices/messaging/formatter';
+import { StateRepository } from './../repository/state';
+import { BotService } from './bot/base';
+import { formatMessages } from './bot/messaging/formatter';
 import {
   createTextMessage,
   createTextBody,
-} from 'botServices/messaging/messages';
-import { REPLY } from 'utils/messaging/reply';
-import { ServerError, UserError } from 'utils/error';
+} from './bot/messaging/messages';
+import { REPLY } from './bot/messaging/reply';
+import { ServerError, UserError } from './../utils/error';
 
 /**
  * LINE bot service hub

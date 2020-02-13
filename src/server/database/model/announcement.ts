@@ -1,5 +1,5 @@
 import { EntitySchema } from 'typeorm';
-import { Announcement } from 'entity/announcement';
+import { Announcement } from './../../entity/announcement';
 
 /**
  * TypeORM entity schema for Announcement entity

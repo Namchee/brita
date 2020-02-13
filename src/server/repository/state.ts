@@ -1,5 +1,5 @@
-import { Repository } from 'repository/base';
-import { State } from 'entity/state';
+import { Repository } from './base';
+import { State } from './../entity/state';
 
 /**
  * An interface which describes state repository behavior

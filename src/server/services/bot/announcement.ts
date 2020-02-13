@@ -3,19 +3,19 @@ import {
   BotServiceParameters,
   BotServiceResult,
   HandlerParameters,
-} from 'botServices/base';
+} from './base';
 import {
   createTextBody,
   createButtonMessage,
   createButtonBody,
   createTextMessage,
   createCarouselMessage,
-} from 'botServices/messaging/messages';
-import { AnnouncementRepository } from 'repository/announcement';
-import { ServerError, UserError } from 'utils/error';
-import { REPLY, LOGIC_ERROR } from 'utils/messaging/reply';
-import { CategoryRepository } from 'repository/category';
-import { Category } from 'entity/category';
+} from './messaging/messages';
+import { AnnouncementRepository } from './../../repository/announcement';
+import { ServerError, UserError } from './../../utils/error';
+import { REPLY, LOGIC_ERROR } from './messaging/reply';
+import { CategoryRepository } from './../../repository/category';
+import { Category } from './../../entity/category';
 
 /**
  * A class which provides service for handling announcement fetching

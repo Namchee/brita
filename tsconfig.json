@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "target": "es2017",
+    "target": "es2015",
     "module": "commonjs",
     "allowJs": true,
     "outDir": "./build",
@@ -16,35 +16,12 @@
     "emitDecoratorMetadata": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "baseUrl": "./src/server",
-    "paths": {
-      "controllers/*": [
-        "controllers/*"
-      ],
-      "model/*": [
-        "database/model/*"
-      ],
-      "entity/*": [
-        "entity/*"
-      ],
-      "repository/*": [
-        "repository/*"
-      ],
-      "services/*": [
-        "services/*"
-      ],
-      "botServices/*": [
-        "services/bot/*"
-      ],
-      "utils/*": [
-        "utils/*"
-      ],
-      "config/*": [
-        "config/*"
-      ],
-      "routes/*": [
-        "routes/*"
-      ]
-    }
   },
+  "include": [
+    "src/server/**/*"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/server/**/*.test.ts"
+  ]
 }

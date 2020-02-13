@@ -1,5 +1,5 @@
 import { EntitySchema, EntitySchemaColumnOptions } from 'typeorm';
-import { Category } from 'entity/category';
+import { Category } from './../../entity/category';
 
 /**
  * TypeORM base schema for Category entity
