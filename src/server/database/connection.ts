@@ -1,5 +1,7 @@
 import { createConnection, Connection } from 'typeorm';
 import config from './../config/env';
+import { AnnouncementEntity } from './model/announcement';
+import { CategoryEntity, CategoryWithCount } from './model/category';
 
 /**
  * Connects to a database based on configuration URL
@@ -10,6 +12,10 @@ export function connectToDatabase(): Promise<Connection> {
   return createConnection({
     type: 'postgres',
     url: config.dbUrl,
-    entities: ['./src/server/database/model/*.ts'],
+    entities: [
+      AnnouncementEntity,
+      CategoryEntity,
+      CategoryWithCount,
+    ],
   });
 }

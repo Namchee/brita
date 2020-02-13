@@ -3,6 +3,7 @@ import { Context, Next } from 'koa';
 import crypto from 'crypto';
 import config from './../config/env';
 import { ControllerList } from './../utils/bootstrap';
+import { validateSignature } from '@line/bot-sdk';
 
 /**
  * Koa middleware for LINE client signature validation
@@ -12,7 +13,7 @@ import { ControllerList } from './../utils/bootstrap';
  * @return {Promise<any>} Execute next middleware function if signature matches
  * or respond with `401` if signature doesn't match
  */
-async function lineMiddleware(ctx: Context, next: Next): Promise<any> {
+async function lineMiddleware(ctx: Context, next: Next): Promise<void> {
   const channelSecret = config.secretToken;
   const body = JSON.stringify(ctx.body);
 
@@ -20,15 +21,15 @@ async function lineMiddleware(ctx: Context, next: Next): Promise<any> {
     .createHmac('SHA256', channelSecret)
     .update(body).digest('base64');
 
-  if (ctx.request.header['X-Line-Signature'] === signature) {
-    return next();
-  } else {
-    ctx.response.status = 401;
-    ctx.response.body = {
-      data: null,
-      error: 'Unauthorized request for bot endpoint access',
-    };
+  if (validateSignature(body, channelSecret, signature)) {
+    await next();
   }
+
+  ctx.response.status = 401;
+  ctx.response.body = {
+    data: null,
+    error: 'Unauthorized request for bot endpoint access',
+  };
 }
 
 /**

@@ -1,5 +1,5 @@
 import Koa from 'koa';
-import logger from 'koa-morgan';
+import logger from 'koa-logger';
 import { init, captureException } from '@sentry/node';
 import { createApp } from './app';
 import config from './config/env';
@@ -18,7 +18,7 @@ createApp().then((app: Koa) => {
   if (process.env.NODE_ENV === 'production') {
     init({ dsn: config.dsn });
   } else {
-    app.use(logger('dev'));
+    app.use(logger());
   }
 
   app.on('error', errorHandler);
