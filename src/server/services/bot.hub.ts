@@ -51,9 +51,9 @@ export class LineBotServiceHub {
    * @return {Promise<MessageAPIResponseBase | null>} Proper respond or
    * `null` when supplied with unsupported events
    */
-  public async handleBotQuery(
+  public handleBotQuery =  async (
     event: WebhookEvent,
-  ): Promise<MessageAPIResponseBase | null> {
+  ): Promise<MessageAPIResponseBase | null> => {
     if (
       event.type !== 'message' ||
       event.message.type !== 'text' ||
@@ -128,13 +128,13 @@ export class LineBotServiceHub {
     }
   }
 
-  private async updateUserState(
+  private updateUserState = async (
     userId: string,
     serviceId: string,
     state: number,
     text: string,
     misc?: Map<string, any>,
-  ): Promise<boolean> {
+  ): Promise<boolean> => {
     const exist = await this.stateRepository.findById(userId);
 
     if (!exist) {
