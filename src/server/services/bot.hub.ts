@@ -51,7 +51,7 @@ export class LineBotServiceHub {
    * @return {Promise<MessageAPIResponseBase | null>} Proper respond or
    * `null` when supplied with unsupported events
    */
-  public handleBotQuery =  async (
+  public handleBotQuery = async (
     event: WebhookEvent,
   ): Promise<MessageAPIResponseBase | null> => {
     if (

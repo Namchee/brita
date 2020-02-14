@@ -1,36 +1,7 @@
-import Router from 'koa-router';
-import { Context, Next } from 'koa';
-import crypto from 'crypto';
-import config from './../config/env';
+import Router from '@koa/router';
+import { lineMiddleware } from './../utils/middleware';
 import { ControllerList } from './../utils/bootstrap';
-import { validateSignature } from '@line/bot-sdk';
-
-/**
- * Koa middleware for LINE client signature validation
- *
- * @param {Context} ctx Koa Context object, must contain 'X-Line-Signature'
- * @param {Next} next Koa next function
- * @return {Promise<any>} Execute next middleware function if signature matches
- * or respond with `401` if signature doesn't match
- */
-async function lineMiddleware(ctx: Context, next: Next): Promise<void> {
-  const channelSecret = config.secretToken;
-  const body = JSON.stringify(ctx.body);
-
-  const signature = crypto
-    .createHmac('SHA256', channelSecret)
-    .update(body).digest('base64');
-
-  if (validateSignature(body, channelSecret, signature)) {
-    await next();
-  }
-
-  ctx.response.status = 401;
-  ctx.response.body = {
-    data: null,
-    error: 'Unauthorized request for bot endpoint access',
-  };
-}
+import { Context } from 'koa';
 
 /**
  * Generate a Koa router instance with predefined controllers

@@ -1,4 +1,4 @@
-import { Next, Context } from 'koa';
+import { Request, Response, NextFunction } from 'express';
 
 /**
  * Base interface for all controller implementation
@@ -15,5 +15,9 @@ export interface Controller {
    * It will return `void` as Koa will directly mutate the provided
    * context object
    */
-  handleRequest(ctx: Context, next: Next): Promise<void>;
+  handleRequest(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+  ): Promise<Response>;
 }
