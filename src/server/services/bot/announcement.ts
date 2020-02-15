@@ -207,7 +207,7 @@ export class BotAnnouncementService extends BotService {
       throw new ServerError('Cached data for bot service does not exist');
     }
 
-    const category = misc.get('category');
+    const category = misc.get('category') as Category;
 
     if (!category) {
       throw new ServerError(LOGIC_ERROR.BREACH_OF_FLOW);
@@ -232,7 +232,7 @@ export class BotAnnouncementService extends BotService {
       state: 0,
       message: [
         createTextMessage(
-          createTextBody(REPLY.ANNOUNCEMENT_SERVED),
+          createTextBody(REPLY.ANNOUNCEMENT_SERVED + ` ${category.name}`),
         ),
         createCarouselMessage(messages),
       ],

@@ -1,5 +1,7 @@
+import { RedisClient } from 'redis';
 import { Repository } from './base';
 import { State } from './../entity/state';
+import config from './../config/env';
 
 /**
  * An interface which describes state repository behavior
@@ -36,14 +38,19 @@ export interface StateRepository extends Repository<State> {
   ): Promise<boolean>;
 }
 
-export class StateRepositoryVolatile implements StateRepository {
-  private readonly stateContainer: Map<string, State>;
+/**
+ * State repository implemented with redis
+ */
+export class StateRepositoryRedis implements StateRepository {
+  private readonly client: RedisClient;
 
   /**
-   * Constructor for in-memory state repository
+   * Constructor for StateRepositoryRedis
+   *
+   * @param {RedisClient} client Redis client object
    */
-  public constructor() {
-    this.stateContainer = new Map();
+  public constructor(client: RedisClient) {
+    this.client = client;
   }
 
   /**
@@ -53,10 +60,19 @@ export class StateRepositoryVolatile implements StateRepository {
    * @return {Promise<State | null>} User's state if it exists,
    * `null` otherwise
    */
-  public findById = async (id: string): Promise<State | null> => {
-    const state = this.stateContainer.get(id);
+  public findById = (id: string): Promise<State | null> => {
+    return new Promise((resolve) => {
+      this.client.get(id, (err, res: string) => {
+        if (err || res.length === 0) {
+          return null;
+        }
 
-    return state || null;
+        return resolve({
+          id,
+          ...JSON.parse(res),
+        });
+      });
+    });
   }
 
   /**
@@ -77,16 +93,22 @@ export class StateRepositoryVolatile implements StateRepository {
     text: string,
     misc?: Map<string, any>,
   ): Promise<boolean> => {
-    if (this.stateContainer.has(id)) {
+    if (await this.findById(id)) {
       return false;
     }
 
-    this.stateContainer.set(
-      id,
-      { id, service, state, text, misc },
-    );
+    const stateData = {
+      service,
+      state,
+      text,
+      misc,
+    };
 
-    return this.stateContainer.has(id);
+    return this.client.setex(
+      id,
+      config.expirationTime,
+      JSON.stringify(stateData),
+    );
   }
 
   /**
@@ -94,10 +116,14 @@ export class StateRepositoryVolatile implements StateRepository {
    *
    * @param {string} id User's ID
    * @return {Promise<boolean>} `true` if deletion completed
-   * successfully, `false` otherwise
+   * successfully, `false` otherwise (e.g: It doens't exist)
    */
   public delete = async (id: string): Promise<boolean> => {
-    return this.stateContainer.delete(id);
+    if (!(await this.findById(id))) {
+      return false;
+    }
+
+    return this.client.del(id);
   }
 
   /**
@@ -108,12 +134,17 @@ export class StateRepositoryVolatile implements StateRepository {
    * successfully, `false` otherwise
    */
   public update = async (state: State): Promise<boolean> => {
-    if (!this.stateContainer.has(state.id)) {
+    if (!(await this.findById(state.id))) {
       return false;
     }
 
-    this.stateContainer.set(state.id, state);
+    const stateData = { ...state };
+    delete stateData.id;
 
-    return true;
+    return this.client.setex(
+      state.id,
+      config.expirationTime,
+      JSON.stringify(stateData),
+    );
   }
 }

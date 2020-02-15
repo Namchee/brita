@@ -1,13 +1,14 @@
 import { Client } from '@line/bot-sdk';
 import { Connection } from 'typeorm';
+import { createClient } from 'redis';
 import { AnnouncementRepositoryTypeORM } from './../repository/announcement';
 import { CategoryRepositoryTypeORM } from './../repository/category';
-import { StateRepositoryVolatile } from './../repository/state';
 import { BotAnnouncementService } from './../services/bot/announcement';
 import { LineBotController } from './../controllers/bot.controller';
 import { BotService } from './../services/bot/base';
 import { LineBotServiceHub } from './../services/bot.hub';
 import config from './../config/env';
+import { StateRepositoryRedis } from '../repository/state';
 
 /**
  * An interface which describes key-value mapping for bootstrapped
@@ -31,6 +32,7 @@ export function bootstrapApp(conn: Connection): ControllerList {
   };
 
   const client = new Client(lineConfig);
+  const redisClient = createClient()
 
   const announcementRepository = conn.getCustomRepository(
     AnnouncementRepositoryTypeORM,
@@ -38,7 +40,7 @@ export function bootstrapApp(conn: Connection): ControllerList {
   const categoryRepository = conn.getCustomRepository(
     CategoryRepositoryTypeORM,
   );
-  const stateRepository = new StateRepositoryVolatile();
+  const stateRepository = new StateRepositoryRedis();
 
   const announcementService = new BotAnnouncementService(
     announcementRepository,

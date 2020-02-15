@@ -26,10 +26,8 @@ export class LineBotController implements Controller {
   public handleRequest = async (ctx: Context, next: Next): Promise<void> => {
     try {
       const botQueryResult = await Promise.all(
-        ctx.body.events.map(this.serviceHub.handleBotQuery),
+        ctx.request.body.events.map(this.serviceHub.handleBotQuery),
       );
-
-      console.log(botQueryResult);
 
       ctx.response.status = 200;
       ctx.response.body = botQueryResult;

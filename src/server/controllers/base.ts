@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from 'express';
+import { Context, Next } from 'koa';
 
 /**
  * Base interface for all controller implementation
@@ -7,17 +7,15 @@ import { Request, Response, NextFunction } from 'express';
  */
 export interface Controller {
   /**
-   * Handles a Koa request
+   * Handles a HTTP request with Express
    *
-   * @param {Context} ctx Koa context object
-   * @param {Next} next Next function
-   * @return {Promise<void>} A promise per Koa's convention.
-   * It will return `void` as Koa will directly mutate the provided
-   * context object
+   * @param {Request} req Express request object
+   * @param {Response} res Express response object
+   * @param {NextFunction} next Next Function
+   * @return {Promise<Response>} An express response object
    */
   handleRequest(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-  ): Promise<Response>;
+    ctx: Context,
+    next: Next
+  ): Promise<void>;
 }

@@ -1,7 +1,9 @@
 import Router from '@koa/router';
 import { lineMiddleware } from './../utils/middleware';
 import { ControllerList } from './../utils/bootstrap';
-import { Context } from 'koa';
+import { Context, Next } from 'koa';
+
+const ganteng = ['hai', 'sayang', 'ku'];
 
 /**
  * Generate a Koa router instance with predefined controllers
@@ -17,6 +19,12 @@ export function generateRoutes(controllers: ControllerList): Router {
     lineMiddleware,
     controllers.lineController.handleRequest,
   );
+
+  router.post('/', async (ctx: Context, next: Next) => {
+    ctx.response.body = {
+      data: ganteng[Math.floor(Math.random() * ganteng.length)],
+    };
+  });
 
   return router;
 }

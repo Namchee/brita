@@ -9,7 +9,7 @@ export enum REPLY {
   UNIDENTIFIABLE = 'Permintaan yang anda minta tidak dapat dipahami. Mungkin saja karena permintaan anda sudah expired. Silahkan mengulangi permintaan anda.',
   INPUT_AMOUNT = 'Mohon masukkan jumlah pengumuman yang diinginkan (maks: 10).',
   AMOUNT_TOO_MUCH = 'Jumlah pengumuman yang anda minta terlalu banyak.',
-  ANNOUNCEMENT_SERVED = 'Berikut adalah daftar pengumuman yang sesuai kriteria.',
+  ANNOUNCEMENT_SERVED = 'Berikut adalah daftar pengumuman dengan kategori',
   AMOUNT_NOT_NUMBER = 'Jumlah yang anda masukkan bukanlah angka.',
   AMOUNT_TOO_LITTLE = 'Jumlah yang anda minta terlalu sedikit (min. 1).',
   SERVER_ERROR = 'Terjadi masalah pada server, mohon coba lagi lain kali.',

@@ -1,7 +1,7 @@
 import { Client } from '@line/bot-sdk';
 import { LineBotServiceHub } from './../services/bot.hub';
 import { LineBotController } from './bot.controller';
-import { StateRepositoryVolatile } from './../repository/state';
+import { StateRepositoryMock } from './../services/bot.hub.test.util';
 
 const sampleEvent = {
   'destination': 'xxxxxxxxxx',
@@ -44,7 +44,7 @@ describe('Controller unit test', () => {
   describe('LINE Controller unit test', () => {
     const client = new Client({ channelAccessToken: 'a', channelSecret: 'b' });
     const serviceMap = new Map();
-    const stateRepository = new StateRepositoryVolatile();
+    const stateRepository = new StateRepositoryMock();
 
     const serviceHub = new LineBotServiceHub(
       client,
@@ -56,7 +56,9 @@ describe('Controller unit test', () => {
 
     it('should respond with 200', async () => {
       const ctx: any = {
-        body: sampleEvent,
+        request: {
+          body: sampleEvent,
+        },
         response: {},
       };
 
