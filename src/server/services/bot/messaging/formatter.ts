@@ -20,7 +20,12 @@ function generateLineTextMessage(text: string): TextMessage {
 }
 
 function generateTextComponent(text: string): FlexText {
-  return generateLineTextMessage(text) as FlexText;
+  const textObject = generateLineTextMessage(text);
+
+  return {
+    ...textObject,
+    wrap: true,
+  };
 }
 
 function generateButtonComponent(label: string, text: string): FlexButton {
