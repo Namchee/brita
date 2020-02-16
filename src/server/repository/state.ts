@@ -2,6 +2,7 @@ import { Redis } from 'ioredis';
 import { Repository } from './base';
 import { State } from './../entity/state';
 import config from './../config/env';
+import { StringMap } from '../utils/types';
 
 /**
  * An interface which describes state repository behavior
@@ -25,7 +26,7 @@ export interface StateRepository extends Repository<State> {
    * @param {string} service Service identifier
    * @param {number} state Service's state
    * @param {string} text Accumulated user request text
-   * @param {Map<string, any> =} misc Miscellanous data for services
+   * @param {StringMap=} misc Miscellanous data
    * @return {Promise<boolean>} `true` if insertion is successful,
    * `false` otherwise
    */
@@ -34,7 +35,7 @@ export interface StateRepository extends Repository<State> {
     service: string,
     state: number,
     text: string,
-    misc?: Map<string, any>,
+    misc?: StringMap,
   ): Promise<boolean>;
 }
 
@@ -78,7 +79,7 @@ export class StateRepositoryRedis implements StateRepository {
    * @param {string} service Service identifier
    * @param {number} state State number
    * @param {string} text Accumulated text
-   * @param {Map<string, any> =} misc Miscellanous data
+   * @param {StringMap=} misc Miscellanous data
    * @return {Promise<boolean>} `true` if insertion successful,
    * `false` otherwise (e.g: It already exist)
    */
@@ -87,7 +88,7 @@ export class StateRepositoryRedis implements StateRepository {
     service: string,
     state: number,
     text: string,
-    misc?: Map<string, any>,
+    misc?: StringMap,
   ): Promise<boolean> => {
     if (await this.findById(id)) {
       return false;

@@ -14,6 +14,7 @@ import {
 } from './bot/messaging/messages';
 import { REPLY } from './bot/messaging/reply';
 import { ServerError, UserError } from './../utils/error';
+import { StringMap } from '../utils/types';
 
 /**
  * LINE bot service hub
@@ -140,7 +141,7 @@ export class LineBotServiceHub {
     serviceId: string,
     state: number,
     text: string,
-    misc?: Map<string, any>,
+    misc?: StringMap,
   ): Promise<boolean> => {
     const exist = await this.stateRepository.findById(userId);
 

@@ -1,4 +1,5 @@
 import { Message } from './messaging/messages';
+import { StringMap } from '../../utils/types';
 
 /**
  * An interface which defines parameters for Bot service
@@ -6,7 +7,7 @@ import { Message } from './messaging/messages';
 export interface BotServiceParameters {
   state: number;
   text: string;
-  misc?: Map<string, any>;
+  misc?: StringMap;
 }
 
 /**
@@ -14,7 +15,7 @@ export interface BotServiceParameters {
  */
 export interface HandlerParameters {
   text: string;
-  misc?: Map<string, any>;
+  misc?: StringMap;
 }
 
 /**
@@ -38,7 +39,7 @@ export interface BotServiceResult {
    *
    * Useful for caching or keeping extra state
    */
-  misc?: Map<string, any>;
+  misc?: StringMap;
 }
 
 export type BotServiceHandler = (

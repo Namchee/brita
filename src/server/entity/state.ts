@@ -1,4 +1,5 @@
 import { Entity } from './base';
+import { StringMap } from '../utils/types';
 
 /**
  * An interface which represents single user state
@@ -25,5 +26,5 @@ export interface State extends Entity {
    * Miscellanous object needed by particular services,
    * Useful for caching data
    */
-  misc?: Map<string, any>;
+  misc?: StringMap;
 }

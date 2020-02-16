@@ -16,6 +16,7 @@ import { ServerError, UserError } from './../../utils/error';
 import { REPLY, LOGIC_ERROR } from './messaging/reply';
 import { CategoryRepository } from './../../repository/category';
 import { Category } from './../../entity/category';
+import { StringMap } from '../../utils/types';
 
 /**
  * A class which provides service for handling announcement fetching
@@ -164,7 +165,7 @@ export class BotAnnouncementService extends BotService {
       throw new UserError(REPLY.UNKNOWN_CATEGORY);
     }
 
-    const cache: any = {};
+    const cache: StringMap = {};
 
     delete category.desc; // we don't need this
     cache['category'] = category;
@@ -205,11 +206,11 @@ export class BotAnnouncementService extends BotService {
       throw new UserError(REPLY.AMOUNT_TOO_MUCH);
     }
 
-    if (!misc || !misc.has('category')) {
+    if (!misc || !misc.category) {
       throw new ServerError('Cached data for bot service does not exist');
     }
 
-    const category = misc.get('category') as Category;
+    const category = misc.category as Category;
 
     if (!category) {
       throw new ServerError(LOGIC_ERROR.BREACH_OF_FLOW);
