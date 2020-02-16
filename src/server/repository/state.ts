@@ -1,4 +1,4 @@
-import { RedisClient } from 'redis';
+import { Redis } from 'ioredis';
 import { Repository } from './base';
 import { State } from './../entity/state';
 import config from './../config/env';
@@ -42,14 +42,14 @@ export interface StateRepository extends Repository<State> {
  * State repository implemented with redis
  */
 export class StateRepositoryRedis implements StateRepository {
-  private readonly client: RedisClient;
+  private readonly client: Redis;
 
   /**
    * Constructor for StateRepositoryRedis
    *
    * @param {RedisClient} client Redis client object
    */
-  public constructor(client: RedisClient) {
+  public constructor(client: Redis) {
     this.client = client;
   }
 
@@ -60,19 +60,15 @@ export class StateRepositoryRedis implements StateRepository {
    * @return {Promise<State | null>} User's state if it exists,
    * `null` otherwise
    */
-  public findById = (id: string): Promise<State | null> => {
-    return new Promise((resolve) => {
-      this.client.get(id, (err, res: string) => {
-        if (err || res.length === 0) {
-          return null;
-        }
+  public findById = async (id: string): Promise<State | null> => {
+    const state = await this.client.get(id);
 
-        return resolve({
-          id,
-          ...JSON.parse(res),
-        });
-      });
-    });
+    return state ?
+      {
+        id,
+        ...JSON.parse(state),
+      } :
+      null;
   }
 
   /**
@@ -104,11 +100,13 @@ export class StateRepositoryRedis implements StateRepository {
       misc,
     };
 
-    return this.client.setex(
+    const insertResult = await this.client.setex(
       id,
       config.expirationTime,
       JSON.stringify(stateData),
     );
+
+    return insertResult === 'OK';
   }
 
   /**
@@ -123,7 +121,9 @@ export class StateRepositoryRedis implements StateRepository {
       return false;
     }
 
-    return this.client.del(id);
+    const deleteResult = await this.client.del(id);
+
+    return deleteResult > 0;
   }
 
   /**
@@ -141,10 +141,12 @@ export class StateRepositoryRedis implements StateRepository {
     const stateData = { ...state };
     delete stateData.id;
 
-    return this.client.setex(
+    const updateResult = await this.client.setex(
       state.id,
       config.expirationTime,
       JSON.stringify(stateData),
     );
+
+    return updateResult === 'OK';
   }
 }
