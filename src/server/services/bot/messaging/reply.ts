@@ -10,6 +10,7 @@ export enum REPLY {
   INPUT_AMOUNT = 'Mohon masukkan jumlah pengumuman yang diinginkan (maks: 10).',
   AMOUNT_TOO_MUCH = 'Jumlah pengumuman yang anda minta terlalu banyak.',
   ANNOUNCEMENT_SERVED = 'Berikut adalah daftar pengumuman dengan kategori',
+  NO_ANNOUNCEMENT = 'Saat ini, tidak ada pengumuman dengan kategori yang sesuai dengan permintaan anda',
   AMOUNT_NOT_NUMBER = 'Jumlah yang anda masukkan bukanlah angka.',
   AMOUNT_TOO_LITTLE = 'Jumlah yang anda minta terlalu sedikit (min. 1).',
   SERVER_ERROR = 'Terjadi masalah pada server, mohon coba lagi lain kali.',

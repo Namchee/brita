@@ -100,6 +100,7 @@ export function createButtonMessage(body: MessageBody[]): Message {
  * @return {Message} A carousel message
  */
 export function createCarouselMessage(body: MessageBody[]): Message {
+  console.log(body);
   if (body.some(val => val.type === 'button')) {
     throw new ServerError('A carousel messsage can only contain `text`s');
   }

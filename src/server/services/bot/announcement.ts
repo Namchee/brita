@@ -10,6 +10,7 @@ import {
   createButtonBody,
   createTextMessage,
   createCarouselMessage,
+  Message,
 } from './messaging/messages';
 import { AnnouncementRepository } from './../../repository/announcement';
 import { ServerError, UserError } from './../../utils/error';
@@ -216,20 +217,30 @@ export class BotAnnouncementService extends BotService {
       throw new ServerError(LOGIC_ERROR.BREACH_OF_FLOW);
     }
 
+    let message: Message = createTextMessage(
+      createTextBody(REPLY.NO_ANNOUNCEMENT),
+    );
+
     const announcements = await this.announcementRepository
       .findByCategory(category);
 
-    announcements.sort((a, b) => {
-      if (a.important && b.important) {
-        return a.validUntil.getTime() < b.validUntil.getTime() ? -1 : 1;
-      }
+    if (announcements.length > 0) {
+      announcements.sort((a, b) => {
+        if (a.important && b.important) {
+          return a.validUntil.getTime() < b.validUntil.getTime() ? -1 : 1;
+        }
 
-      return a.important ? -1 : 1;
-    });
+        return a.important ? -1 : 1;
+      });
 
-    const messages = announcements.slice(0, amount).map((announcement) => {
-      return createTextBody(announcement.title + '\n\n' + announcement.content);
-    });
+      const messages = announcements.slice(0, amount).map((announcement) => {
+        return createTextBody(
+          announcement.title + '\n\n' + announcement.content,
+        );
+      });
+
+      message = createCarouselMessage(messages);
+    }
 
     return {
       state: 0,
@@ -237,7 +248,7 @@ export class BotAnnouncementService extends BotService {
         createTextMessage(
           createTextBody(REPLY.ANNOUNCEMENT_SERVED + ` ${category.name}`),
         ),
-        createCarouselMessage(messages),
+        message,
       ],
     };
   }
