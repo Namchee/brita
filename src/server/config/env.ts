@@ -19,7 +19,7 @@ export default {
    * This variable will be used by the app to listen specific events
    * sent to this port number
    */
-  port: process.env.PORT || 8080,
+  port: process.env.PORT || 3000,
   /**
    * Database URL connection string
    */

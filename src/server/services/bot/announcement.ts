@@ -91,6 +91,7 @@ export class BotAnnouncementService extends BotService {
                 ),
                 ...result.message,
               ],
+              misc: result.misc,
             };
           } else {
             result = {
@@ -100,6 +101,7 @@ export class BotAnnouncementService extends BotService {
                   createTextBody(err.message),
                 ),
               ],
+              misc: result.misc,
             };
           }
 
@@ -162,10 +164,10 @@ export class BotAnnouncementService extends BotService {
       throw new UserError(REPLY.UNKNOWN_CATEGORY);
     }
 
-    const cache = new Map<string, any>();
+    const cache: any = {};
 
     delete category.desc; // we don't need this
-    cache.set('category', category);
+    cache['category'] = category;
 
     return {
       state: 2,

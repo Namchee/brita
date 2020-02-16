@@ -101,16 +101,21 @@ export class LineBotServiceHub {
         {
           state,
           text: realText,
+          misc: userState?.misc,
         },
       );
 
-      await this.updateUserState(
+      const stateProcess = await this.updateUserState(
         userId,
         service.identifier,
         queryResult.state,
         realText,
         queryResult.misc,
       );
+
+      if (!stateProcess) {
+        throw new ServerError('Failed to update user state');
+      }
 
       const message = formatMessages(queryResult.message);
 
@@ -137,31 +142,35 @@ export class LineBotServiceHub {
   ): Promise<boolean> => {
     const exist = await this.stateRepository.findById(userId);
 
-    if (!exist) {
-      if (state === 0) {
-        return true;
-      }
+    if (state >= 0) {
+      if (!exist) {
+        if (state === 0) {
+          return true;
+        }
 
-      return await this.stateRepository.create(
-        userId,
-        serviceId,
-        state,
-        text,
-        misc,
-      );
-    } else {
-      if (state === 0) {
-        return await this.stateRepository.delete(userId);
-      } else {
-        return await this.stateRepository.update({
-          id: userId,
-          service: serviceId,
+        return await this.stateRepository.create(
+          userId,
+          serviceId,
           state,
           text,
           misc,
-        });
+        );
+      } else {
+        if (state === 0) {
+          return await this.stateRepository.delete(userId);
+        } else {
+          return await this.stateRepository.update({
+            id: userId,
+            service: serviceId,
+            state,
+            text,
+            misc,
+          });
+        }
       }
     }
+
+    return true;
   }
 
   private sendMessage = (

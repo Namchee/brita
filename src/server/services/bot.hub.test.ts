@@ -87,7 +87,7 @@ describe('Bot hub unit test', () => {
         expect(client.pushMessage).toBeCalledTimes(1);
       });
 
-      it('should still reply on user error', async () => {
+      it('should reply when user error is thrown', async () => {
         const event = createUnsavedStateUserErrorEvent();
 
         const result = await hub.handleBotQuery(event);
@@ -100,6 +100,7 @@ describe('Bot hub unit test', () => {
         const event = createUnsavedStateServerErrorEvent();
 
         expect(hub.handleBotQuery(event)).rejects.toBeInstanceOf(ServerError);
+        expect(client.replyMessage).toHaveBeenCalledTimes(0);
       });
     });
 

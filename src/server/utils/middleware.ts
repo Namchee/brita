@@ -14,13 +14,13 @@ import config from './../config/env';
  */
 export async function lineMiddleware(ctx: Context, next: Next): Promise<any> {
   const channelSecret = config.secretToken;
-  const body = JSON.stringify(ctx.body);
+  const body = JSON.stringify(ctx.request.body);
 
   const signature = crypto
     .createHmac('SHA256', channelSecret)
     .update(body).digest('base64');
 
-  if (validateSignature(body, channelSecret, signature)) {
+  if (ctx.request.header['x-line-signature'] === signature) {
     await next();
   } else {
     ctx.response.status = 401;
