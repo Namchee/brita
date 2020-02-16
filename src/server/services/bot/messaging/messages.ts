@@ -8,13 +8,19 @@ import { ServerError } from './../../../utils/error';
  * Every Message must contain at least one `MessageBody`
  */
 export interface MessageBody {
-  type: 'text' | 'button';
+  type: 'text' | 'button' | 'bubble';
   text: string;
 }
 
 export interface ButtonBody extends MessageBody {
   type: 'button';
   label: string;
+}
+
+export interface CarouselBody extends MessageBody {
+  type: 'bubble';
+  header: string;
+  body: string;
 }
 
 export interface Message {
@@ -100,8 +106,8 @@ export function createButtonMessage(body: MessageBody[]): Message {
  * @return {Message} A carousel message
  */
 export function createCarouselMessage(body: MessageBody[]): Message {
-  if (body.some(val => val.type === 'button')) {
-    throw new ServerError('A carousel messsage can only contain `text`s');
+  if (body.some(val => val.type !== 'bubble')) {
+    throw new ServerError('A carousel messsage can only contain `bubble`s');
   }
 
   return {

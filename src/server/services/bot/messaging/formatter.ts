@@ -23,6 +23,7 @@ function generateTextComponent(text: string): FlexText {
   const textObject = generateLineTextMessage(text);
 
   return {
+    size: 'sm',
     ...textObject,
     wrap: true,
   };
@@ -31,6 +32,7 @@ function generateTextComponent(text: string): FlexText {
 function generateButtonComponent(label: string, text: string): FlexButton {
   return {
     type: 'button',
+    height: 'sm',
     action: {
       type: 'message',
       text,
@@ -39,15 +41,30 @@ function generateButtonComponent(label: string, text: string): FlexButton {
   };
 }
 
-function generateBubbleContainer(contents: FlexComponent[]): FlexBubble {
-  return {
+function generateBubbleContainer(
+  contents: FlexComponent[],
+  header?: FlexComponent,
+): FlexBubble {
+  const bubbleContainer: FlexBubble = {
     type: 'bubble',
     body: {
       type: 'box',
       layout: 'vertical',
+      paddingAll: 'none',
       contents,
     },
   };
+
+  if (header) {
+    bubbleContainer.header = {
+      type: 'box',
+      layout: 'vertical',
+      paddingAll: 'sm',
+      contents: [header],
+    };
+  }
+
+  return bubbleContainer;
 }
 
 function generateCarouselContainer(contents: FlexBubble[]): FlexCarousel {
