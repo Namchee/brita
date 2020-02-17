@@ -6,6 +6,7 @@ import {
   createButtonMessage,
   createButtonBody,
   createCarouselMessage,
+  createCarouselBody,
 } from './messages';
 import { formatMessages } from './formatter';
 
@@ -16,8 +17,7 @@ describe('Line message formatter unit test', () => {
     createButtonBody('Label', 'Button message'),
   ]);
   const carouselMessage: Message = createCarouselMessage([
-    textMessage.body[0],
-    textMessage.body[0],
+    createCarouselBody('a', 'b'),
   ]);
   const pushMessage = [
     textMessage,

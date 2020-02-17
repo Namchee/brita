@@ -20,7 +20,6 @@ export interface ButtonBody extends MessageBody {
 export interface CarouselBody extends MessageBody {
   type: 'bubble';
   header: string;
-  body: string;
 }
 
 export interface Message {
@@ -62,7 +61,25 @@ export function createButtonBody(label: string, text: string): ButtonBody {
 }
 
 /**
+ * Creates a carousel body
+ *
+ * @param {string} title Carousel title
+ * @param {string} content Carousel content
+ */
+export function createCarouselBody(
+  title: string,
+  content: string,
+): CarouselBody {
+  return {
+    type: 'bubble',
+    header: title,
+    text: content,
+  };
+}
+
+/**
  * Creates a new basic plain-text message
+ *
  * @param {MessageBody} textBody A `MessageBody` to be sent.
  * Must only be a plain-text body, otherwise it will throw an error
  * @return {Message} Basic plain-text message
@@ -102,6 +119,7 @@ export function createButtonMessage(body: MessageBody[]): Message {
 /**
  * Creates a new carousel message, which wraps a bunch of messages in
  * single message (think of a simple web carousel)
+ *
  * @param {MessageBody[]} body Message body
  * @return {Message} A carousel message
  */

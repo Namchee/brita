@@ -11,6 +11,7 @@ import {
   createTextMessage,
   createCarouselMessage,
   Message,
+  createCarouselBody,
 } from './messaging/messages';
 import { AnnouncementRepository } from './../../repository/announcement';
 import { ServerError, UserError } from './../../utils/error';
@@ -234,9 +235,7 @@ export class BotAnnouncementService extends BotService {
       });
 
       const messages = announcements.slice(0, amount).map((announcement) => {
-        return createTextBody(
-          announcement.title + '\n\n' + announcement.content,
-        );
+        return createCarouselBody(announcement.title, announcement.content);
       });
 
       message = createCarouselMessage(messages);

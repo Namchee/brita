@@ -9,7 +9,7 @@ import {
   FlexCarousel,
   FlexContainer,
 } from '@line/bot-sdk';
-import { Message, ButtonBody } from './messages';
+import { Message, ButtonBody, CarouselBody } from './messages';
 import { ServerError } from './../../../utils/error';
 
 function generateLineTextMessage(text: string): TextMessage {
@@ -82,6 +82,12 @@ function generateFlexMessage(contents: FlexContainer): FlexMessage {
   };
 }
 
+/**
+ * Formats a message to approriate LINE message counterpart
+ *
+ * @param {Message} message Message to be formatted
+ * @return {LineMessage} A preformatted LINE message
+ */
 function generateLineMessage(
   message: Message,
 ): LineMessage {
@@ -110,12 +116,16 @@ function generateLineMessage(
   }
   case 'carousel': {
     const messages = message.body.map((content) => {
-      if (content.type === 'button') {
+      if (content.type !== 'bubble') {
         throw new ServerError('A carousel can only contain text(s)');
       }
 
-      const textComponent = generateTextComponent(content.text);
-      return generateBubbleContainer([textComponent]);
+      const carouselBody = content as CarouselBody;
+
+      return generateBubbleContainer(
+        [generateTextComponent(carouselBody.text)],
+        generateTextComponent(carouselBody.header),
+      );
     });
 
     const carouselContainer = generateCarouselContainer(messages);

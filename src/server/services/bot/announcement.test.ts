@@ -4,15 +4,12 @@ import {
   AnnouncementRepositoryMock,
   CategoryRepositoryMock,
   categories,
+  announcements,
 } from './announcement.test.util';
 import { CategoryRepository } from './../../repository/category';
 import { AnnouncementRepository } from './../../repository/announcement';
-
-const processedAnnouncement = [
-  'Announcement Two\n\nThis is announcement two',
-  'Announcement Three\n\nThis is announcement three',
-  'Announcement One\n\nThis is announcement one',
-];
+import { StringMap } from '../../utils/types';
+import { CarouselBody } from './messaging/messages';
 
 describe('Bot service unit test', () => {
   describe('Announcement service test', () => {
@@ -104,11 +101,11 @@ describe('Bot service unit test', () => {
     });
 
     describe('Third handler testing', () => {
-      let misc: Map<string, any>;
+      let misc: StringMap;
 
       beforeAll(() => {
         misc = new Map();
-        misc.set('category', categories[0]);
+        misc['category'] = categories[0];
       });
 
       it('should throw a server error because category not found', async () => {
@@ -183,7 +180,7 @@ describe('Bot service unit test', () => {
         expect(announcementText.length).toBe(3);
 
         for (let i = 0; i < announcementText.length; i++) {
-          expect(announcementText[i].text).toBe(processedAnnouncement[i]);
+          expect(announcementText[i].type).toBe('bubble');
         }
       });
 
@@ -198,12 +195,14 @@ describe('Bot service unit test', () => {
 
         expect(result.state).toBe(0);
 
-        const announcementText = result.message[1].body;
+        const announcementText = result.message[1].body as CarouselBody[];
 
         expect(announcementText.length).toBe(2);
 
         for (let i = 0; i < announcementText.length; i++) {
-          expect(announcementText[i].text).toBe(processedAnnouncement[i]);
+          expect(announcementText[i].type).toBe('bubble');
+          expect(announcementText[i].header).toBe(announcements[i].title);
+          expect(announcementText[i].text).toBe(announcements[i].content);
         }
       });
     });
@@ -246,12 +245,14 @@ describe('Bot service unit test', () => {
 
         expect(result.state).toBe(0);
 
-        const announcementText = result.message[1].body;
+        const announcementText = result.message[1].body as CarouselBody[];
 
         expect(announcementText.length).toBe(2);
 
         for (let i = 0; i < announcementText.length; i++) {
-          expect(announcementText[i].text).toBe(processedAnnouncement[i]);
+          expect(announcementText[i].type).toBe('bubble');
+          expect(announcementText[i].header).toBe(announcements[i].title);
+          expect(announcementText[i].text).toBe(announcements[i].content);
         }
       });
     });
@@ -267,12 +268,14 @@ describe('Bot service unit test', () => {
 
         expect(result.state).toBe(0);
 
-        const announcementText = result.message[1].body;
+        const announcementText = result.message[1].body as CarouselBody[];
 
         expect(announcementText.length).toBe(2);
 
         for (let i = 0; i < announcementText.length; i++) {
-          expect(announcementText[i].text).toBe(processedAnnouncement[i]);
+          expect(announcementText[i].type).toBe('bubble');
+          expect(announcementText[i].header).toBe(announcements[i].title);
+          expect(announcementText[i].text).toBe(announcements[i].content);
         }
       });
     });
