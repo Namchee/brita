@@ -117,7 +117,7 @@ function generateLineMessage(
   case 'carousel': {
     const messages = message.body.map((content) => {
       if (content.type !== 'bubble') {
-        throw new ServerError('A carousel can only contain text(s)');
+        throw new ServerError('A carousel can only contain bubble(s)');
       }
 
       const carouselBody = content as CarouselBody;

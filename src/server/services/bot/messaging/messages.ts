@@ -104,7 +104,7 @@ export function createTextMessage(textBody: MessageBody): Message {
  * @return {Message} Interactive button message
  */
 export function createButtonMessage(body: MessageBody[]): Message {
-  if (!body.some((obj: MessageBody) => obj.type === 'button')) {
+  if (!body.some(obj => obj.type === 'button')) {
     throw new ServerError(
       'A button message should contain at least one "button" body',
     );
@@ -124,7 +124,7 @@ export function createButtonMessage(body: MessageBody[]): Message {
  * @return {Message} A carousel message
  */
 export function createCarouselMessage(body: MessageBody[]): Message {
-  if (body.some(val => val.type !== 'bubble')) {
+  if (body.some(obj => obj.type !== 'bubble')) {
     throw new ServerError('A carousel messsage can only contain `bubble`s');
   }
 

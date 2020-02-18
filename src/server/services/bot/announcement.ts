@@ -134,6 +134,15 @@ export class BotAnnouncementService extends BotService {
 
     const categories = await this.categoryRepository.findAll();
 
+    if (categories.length === 0) {
+      return {
+        state: 0,
+        message: [
+          createTextMessage(createTextBody(REPLY.NO_CATEGORY)),
+        ],
+      };
+    }
+
     const buttons = categories.map((category: Category) => {
       return createButtonBody(category.name, category.name);
     });

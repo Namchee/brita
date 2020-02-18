@@ -32,7 +32,7 @@ describe('Bot service unit test', () => {
       jest.clearAllMocks();
     });
 
-    it('should throw a server error caused by negative state', () => {
+    it('should throw a server error when state is negative', () => {
       const serviceParams = {
         state: -1,
         text: '',
@@ -44,7 +44,7 @@ describe('Bot service unit test', () => {
     });
 
     describe('First handler testing', () => {
-      it('should throw a server error caused by wrong commands', () => {
+      it('should throw a server error when command mapping is wrong', () => {
         const serviceParams = {
           state: 0,
           text: 'subscribe',
@@ -55,24 +55,43 @@ describe('Bot service unit test', () => {
           .toBeInstanceOf(ServerError);
       });
 
-      it('should return a list of categories', async () => {
-        const spy = jest.spyOn(categoryRepository, 'findAll');
+      it('should return when text message when no category is available',
+        async () => {
+          jest.spyOn(categoryRepository, 'findAll')
+            .mockImplementationOnce(() => Promise.resolve([]));
 
-        const serviceParams = {
-          state: 0,
-          text: 'pengumuman',
-        };
+          const serviceParams = {
+            state: 0,
+            text: 'pengumuman',
+          };
 
-        const result = await botService.handle(serviceParams);
+          const result = await botService.handle(serviceParams);
 
-        expect(result.state).toBe(1);
-        expect(result.message.length).toBe(1);
-        expect(spy.mock.calls.length).toBe(1);
-      });
+          expect(result.state).toBe(0);
+          expect(result.message.length).toBe(1);
+          expect(result.message[0].type).toBe('basic');
+        });
+
+      it('should return list of categories when categories is available',
+        async () => {
+          const spy = jest.spyOn(categoryRepository, 'findAll');
+
+          const serviceParams = {
+            state: 0,
+            text: 'pengumuman',
+          };
+
+          const result = await botService.handle(serviceParams);
+
+          expect(result.state).toBe(1);
+          expect(result.message.length).toBe(1);
+          expect(result.message[0].type).toBe('buttons');
+          expect(spy.mock.calls.length).toBe(1);
+        });
     });
 
     describe('Second handler testing', () => {
-      it('should throw a user error because category not found', async () => {
+      it('should throw a user error when category is not found', async () => {
         const serviceParams = {
           state: 1,
           text: 'pengumuman Three',
@@ -82,6 +101,7 @@ describe('Bot service unit test', () => {
 
         expect(result.state).toBe(-2);
         expect(result.message.length).toBe(1);
+        expect(result.message[0].type).toBe('basic');
       });
 
       it('should request an amount of categories requested', async () => {
@@ -96,6 +116,7 @@ describe('Bot service unit test', () => {
 
         expect(result.state).toBe(2);
         expect(result.message.length).toBe(1);
+        expect(result.message[0].type).toBe('basic');
         expect(spy.mock.calls.length).toBe(1);
       });
     });
@@ -108,23 +129,25 @@ describe('Bot service unit test', () => {
         misc['category'] = categories[0];
       });
 
-      it('should throw a server error because category not found', async () => {
-        const serviceParams = {
-          state: 2,
-          text: 'pengumuman Three 10',
-        };
+      it('should throw a server error when cache is not available',
+        async () => {
+          const serviceParams = {
+            state: 2,
+            text: 'pengumuman Three 10',
+          };
 
-        expect(botService.handle(serviceParams))
-          .rejects
-          .toBeInstanceOf(ServerError);
-      });
+          expect(botService.handle(serviceParams))
+            .rejects
+            .toBeInstanceOf(ServerError);
+        });
 
       it(
-        'should throw a user error because the amount is not a number',
+        'should throw a user error when inputted amount is not a number',
         async () => {
           const serviceParams = {
             state: 2,
             text: 'pengumuman One Numberrr',
+            misc,
           };
 
           const result = await botService.handle(serviceParams);
@@ -134,12 +157,12 @@ describe('Bot service unit test', () => {
         },
       );
 
-      it(
-        'should throw a user error because the requested amount is too much',
+      it('should throw a user error when the requested amount is too much',
         async () => {
           const serviceParams = {
             state: 2,
             text: 'pengumuman One 11',
+            misc,
           };
 
           const result = await botService.handle(serviceParams);
@@ -149,12 +172,12 @@ describe('Bot service unit test', () => {
         },
       );
 
-      it(
-        'should throw a user error because the requested amount is too little',
+      it('should throw a user error when the requested amount is below 1',
         async () => {
           const serviceParams = {
             state: 2,
             text: 'pengumuman One -1',
+            misc,
           };
 
           const result = await botService.handle(serviceParams);
@@ -164,11 +187,11 @@ describe('Bot service unit test', () => {
         },
       );
 
-      it('should return a list of announcements (all)', async () => {
+      it('should return list of all announcements', async () => {
         const serviceParams = {
           state: 2,
           text: 'pengumuman One 3',
-          misc: misc,
+          misc,
         };
 
         const result = await botService.handle(serviceParams);
@@ -184,7 +207,7 @@ describe('Bot service unit test', () => {
         }
       });
 
-      it('should return a list of announcements (partial)', async () => {
+      it('should return list of partial announcements', async () => {
         const serviceParams = {
           state: 2,
           text: 'pengumuman One 2',
@@ -220,6 +243,7 @@ describe('Bot service unit test', () => {
         expect(result.state).toBe(1);
 
         expect(result.message.length).toBe(2);
+        expect(result.message[0].type).toBe('basic');
       });
 
       it('should handle the state until it reached second state', async () => {
