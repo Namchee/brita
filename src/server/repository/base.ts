@@ -2,6 +2,16 @@ import { EntityManager, Repository as BaseRepository } from 'typeorm';
 import { Entity } from './../entity/base';
 
 /**
+ * An object which represents pagination details for `find` methods
+ *
+ * Useful for bot environment
+ */
+export interface PagingOptions {
+  limit: number;
+  offset: number;
+}
+
+/**
  * Base typeORM repository class.
  * Every repository which depends on typeORM must extend this class.
  *

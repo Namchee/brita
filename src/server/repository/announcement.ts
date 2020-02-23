@@ -4,7 +4,7 @@ import {
   Repository as BaseRepository,
 } from 'typeorm';
 import { Announcement } from './../entity/announcement';
-import { TypeORMRepository, EntityRepository } from './base';
+import { TypeORMRepository, EntityRepository, PagingOptions } from './base';
 import { Category } from './../entity/category';
 import { AnnouncementEntity } from './../database/model/announcement';
 
@@ -20,18 +20,19 @@ export interface AnnouncementRepository
    * Get all Announcement which satisfies the requested category
    *
    * @param {Category} category Category criterion
-   * @param {number=} limit Announcement amount limit, useful for limited
-   * chatbot environment
+   * @param {PagingOptions=} options Options for pagination purposes
    * @return {Announcement[]} Array of announcements
    */
-  findByCategory(category: Category, limit?: number): Promise<Announcement[]>;
+  findByCategory(
+    category: Category,
+    options?: PagingOptions,
+  ): Promise<Announcement[]>;
   /**
    * Creates a new Announcement and save it in the database
    *
    * @param {string} title Announcement's title
    * @param {string} content Announcement's content
    * @param {Date} date Announcement's date
-   * @param {boolean} important Announcement's importance
    * @param {Category[]} categories Announcement's categories
    * @return {Promise<Announcement>} The newly created Announcement
    * or `null` if duplicate properties exists
@@ -40,7 +41,6 @@ export interface AnnouncementRepository
     title: string,
     content: string,
     date: Date,
-    important: boolean,
     categories: Category[],
   ): Promise<Announcement | null>;
 }
@@ -78,7 +78,6 @@ export class AnnouncementRepositoryTypeORM
         'announcement.title',
         'announcement.content',
         'announcement.validUntil',
-        'announcement.important',
         'categories.id',
         'categories.name',
       ])
@@ -95,7 +94,7 @@ export class AnnouncementRepositoryTypeORM
    */
   public findByCategory = async (
     category: Category,
-    limit?: number,
+    options?: PagingOptions,
   ): Promise<Announcement[]> => {
     return await this.repository
       .createQueryBuilder('announcement')
@@ -103,13 +102,14 @@ export class AnnouncementRepositoryTypeORM
         'announcement.categories',
         'categories',
         'categories.id = :id', { id: category.id })
+      .where('announcement.valid_until')
       .select([
         'announcement.title',
         'announcement.content',
         'announcement.validUntil',
-        'announcement.important',
       ])
-      .limit(limit)
+      .limit(options?.limit)
+      .offset(options?.offset)
       .getMany();
   }
 
@@ -119,7 +119,6 @@ export class AnnouncementRepositoryTypeORM
    * @param {string} title Announcement's title
    * @param {string} content Announcement's content
    * @param {Date} validUntil Announcement's date
-   * @param {boolean} important Announcement's importance
    * @param {Category[]} categories Announcement's categories
    * @return {Promise<Announcement>} The newly created Announcement
    * or `null` if duplicate property exists
@@ -128,7 +127,6 @@ export class AnnouncementRepositoryTypeORM
     title: string,
     content: string,
     validUntil: Date,
-    important: boolean,
     categories: Category[],
   ): Promise<Announcement | null> => {
     try {
@@ -136,7 +134,6 @@ export class AnnouncementRepositoryTypeORM
         title,
         content,
         validUntil,
-        important,
         categories,
       });
 
@@ -172,7 +169,6 @@ export class AnnouncementRepositoryTypeORM
       title,
       content,
       validUntil,
-      important,
       categories,
     }: Announcement,
   ): Promise<boolean> => {
@@ -182,7 +178,6 @@ export class AnnouncementRepositoryTypeORM
         title,
         content,
         validUntil,
-        important,
         categories,
       },
     );
