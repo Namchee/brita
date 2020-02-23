@@ -1,4 +1,3 @@
-import { validateSignature } from '@line/bot-sdk';
 import chalk from 'chalk';
 import crypto from 'crypto';
 import { Context, Next } from 'koa';

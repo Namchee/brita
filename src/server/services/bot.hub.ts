@@ -63,8 +63,8 @@ export class LineBotServiceHub {
       return Promise.resolve(null);
     }
 
-    const userId = event.source.userId;
-    const text = event.message.text;
+    const userId = event.source.userId.trim();
+    const text = event.message.text.trim();
 
     const userState = await this.stateRepository.findById(userId);
 

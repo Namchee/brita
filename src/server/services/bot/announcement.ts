@@ -6,7 +6,6 @@ import {
 } from './base';
 import {
   createTextBody,
-  createButtonMessage,
   createButtonBody,
   createTextMessage,
   createCarouselMessage,
@@ -44,7 +43,6 @@ export class BotAnnouncementService extends BotService {
     this.handler = [
       this.handleFirstState,
       this.handleSecondState,
-      this.handleThirdState,
     ];
 
     this.announcementRepository = announcementRepository;
@@ -85,28 +83,12 @@ export class BotAnnouncementService extends BotService {
         misc = result.misc ? result.misc : misc;
       } catch (err) {
         if (err instanceof UserError) {
-          if (result.state !== -1) {
-            result = {
-              state: result.state,
-              message: [
-                createTextMessage(
-                  createTextBody(err.message),
-                ),
-                ...result.message,
-              ],
-              misc: result.misc,
-            };
-          } else {
-            result = {
-              state: -2,
-              message: [
-                createTextMessage(
-                  createTextBody(err.message),
-                ),
-              ],
-              misc: result.misc,
-            };
-          }
+          result = {
+            state: -2,
+            message: [createTextMessage(
+              createTextBody(err.message),
+            )],
+          };
 
           break;
         }
@@ -121,17 +103,7 @@ export class BotAnnouncementService extends BotService {
   /**
    * Handles the command checking flow
    */
-  private handleFirstState = async (
-    {
-      text,
-    }: HandlerParameters,
-  ): Promise<BotServiceResult> => {
-    const command = text.split(' ')[0];
-
-    if (command !== this.identifier) {
-      throw new ServerError(LOGIC_ERROR.INCORRECT_MAPPING);
-    }
-
+  private handleFirstState = async (): Promise<BotServiceResult> => {
     const categories = await this.categoryRepository.findAll();
 
     if (categories.length === 0) {
@@ -143,19 +115,13 @@ export class BotAnnouncementService extends BotService {
       };
     }
 
-    const buttons = categories.map((category: Category) => {
-      return createButtonBody(category.name, category.name);
-    });
+    const quickReplies = 
 
     return {
       state: 1,
       message: [
-        createButtonMessage(
-          [
-            createTextBody(REPLY.INPUT_CATEGORY),
-            ...buttons,
-          ],
-        ),
+        createTextMessage(createTextBody(REPLY.INPUT_CATEGORY)),
+        createTextMessage(createTextBody()),
       ],
     };
   }

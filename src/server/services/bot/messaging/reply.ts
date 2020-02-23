@@ -4,7 +4,8 @@
  * An `enum` which contains all default REPLY messages
  */
 export enum REPLY {
-  INPUT_CATEGORY = 'Mohon masukkan kategori pengumuman yang anda inginkan.',
+  INPUT_CATEGORY = 'Oke, Brita akan carikan pengumuman buat kamu. Kamu mau pengumuman dengan kategori apa?',
+  CHOOSE_CATEGORY = 'Pilih kategori',
   NO_CATEGORY = 'Saat ini, tidak ada kategori pengumuman yang tersedia',
   UNKNOWN_CATEGORY = 'Kategori yang anda masukkan tidak ada.',
   UNIDENTIFIABLE = 'Permintaan yang anda minta tidak dapat dipahami. Mungkin saja karena permintaan anda sudah expired. Silahkan mengulangi permintaan anda.',

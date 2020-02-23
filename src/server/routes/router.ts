@@ -20,11 +20,5 @@ export function generateRoutes(controllers: ControllerList): Router {
     controllers.lineController.handleRequest,
   );
 
-  router.post('/', async (ctx: Context, next: Next) => {
-    ctx.response.body = {
-      data: ganteng[Math.floor(Math.random() * ganteng.length)],
-    };
-  });
-
   return router;
 }

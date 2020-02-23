@@ -19,50 +19,73 @@ function generateLineTextMessage(text: string): TextMessage {
   };
 }
 
-function generateTextComponent(text: string): FlexText {
+function generateTextComponent(
+  text: string,
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl',
+  bold?: boolean,
+): FlexText {
   const textObject = generateLineTextMessage(text);
 
   return {
-    size: 'sm',
+    size: size || 'sm',
     ...textObject,
     wrap: true,
+    weight: bold ? 'bold' : 'regular',
   };
 }
 
-function generateButtonComponent(label: string, text: string): FlexButton {
+function generateButtonComponent(
+  label: string,
+  text: string,
+  solid?: boolean,
+): FlexButton {
   return {
     type: 'button',
-    height: 'sm',
     action: {
       type: 'message',
       text,
       label,
     },
+    height: 'sm',
+    style: solid ? 'primary' : 'link',
+    color: solid ? '#2196F3' : '#212121',
   };
 }
 
 function generateBubbleContainer(
-  contents: FlexComponent[],
+  body: FlexComponent[],
   header?: FlexComponent,
+  footer?: FlexButton,
+  padding?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl',
 ): FlexBubble {
+  const elem: FlexComponent[] = [];
+
+  if (header) {
+    elem.push(header);
+  }
+
+  elem.push(...body);
+
+  if (footer) {
+    elem.push({
+      type: 'separator',
+    })
+    elem.push(footer);
+  }
+
   const bubbleContainer: FlexBubble = {
     type: 'bubble',
     body: {
       type: 'box',
       layout: 'vertical',
-      paddingAll: 'none',
-      contents,
+      paddingAll: padding,
+      paddingStart: '30px',
+      paddingEnd: '30px',
+      contents: elem,
+      spacing: 'xxl',
     },
+    action: footer?.action || undefined,
   };
-
-  if (header) {
-    bubbleContainer.header = {
-      type: 'box',
-      layout: 'vertical',
-      paddingAll: 'sm',
-      contents: [header],
-    };
-  }
 
   return bubbleContainer;
 }
@@ -100,14 +123,10 @@ function generateLineMessage(
     return generateLineTextMessage(message.body[0].text);
   }
   case 'buttons': {
-    const messageComponents = message.body.map((content) => {
-      if (content.type === 'button') {
-        const buttonBody = content as ButtonBody;
+    const buttons = message.body as ButtonBody[];
 
-        return generateButtonComponent(buttonBody.label, buttonBody.text);
-      }
-
-      return generateTextComponent(content.text);
+    const messageComponents = buttons.map((button) => {
+      return generateButtonComponent(button.label, button.text, button.solid);
     });
 
     const boxContainer = generateBubbleContainer(messageComponents);
@@ -115,20 +134,23 @@ function generateLineMessage(
     return generateFlexMessage(boxContainer);
   }
   case 'carousel': {
-    const messages = message.body.map((content) => {
-      if (content.type !== 'bubble') {
-        throw new ServerError('A carousel can only contain bubble(s)');
-      }
+    const bubbles = message.body as CarouselBody[];
 
-      const carouselBody = content as CarouselBody;
+    const messageComponents = bubbles.map((bubble) => {
+      const body = generateTextComponent(bubble.text, bubble.size);
 
-      return generateBubbleContainer(
-        [generateTextComponent(carouselBody.text)],
-        generateTextComponent(carouselBody.header),
-      );
+      const header = bubble.header ?
+        generateTextComponent(bubble.header, 'xxl') :
+        undefined;
+
+      const footer = bubble.action ?
+        generateButtonComponent(bubble.action.label, bubble.action.text, true) :
+        undefined;
+
+      return generateBubbleContainer([body], header, footer);
     });
 
-    const carouselContainer = generateCarouselContainer(messages);
+    const carouselContainer = generateCarouselContainer(messageComponents);
     return generateFlexMessage(carouselContainer);
   }
   default:

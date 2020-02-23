@@ -47,13 +47,13 @@ INSERT INTO announcement (title, "content", valid_until, important)
 VALUES ('This is important', 'Test content', 'January 27, 2020', false);
 
 INSERT INTO category ("name", "desc")
-VALUES ('Anak', 'Test description');
+VALUES ('Anak', 'Kategori ini merupakan kategori yang menampung pengumuman mengenai kebaktian sekolah minggu');
 
 INSERT INTO category ("name", "desc")
-VALUES ('Remaja', 'lorem ipsum');
+VALUES ('Remaja', 'Kategori ini merupakan kategori yang menampung pengumuman mengenai kebaktian kaum muda');
 
 INSERT INTO category ("name", "desc")
-VALUES ('Dewasa', 'lorem ipsum');
+VALUES ('Umum', 'Kategori ini merupakan kategori yang menampung pengumuman mengenai kebaktian umum');
 
 INSERT INTO announcement_categories
 VALUES (1, 1);
