@@ -17,7 +17,7 @@ export interface QuickReplyItems {
  */
 export interface MessageBody {
   type: 'text' | 'button' | 'bubble';
-  quickReply?: QuickReplyItems[];
+  text: string;
 }
 
 /**
@@ -62,8 +62,11 @@ export interface CarouselBody extends MessageBody {
 /**
  * An entity which represents a single message to be sent to
  * the user.
+ *
+ * A message may contain quick reply objects
  */
 export interface Message {
   type: 'basic' | 'buttons' | 'carousel';
   body: MessageBody[];
+  quickReply?: QuickReplyItems[];
 }

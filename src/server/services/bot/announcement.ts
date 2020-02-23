@@ -4,14 +4,7 @@ import {
   BotServiceResult,
   HandlerParameters,
 } from './base';
-import {
-  createTextBody,
-  createButtonBody,
-  createTextMessage,
-  createCarouselMessage,
-  Message,
-  createCarouselBody,
-} from './messaging/messages';
+import { Message, TextBody, QuickReplyItems, CarouselBody, ButtonBody } from './messaging/messages';
 import { AnnouncementRepository } from './../../repository/announcement';
 import { ServerError, UserError } from './../../utils/error';
 import { REPLY, LOGIC_ERROR } from './messaging/reply';
@@ -83,11 +76,17 @@ export class BotAnnouncementService extends BotService {
         misc = result.misc ? result.misc : misc;
       } catch (err) {
         if (err instanceof UserError) {
+          const errorMessage: TextBody = {
+            type: 'text',
+            text: err.message,
+          };
+
           result = {
             state: -2,
-            message: [createTextMessage(
-              createTextBody(err.message),
-            )],
+            message: [{
+              type: 'basic',
+              body: [errorMessage],
+            }],
           };
 
           break;
@@ -101,28 +100,64 @@ export class BotAnnouncementService extends BotService {
   }
 
   /**
-   * Handles the command checking flow
+   * Handles the initial user request
    */
   private handleFirstState = async (): Promise<BotServiceResult> => {
     const categories = await this.categoryRepository.findAll();
 
+    /**
+     * Fallback case
+     *
+     * Show 'no category' message
+     */
     if (categories.length === 0) {
+      const body: TextBody = {
+        type: 'text',
+        text: REPLY.NO_CATEGORY,
+      };
+
       return {
         state: 0,
-        message: [
-          createTextMessage(createTextBody(REPLY.NO_CATEGORY)),
-        ],
+        message: [{
+          type: 'basic',
+          body: [body],
+        }],
       };
     }
 
-    const quickReplies = 
+    const quickReplies: QuickReplyItems[] = categories.map((category) => {
+      return {
+        label: category.name,
+        text: category.name,
+      };
+    });
+
+    let messageText = REPLY.INPUT_CATEGORY + '\n';
+
+    for (let i = 0; i < categories.length; i++) {
+      if (i & 1) {
+        messageText += '\t';
+      }
+
+      messageText += categories[i].name;
+
+      if (i & 1) {
+        messageText += '\n';
+      }
+    }
+
+    const messageBody: TextBody = {
+      type: 'text',
+      text: messageText,
+    };
 
     return {
       state: 1,
-      message: [
-        createTextMessage(createTextBody(REPLY.INPUT_CATEGORY)),
-        createTextMessage(createTextBody()),
-      ],
+      message: [{
+        type: 'basic',
+        body: [messageBody],
+        quickReply: quickReplies,
+      }],
     };
   }
 
@@ -132,97 +167,72 @@ export class BotAnnouncementService extends BotService {
   private handleSecondState = async (
     {
       text,
-    }: HandlerParameters,
-  ): Promise<BotServiceResult> => {
-    const categoryText = text.split(' ')[1];
-
-    const category = await this.categoryRepository.findByName(categoryText);
-
-    if (!category) {
-      throw new UserError(REPLY.UNKNOWN_CATEGORY);
-    }
-
-    const cache: StringMap = {};
-
-    delete category.desc; // we don't need this
-    cache['category'] = category;
-
-    return {
-      state: 2,
-      message: [
-        createTextMessage(
-          createTextBody(REPLY.INPUT_AMOUNT),
-        ),
-      ],
-      misc: cache,
-    };
-  }
-
-  /**
-   * Handles the amount request validation and actual response
-   */
-  private handleThirdState = async (
-    {
-      text,
       misc,
     }: HandlerParameters,
   ): Promise<BotServiceResult> => {
-    const fragments = text.split(' ');
+    if (!misc) {
+      const category = await this.categoryRepository.findByName(text);
 
-    const amount = Number(fragments[2]);
+      if (!category) {
+        throw new UserError(REPLY.UNKNOWN_CATEGORY);
+      }
 
-    if (isNaN(amount)) {
-      throw new UserError(REPLY.AMOUNT_NOT_NUMBER);
-    }
+      const cache: StringMap = {};
 
-    if (amount < 1) {
-      throw new UserError(REPLY.AMOUNT_TOO_LITTLE);
-    }
+      delete category.desc; // we don't need this
+      cache['category'] = category;
 
-    if (amount > 10) {
-      throw new UserError(REPLY.AMOUNT_TOO_MUCH);
-    }
+      const announcements = await this.announcementRepository
+        .findByCategory(category, 10);
 
-    if (!misc || !misc.category) {
-      throw new ServerError('Cached data for bot service does not exist');
-    }
-
-    const category = misc.category as Category;
-
-    if (!category) {
-      throw new ServerError(LOGIC_ERROR.BREACH_OF_FLOW);
-    }
-
-    let message: Message = createTextMessage(
-      createTextBody(REPLY.NO_ANNOUNCEMENT),
-    );
-
-    const announcements = await this.announcementRepository
-      .findByCategory(category);
-
-    if (announcements.length > 0) {
-      announcements.sort((a, b) => {
-        if (a.important && b.important) {
-          return a.validUntil.getTime() < b.validUntil.getTime() ? -1 : 1;
-        }
-
-        return a.important ? -1 : 1;
+      const carouselBody: CarouselBody[] = announcements.map((announcement) => {
+        return {
+          type: 'bubble',
+          header: announcement.title,
+          text: announcement.content,
+          tightPadding: true,
+        };
       });
 
-      const messages = announcements.slice(0, amount).map((announcement) => {
-        return createCarouselBody(announcement.title, announcement.content);
-      });
+      return {
+        state: 2,
+        message: [
+          {
+            type: 'carousel',
+            body: carouselBody,
+          },
+          this.generatePrompt(),
+        ],
+        misc: cache,
+      };
+    } else {
 
-      message = createCarouselMessage(messages);
     }
+  }
 
+  private generatePrompt(): Message {
     return {
-      state: 0,
-      message: [
-        createTextMessage(
-          createTextBody(REPLY.ANNOUNCEMENT_SERVED + ` ${category.name}`),
-        ),
-        message,
+      type: 'buttons',
+      body: [
+        {
+          type: 'text',
+          text: REPLY.PROMPT,
+        },
+        {
+          type: 'button',
+          label: REPLY.NEXT_ANNOUNCEMENT_LABEL,
+          text: REPLY.NEXT_ANNOUNCEMENT_LABEL,
+        } as ButtonBody,
+        {
+          type: 'button',
+          label: REPLY.RECHOOSE_CATEGORY_LABEL,
+          text: REPLY.RECHOOSE_CATEGORY_LABEL,
+        } as ButtonBody,
+        {
+          type: 'button',
+          label: REPLY.END_REQUEST_LABEL,
+          text: REPLY.END_REQUEST_LABEL,
+        } as ButtonBody,
       ],
     };
   }

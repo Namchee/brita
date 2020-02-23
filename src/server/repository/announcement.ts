@@ -20,9 +20,11 @@ export interface AnnouncementRepository
    * Get all Announcement which satisfies the requested category
    *
    * @param {Category} category Category criterion
+   * @param {number=} limit Announcement amount limit, useful for limited
+   * chatbot environment
    * @return {Announcement[]} Array of announcements
    */
-  findByCategory(category: Category): Promise<Announcement[]>;
+  findByCategory(category: Category, limit?: number): Promise<Announcement[]>;
   /**
    * Creates a new Announcement and save it in the database
    *
@@ -87,11 +89,13 @@ export class AnnouncementRepositoryTypeORM
    * Get all announcements which satisfies the requested category
    *
    * @param {Category} category Requested category
+   * @param {number=} limit Announcement amount limit
    * @return {Promise<Announcement[]>} Announcement array, which
    * satisfies the requested category
    */
   public findByCategory = async (
     category: Category,
+    limit?: number,
   ): Promise<Announcement[]> => {
     return await this.repository
       .createQueryBuilder('announcement')
@@ -105,6 +109,7 @@ export class AnnouncementRepositoryTypeORM
         'announcement.validUntil',
         'announcement.important',
       ])
+      .limit(limit)
       .getMany();
   }
 

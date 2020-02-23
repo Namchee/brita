@@ -30,10 +30,6 @@ export const AnnouncementEntity = new EntitySchema<Announcement>({
       name: 'valid_until',
       nullable: false,
     },
-    important: {
-      type: Boolean,
-      nullable: false,
-    },
   },
   relations: {
     categories: {
