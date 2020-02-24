@@ -12,7 +12,7 @@ import {
   ButtonBody,
 } from './messaging/messages';
 import { AnnouncementRepository } from './../../repository/announcement';
-import { ServerError, UserError } from './../../utils/error';
+import { UserError } from './../../utils/error';
 import { REPLY } from './messaging/reply';
 import { CategoryRepository } from './../../repository/category';
 import { Category } from './../../entity/category';
@@ -89,52 +89,39 @@ export class BotAnnouncementService extends BotService {
       misc,
     }: BotServiceParameters,
   ): Promise<BotServiceResult> => {
-    if (state > 2 || state < 0) {
-      throw new ServerError(`Invalid state of ${state}`);
-    }
-
-    let result: BotServiceResult = {
-      state: -1,
-      message: [],
-    };
-
-    const fragments = text.split(' ');
-    const handlerLen = this.handler.length;
-    const fragmentLen = fragments.length;
-
-    for (let i = state; i < handlerLen && i < fragmentLen; i++) {
-      try {
-        result = await this.handler[i]({ text, misc });
-        misc = result.misc ? result.misc : misc;
-      } catch (err) {
-        if (err instanceof UserError) {
-          const errorMessage: TextBody = {
-            type: 'text',
-            text: err.message,
-          };
-
-          result = {
-            state: -2,
-            message: [{
-              type: 'basic',
-              body: [errorMessage],
+    try {
+      return await this.handler[state]({ text, misc });
+    } catch (err) {
+      if (err instanceof UserError) {
+        return {
+          state: -1,
+          message: [{
+            type: 'basic',
+            body: [{
+              type: 'text',
+              text: err.message,
             }],
-          };
-
-          break;
-        }
-
-        throw err;
+          }],
+        };
       }
-    }
 
-    return result;
+      throw err;
+    }
   }
 
   /**
    * Handles the initial user request
    */
-  private handleFirstState = async (): Promise<BotServiceResult> => {
+  private handleFirstState = async (
+    {
+      misc,
+    }: HandlerParameters,
+  ): Promise<BotServiceResult> => {
+    if (misc) {
+      delete misc['category'];
+      delete misc['page'];
+    }
+
     const categories = await this.categoryRepository.findAll();
 
     /**
@@ -154,6 +141,7 @@ export class BotAnnouncementService extends BotService {
           type: 'basic',
           body: [body],
         }],
+        misc,
       };
     }
 
@@ -190,11 +178,12 @@ export class BotAnnouncementService extends BotService {
         body: [messageBody],
         quickReply: quickReplies,
       }],
+      misc,
     };
   }
 
   /**
-   * Handles the category identification flow
+   * Handles the category identification flow and announcement response
    */
   private handleSecondState = async (
     {
@@ -235,10 +224,11 @@ export class BotAnnouncementService extends BotService {
                 text: REPLY.END_REQUEST_REPLY,
               }],
             }],
+            misc,
           };
         }
         case REPLY.RECHOOSE_CATEGORY_LABEL: {
-          return this.handleFirstState();
+          return this.handleFirstState({ text: '', misc });
         }
         case REPLY.NEXT_ANNOUNCEMENT_LABEL: {
           return {
@@ -250,6 +240,7 @@ export class BotAnnouncementService extends BotService {
               ),
               BotAnnouncementService.PROMPT_MESSAGE,
             ],
+            misc,
           };
         }
         default: {
@@ -262,12 +253,22 @@ export class BotAnnouncementService extends BotService {
                 text: REPLY.UNIDENTIFIABLE,
               }],
             }],
+            misc,
           };
         }
       }
     }
   }
 
+  /**
+   * An utility function to generate carousel announcements
+   *
+   * @param {Category} category The requested category from user
+   * @param {number} page Requested page for the announcements, used to limit
+   * the amount of announcements returned
+   * @return {Promise<Message>} An announcement carousel message and
+   * a prompt message
+   */
   private generateAnnouncementCarousel = async (
     category: Category,
     page: number,

@@ -19,10 +19,6 @@ export interface State extends Entity {
    */
   state: number;
   /**
-   * Accumulated user text
-   */
-  text: string;
-  /**
    * Miscellanous object needed by particular services,
    * Useful for caching data
    */

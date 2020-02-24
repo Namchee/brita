@@ -7,8 +7,7 @@ CREATE TABLE IF NOT EXISTS announcement (
 	id SERIAL PRIMARY KEY,
 	title VARCHAR(25) UNIQUE NOT NULL,
 	"content" VARCHAR(300) NOT NULL,
-	valid_until DATE NOT NULL,
-	important BOOLEAN NOT NULL
+	valid_until DATE NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS category (
@@ -40,11 +39,11 @@ CREATE VIEW category_with_count AS
 	FROM
 		category;
 		
-INSERT INTO announcement (title, "content", valid_until, important)
-VALUES ('Test title', 'Test content', 'January 27, 2020', true);
+INSERT INTO announcement (title, "content", valid_until)
+VALUES ('Test title', 'Test content', 'October 19, 2020');
 
-INSERT INTO announcement (title, "content", valid_until, important)
-VALUES ('This is important', 'Test content', 'January 27, 2020', false);
+INSERT INTO announcement (title, "content", valid_until)
+VALUES ('This is important', 'Test content', 'December 20, 2020');
 
 INSERT INTO category ("name", "desc")
 VALUES ('Anak', 'Kategori ini merupakan kategori yang menampung pengumuman mengenai kebaktian sekolah minggu');

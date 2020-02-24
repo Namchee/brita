@@ -25,7 +25,6 @@ export interface StateRepository extends Repository<State> {
    * @param {string} id User's ID
    * @param {string} service Service identifier
    * @param {number} state Service's state
-   * @param {string} text Accumulated user request text
    * @param {StringMap=} misc Miscellanous data
    * @return {Promise<boolean>} `true` if insertion is successful,
    * `false` otherwise
@@ -34,7 +33,6 @@ export interface StateRepository extends Repository<State> {
     id: string,
     service: string,
     state: number,
-    text: string,
     misc?: StringMap,
   ): Promise<boolean>;
 }
@@ -78,7 +76,6 @@ export class StateRepositoryRedis implements StateRepository {
    * @param {string} id User's ID
    * @param {string} service Service identifier
    * @param {number} state State number
-   * @param {string} text Accumulated text
    * @param {StringMap=} misc Miscellanous data
    * @return {Promise<boolean>} `true` if insertion successful,
    * `false` otherwise (e.g: It already exist)
@@ -87,7 +84,6 @@ export class StateRepositoryRedis implements StateRepository {
     id: string,
     service: string,
     state: number,
-    text: string,
     misc?: StringMap,
   ): Promise<boolean> => {
     if (await this.findById(id)) {
@@ -97,7 +93,6 @@ export class StateRepositoryRedis implements StateRepository {
     const stateData = {
       service,
       state,
-      text,
       misc,
     };
 

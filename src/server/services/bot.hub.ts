@@ -8,10 +8,6 @@ import {
 import { StateRepository } from './../repository/state';
 import { BotService } from './bot/base';
 import { formatMessages } from './bot/messaging/formatter';
-import {
-  createTextMessage,
-  createTextBody,
-} from './bot/messaging/messages';
 import { REPLY } from './bot/messaging/reply';
 import { ServerError, UserError } from './../utils/error';
 import { StringMap } from '../utils/types';
@@ -24,20 +20,20 @@ import { StringMap } from '../utils/types';
  */
 export class LineBotServiceHub {
   private readonly client: Client;
-  private readonly serviceMap: Map<string, BotService>;
+  private readonly serviceMap: StringMap;
   private readonly stateRepository: StateRepository;
 
   /**
    * Constructor for LineBotServiceHub
    * @param {Client} client LINE messaging API client
-   * @param {Map<string, BotService>} serviceMap A `Map` which 'maps' an
+   * @param {StringMap} serviceMap A `StringMap` which 'maps' an
    * identifier to correct services
    * @param {StateRepository} stateRepository A concrete implementation
    * of `StateRepository`
    */
   public constructor(
     client: Client,
-    serviceMap: Map<string, BotService>,
+    serviceMap: StringMap,
     stateRepository: StateRepository,
   ) {
     this.client = client;
@@ -63,61 +59,45 @@ export class LineBotServiceHub {
       return Promise.resolve(null);
     }
 
-    const userId = event.source.userId.trim();
-    const text = event.message.text.trim();
+    const userId = event.source.userId.trim().toLowerCase();
+    const text = event.message.text.trim().toLowerCase();
 
     const userState = await this.stateRepository.findById(userId);
 
     const state = userState ? userState.state : 0;
-    let service: BotService | undefined;
 
-    if (userState) {
-      service = this.serviceMap.get(userState.service);
-    } else {
-      const command = text.split(' ')[0];
+    const service: BotService = userState ?
+      this.serviceMap[userState.service] :
+      this.serviceMap[text];
 
-      service = this.serviceMap.get(command);
-    }
+    if (!service && !userState) {
+      const message = formatMessages([{
+        type: 'basic',
+        body: [{
+          type: 'text',
+          text: REPLY.UNIDENTIFIABLE,
+        }],
+      }]);
 
-    if (!service) {
-      if (userState) {
-        throw new ServerError(
-          `Service from user state is unidentifiable: ${userState.service}`,
-        );
-      } else {
-        const message = formatMessages([
-          createTextMessage(createTextBody(REPLY.UNIDENTIFIABLE)),
-        ]);
-
-        return this.sendMessage(event, message);
-      }
+      return this.sendMessage(event, message);
     }
 
     try {
-      const realText = userState ?
-        `${userState.text} ${text}` :
-        text;
-
       const queryResult = await service.handle(
         {
           state,
-          text: realText,
+          text,
           misc: userState?.misc,
         },
       );
 
       if (queryResult.state >= 0) {
-        const stateProcess = await this.updateUserState(
+        await this.updateUserState(
           userId,
           service.identifier,
           queryResult.state,
-          realText,
           queryResult.misc,
         );
-
-        if (!stateProcess) {
-          throw new ServerError('Failed to update user state');
-        }
       }
 
       const message = formatMessages(queryResult.message);
@@ -140,7 +120,6 @@ export class LineBotServiceHub {
     userId: string,
     serviceId: string,
     state: number,
-    text: string,
     misc?: StringMap,
   ): Promise<boolean> => {
     const exist = await this.stateRepository.findById(userId);
@@ -154,7 +133,6 @@ export class LineBotServiceHub {
         userId,
         serviceId,
         state,
-        text,
         misc,
       );
     } else {
@@ -165,7 +143,6 @@ export class LineBotServiceHub {
           id: userId,
           service: serviceId,
           state,
-          text,
           misc,
         });
       }
