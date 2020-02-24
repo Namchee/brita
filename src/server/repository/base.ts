@@ -59,12 +59,9 @@ export interface Repository<T extends Entity> {
    *
    * @param {T} obj The updated Entity
    * @return {Promise<boolean>} `true` if the entity exists
-   * and successfully updated, `false` otherwise
-   * @throw An error:
-   * 1. Server Error, if it violates the `length` constraint
-   * 2. User Error, if it violates the `unique` constraint
+   * and successfully updated, `false` otherwise.
    *
-   * Refer the constraint to each repository's model
+   * Please refer the constraint to each repository's model
    */
   update(obj: T): Promise<boolean>;
 }
@@ -78,7 +75,9 @@ export interface EntityRepository<T extends Entity> extends Repository<T> {
   /**
    * Get all Entity from the database
    *
+   * @param {PagingOptions=} options Pagination options to limit
+   * the amount of entities returned
    * @return {Promise<T[]>} Entity array
    */
-  findAll(): Promise<T[]>;
+  findAll(options?: PagingOptions): Promise<T[]>;
 }

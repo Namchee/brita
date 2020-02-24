@@ -7,10 +7,9 @@ import { Context, Next } from 'koa';
  */
 export interface Controller {
   /**
-   * Handles a HTTP request with Express
+   * Handles a HTTP request in KoaJS style
    *
-   * @param {Request} req Express request object
-   * @param {Response} res Express response object
+   * @param {Context} ctx Koa context object
    * @param {NextFunction} next Next Function
    * @return {Promise<Response>} An express response object
    */

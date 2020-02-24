@@ -2,14 +2,13 @@ import {
   WebhookEvent,
   MessageAPIResponseBase,
   Client,
-  Message as LineMessage,
+  Message,
   MessageEvent,
 } from '@line/bot-sdk';
 import { StateRepository } from './../repository/state';
 import { BotService } from './bot/base';
 import { formatMessages } from './bot/messaging/formatter';
 import { REPLY } from './bot/messaging/reply';
-import { ServerError, UserError } from './../utils/error';
 import { StringMap } from '../utils/types';
 
 /**
@@ -82,38 +81,26 @@ export class LineBotServiceHub {
       return this.sendMessage(event, message);
     }
 
-    try {
-      const queryResult = await service.handle(
-        {
-          state,
-          text,
-          misc: userState?.misc,
-        },
+    const queryResult = await service.handle(
+      {
+        state,
+        text,
+        misc: userState?.misc,
+      },
+    );
+
+    if (queryResult.state >= 0) {
+      await this.updateUserState(
+        userId,
+        service.identifier,
+        queryResult.state,
+        queryResult.misc,
       );
-
-      if (queryResult.state >= 0) {
-        await this.updateUserState(
-          userId,
-          service.identifier,
-          queryResult.state,
-          queryResult.misc,
-        );
-      }
-
-      const message = formatMessages(queryResult.message);
-
-      return this.sendMessage(event, message);
-    } catch (err) {
-      if (err instanceof UserError) {
-        const message = formatMessages([
-          createTextMessage(createTextBody(err.message)),
-        ]);
-
-        return this.sendMessage(event, message);
-      }
-
-      throw err;
     }
+
+    const message = formatMessages(queryResult.message);
+
+    return this.sendMessage(event, message);
   }
 
   private updateUserState = async (
@@ -151,7 +138,7 @@ export class LineBotServiceHub {
 
   private sendMessage = (
     event: MessageEvent,
-    message: LineMessage | LineMessage[],
+    message: Message | Message[],
   ): Promise<MessageAPIResponseBase> => {
     if (Array.isArray(message)) {
       return this.client.pushMessage(

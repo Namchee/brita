@@ -31,7 +31,7 @@ export class BotAnnouncementService extends BotService {
     body: [
       {
         type: 'text',
-        text: REPLY.PROMPT,
+        text: REPLY.PROMPT_ANNOUNCEMENT,
       },
       {
         type: 'button',
@@ -49,6 +49,11 @@ export class BotAnnouncementService extends BotService {
         text: REPLY.END_REQUEST_LABEL,
       } as ButtonBody,
     ],
+  };
+
+  private static readonly INTRO_MESSAGE = {
+    type: 'basic',
+    text: REPLY.SHOW_ANNOUNCEMENT,
   };
 
   /**
@@ -191,30 +196,35 @@ export class BotAnnouncementService extends BotService {
       misc,
     }: HandlerParameters,
   ): Promise<BotServiceResult> => {
-    if (!misc) {
-      const category = await this.categoryRepository.findByName(text);
+    if (!misc || text === REPLY.NEXT_ANNOUNCEMENT_LABEL.toLowerCase()) {
+      const category = misc?.category ||
+        await this.categoryRepository.findByName(text);
+
+      const page = misc?.page || 1;
 
       if (!category) {
         throw new UserError(REPLY.UNKNOWN_CATEGORY);
       }
 
-      const cache: StringMap = {};
+      const carousel = await this.generateAnnouncementCarousel(category, page);
 
-      delete category.desc; // we don't need this
-      cache['category'] = category;
-      cache['page'] = 1;
+      const cache: StringMap = {
+        'category': category,
+        'page': carousel.type === 'basic' ? page : page + 1, // next page
+      };
 
       return {
         state: 1,
         message: [
-          await this.generateAnnouncementCarousel(category, 1),
+          BotAnnouncementService.INTRO_MESSAGE,
+          carousel,
           BotAnnouncementService.PROMPT_MESSAGE,
         ],
         misc: cache,
       };
     } else {
       switch (text) {
-        case REPLY.END_REQUEST_LABEL: {
+        case REPLY.END_REQUEST_LABEL.toLowerCase(): {
           return {
             state: 0,
             message: [{
@@ -227,21 +237,8 @@ export class BotAnnouncementService extends BotService {
             misc,
           };
         }
-        case REPLY.RECHOOSE_CATEGORY_LABEL: {
+        case REPLY.RECHOOSE_CATEGORY_LABEL.toLowerCase(): {
           return this.handleFirstState({ text: '', misc });
-        }
-        case REPLY.NEXT_ANNOUNCEMENT_LABEL: {
-          return {
-            state: 1,
-            message: [
-              await this.generateAnnouncementCarousel(
-                misc['category'],
-                misc['page'],
-              ),
-              BotAnnouncementService.PROMPT_MESSAGE,
-            ],
-            misc,
-          };
         }
         default: {
           return {

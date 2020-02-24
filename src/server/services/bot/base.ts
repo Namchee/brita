@@ -29,11 +29,11 @@ export interface BotServiceResult {
    */
   state: number;
   /**
-   * Array of messages
+   * Message(s) to be sent
    *
-   * It is designed as an array to support multiple messages pushing
+   * Return more than one object to conduct push messages
    */
-  message: Message[];
+  message: Message[] | CustomMessage;
   /**
    * Miscellanous data
    *

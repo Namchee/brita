@@ -1,6 +1,9 @@
 {
   "compilerOptions": {
     "target": "es2017",
+    "lib": [
+      "ES2019.Array"
+    ],
     "module": "commonjs",
     "allowJs": true,
     "outDir": "./build",

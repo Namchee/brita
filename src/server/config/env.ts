@@ -43,5 +43,5 @@ export default {
   /**
    * State lifetime
    */
-  expirationTime: Number(process.env.EXPIRATION_TIME) || 1000 * 60 * 3,
+  expirationTime: Number(process.env.EXPIRATION_TIME) || 1000 * 60 * 5,
 };

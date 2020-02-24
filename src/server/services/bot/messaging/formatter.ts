@@ -21,7 +21,7 @@ function generateLineTextMessage(text: string): TextMessage {
 
 function generateTextComponent(
   text: string,
-  size?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl',
+  size?: 'sm' | 'md' | 'lg',
   bold?: boolean,
 ): FlexText {
   const textObject = generateLineTextMessage(text);
@@ -37,7 +37,6 @@ function generateTextComponent(
 function generateButtonComponent(
   label: string,
   text: string,
-  solid?: boolean,
 ): FlexButton {
   return {
     type: 'button',
@@ -47,16 +46,14 @@ function generateButtonComponent(
       label,
     },
     height: 'sm',
-    style: solid ? 'primary' : 'link',
-    color: solid ? '#2196F3' : '#212121',
   };
 }
 
 function generateBubbleContainer(
   body: FlexComponent[],
   header?: FlexComponent,
-  footer?: FlexButton,
-  padding?: 'sm' | 'md' | 'lg' | 'xl' | 'xxl',
+  tightPadding?: boolean,
+  smallSize?: boolean,
 ): FlexBubble {
   const elem: FlexComponent[] = [];
 
@@ -66,28 +63,16 @@ function generateBubbleContainer(
 
   elem.push(...body);
 
-  if (footer) {
-    elem.push({
-      type: 'separator',
-    })
-    elem.push(footer);
-  }
-
-  const bubbleContainer: FlexBubble = {
+  return {
     type: 'bubble',
+    size: smallSize ? 'kilo' : 'mega',
     body: {
       type: 'box',
       layout: 'vertical',
-      paddingAll: padding,
-      paddingStart: '30px',
-      paddingEnd: '30px',
+      paddingAll: tightPadding ? 'lg' : undefined,
       contents: elem,
-      spacing: 'xxl',
     },
-    action: footer?.action || undefined,
   };
-
-  return bubbleContainer;
 }
 
 function generateCarouselContainer(contents: FlexBubble[]): FlexCarousel {
@@ -115,46 +100,60 @@ function generateLineMessage(
   message: Message,
 ): LineMessage {
   switch (message.type) {
-  case 'basic': {
-    if (message.body.length > 1) {
-      throw new ServerError('A basic message can only contain 1 body');
+    case 'basic': {
+      if (message.body.length > 1) {
+        throw new ServerError('A basic message can only contain 1 body');
+      }
+
+      return generateLineTextMessage(message.body[0].text);
     }
+    case 'buttons': {
+      const components = message.body.map((component) => {
+        if (component.type === 'button') {
+          const buttonComponent = component as ButtonBody;
 
-    return generateLineTextMessage(message.body[0].text);
-  }
-  case 'buttons': {
-    const buttons = message.body as ButtonBody[];
+          return generateButtonComponent(
+            buttonComponent.label,
+            buttonComponent.text,
+          );
+        }
 
-    const messageComponents = buttons.map((button) => {
-      return generateButtonComponent(button.label, button.text, button.solid);
-    });
+        return [
+          generateTextComponent(component.text, 'sm'),
+          {
+            type: 'separator',
+            margin: 'lg',
+          },
+        ];
+      });
 
-    const boxContainer = generateBubbleContainer(messageComponents);
+      const boxContainer = generateBubbleContainer(
+        components.flat(),
+        undefined,
+        true,
+        true,
+      );
 
-    return generateFlexMessage(boxContainer);
-  }
-  case 'carousel': {
-    const bubbles = message.body as CarouselBody[];
+      return generateFlexMessage(boxContainer);
+    }
+    case 'carousel': {
+      const bubbles = message.body as CarouselBody[];
 
-    const messageComponents = bubbles.map((bubble) => {
-      const body = generateTextComponent(bubble.text, bubble.size);
+      const components = bubbles.map((component) => {
+        const body = generateTextComponent(component.text);
 
-      const header = bubble.header ?
-        generateTextComponent(bubble.header, 'xxl') :
-        undefined;
+        const header = component.header ?
+          generateTextComponent(component.header, 'lg', true) :
+          undefined;
 
-      const footer = bubble.action ?
-        generateButtonComponent(bubble.action.label, bubble.action.text, true) :
-        undefined;
+        return generateBubbleContainer([body], header);
+      });
 
-      return generateBubbleContainer([body], header, footer);
-    });
-
-    const carouselContainer = generateCarouselContainer(messageComponents);
-    return generateFlexMessage(carouselContainer);
-  }
-  default:
-    throw new ServerError('Illegal message type', 500);
+      const carouselContainer = generateCarouselContainer(components);
+      return generateFlexMessage(carouselContainer);
+    }
+    default:
+      throw new ServerError('Illegal message type', 500);
   }
 }
 

@@ -64,9 +64,11 @@ export interface CarouselBody extends MessageBody {
  * the user.
  *
  * A message may contain quick reply objects
+ *
+ * You can bypass formatter function by using 'custom' type
  */
 export interface Message {
-  type: 'basic' | 'buttons' | 'carousel';
+  type: 'basic' | 'buttons' | 'carousel' | 'custom';
   body: MessageBody[];
   quickReply?: QuickReplyItems[];
 }

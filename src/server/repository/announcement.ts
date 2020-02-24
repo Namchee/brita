@@ -8,6 +8,12 @@ import { TypeORMRepository, EntityRepository, PagingOptions } from './base';
 import { Category } from './../entity/category';
 import { AnnouncementEntity } from './../database/model/announcement';
 
+interface FindAnnouncementOptions extends PagingOptions {
+  limit: number;
+  offset: number;
+  validUntil?: Date;
+}
+
 /**
  * Interface for Announcement repository
  *
@@ -20,12 +26,12 @@ export interface AnnouncementRepository
    * Get all Announcement which satisfies the requested category
    *
    * @param {Category} category Category criterion
-   * @param {PagingOptions=} options Options for pagination purposes
+   * @param {FindAnnouncementOptions=} options Options for pagination purposes
    * @return {Announcement[]} Array of announcements
    */
   findByCategory(
     category: Category,
-    options?: PagingOptions,
+    options?: FindAnnouncementOptions,
   ): Promise<Announcement[]>;
   /**
    * Creates a new Announcement and save it in the database
@@ -67,7 +73,7 @@ export class AnnouncementRepositoryTypeORM
    *
    * @return {Promise<Announcement[]>} Announcement array
    */
-  public findAll = async (): Promise<Announcement[]> => {
+  public findAll = async (options?: PagingOptions): Promise<Announcement[]> => {
     return await this.repository
       .createQueryBuilder('announcement')
       .innerJoinAndSelect(
@@ -81,6 +87,8 @@ export class AnnouncementRepositoryTypeORM
         'categories.id',
         'categories.name',
       ])
+      .limit(options?.limit)
+      .offset(options?.offset)
       .getMany();
   }
 
@@ -88,29 +96,36 @@ export class AnnouncementRepositoryTypeORM
    * Get all announcements which satisfies the requested category
    *
    * @param {Category} category Requested category
-   * @param {number=} limit Announcement amount limit
+   * @param {FindAnnouncementOptions=} options Find announcement options
    * @return {Promise<Announcement[]>} Announcement array, which
    * satisfies the requested category
    */
   public findByCategory = async (
     category: Category,
-    options?: PagingOptions,
+    options?: FindAnnouncementOptions,
   ): Promise<Announcement[]> => {
-    return await this.repository
+    let query = this.repository
       .createQueryBuilder('announcement')
       .innerJoin(
         'announcement.categories',
         'categories',
         'categories.id = :id', { id: category.id })
-      .where('announcement.valid_until')
       .select([
         'announcement.title',
         'announcement.content',
         'announcement.validUntil',
       ])
       .limit(options?.limit)
-      .offset(options?.offset)
-      .getMany();
+      .offset(options?.offset);
+
+    if (options?.validUntil) {
+      query = query.where(
+        'announcement.valid_until >= :dateNow',
+        { dateNow: options.validUntil },
+      );
+    }
+
+    return await query.getMany();
   }
 
   /**

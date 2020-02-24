@@ -4,18 +4,17 @@
  * An `enum` which contains all default REPLY messages
  */
 export enum REPLY {
-  INPUT_CATEGORY = 'Oke, Brita akan carikan pengumuman buat kamu. Kamu mau pengumuman dengan kategori apa?\n\n Kategori-kategori yang tersedia adalah:',
+  INPUT_CATEGORY = 'Oke, Brita akan carikan pengumuman buat kamu. Kamu mau pengumuman dengan kategori apa?\n\nKategori-kategori yang tersedia adalah:',
   NO_CATEGORY = 'Hmm... Sekarang gak ada kategori yang dapat diminta...',
-  UNKNOWN_CATEGORY = 'Hmm... Brita gak tau kategori apa yang kamu masukkan. Mungkin ajah karena kamu salah ketik. Bisa tolong masukkan lagi?',
-  UNIDENTIFIABLE = 'Hmm... Brita gak ngerti apa yang kamu minta. Entah karena kamu salah ketik atau sesi permintaan kamu habis. Silahkan ulang permintaan kamu lagi ya~',
-  PROMPT = 'Yay! Brita udah nanganin permintaan kamu! Sekarang, apa yang mau kamu lakukan?\nKamu dapat memilih "Ubah Kategori" untuk mengubah kategori, "Selanjutnya" untuk melihat pengumuman selanjutnya, dan "Akhiri" untuk menyelesaikan permintaan',
-  RECHOOSE_CATEGORY_LABEL = 'Ubah Kategori',
-  NEXT_ANNOUNCEMENT_LABEL = 'Selanjutnya',
+  UNKNOWN_CATEGORY = 'Hmm... Brita gak tau kategori apa yang kamu masukkan. Mungkin ajah karena kamu salah ketik.\nBisa tolong masukkan lagi?',
+  UNIDENTIFIABLE = 'Hmm... Brita gak ngerti apa yang kamu minta. Entah karena kamu salah ketik atau sesi permintaan kamu habis.\n\nSilahkan ulang permintaan kamu lagi ya~',
+  SHOW_ANNOUNCEMENT = 'Berikut ini adalah beberapa pengumuman yang sesuai dengan kriteria yang kamu minta',
+  PROMPT_ANNOUNCEMENT = 'Sekarang, apakah kamu masih mau melanjutkan baca pengumuman?\n\nKamu dapat memilih\n"Ganti" untuk mengubah kategori\n"Lanjutkan" untuk melihat pengumuman selanjutnya\n"Akhiri" untuk menyelesaikan permintaan',
+  RECHOOSE_CATEGORY_LABEL = 'Ganti',
+  NEXT_ANNOUNCEMENT_LABEL = 'Lanjutkan',
   END_REQUEST_LABEL = 'Akhiri',
   END_REQUEST_REPLY = 'Baiklah. Terima kasih udah tanya ke Brita! Semoga harimu menyenangkan!',
   NO_ANNOUNCEMENT = 'Hmm... Saat ini, udah gak ada pengumuman lagi yang tersedia buat kategori tersebut.',
-  AMOUNT_NOT_NUMBER = 'Jumlah yang anda masukkan bukanlah angka.',
-  AMOUNT_TOO_LITTLE = 'Jumlah yang anda minta terlalu sedikit (min. 1).',
   SERVER_ERROR = 'Terjadi masalah pada server, mohon coba lagi lain kali.',
 }
 
