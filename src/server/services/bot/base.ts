@@ -7,6 +7,7 @@ import { StringMap } from '../../utils/types';
 export interface BotServiceParameters {
   state: number;
   text: string;
+  timestamp: number;
   misc?: StringMap;
 }
 
@@ -15,6 +16,7 @@ export interface BotServiceParameters {
  */
 export interface HandlerParameters {
   text: string;
+  timestamp?: number;
   misc?: StringMap;
 }
 
@@ -33,7 +35,7 @@ export interface BotServiceResult {
    *
    * Return more than one object to conduct push messages
    */
-  message: Message[] | CustomMessage;
+  message: Message[];
   /**
    * Miscellanous data
    *

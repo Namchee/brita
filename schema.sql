@@ -49,29 +49,29 @@ VALUES ('This is important', 'Test content', 'December 20, 2020');
  * Batched for testing
 */
 INSERT INTO announcement (title, "content", valid_until)
-VALUES ('This is important1', 'Test content 1', 'January 11, 2020');
+VALUES ('Lorem Ipsum Dolor', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'January 11, 2020');
 INSERT INTO announcement (title, "content", valid_until)
-VALUES ('This is important2', 'Test content 2', 'December 20, 2020');
+VALUES ('This is important2', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
 INSERT INTO announcement (title, "content", valid_until)
-VALUES ('This is important3', 'Test content 2', 'December 20, 2020');
+VALUES ('This is important3', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
 INSERT INTO announcement (title, "content", valid_until)
-VALUES ('This is important4', 'Test content 2', 'December 20, 2020');
+VALUES ('This is important4', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
 INSERT INTO announcement (title, "content", valid_until)
-VALUES ('This is important5', 'Test content 2', 'December 20, 2020');
+VALUES ('This is important5', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
 INSERT INTO announcement (title, "content", valid_until)
-VALUES ('This is important6', 'Test content 2', 'December 20, 2020');
+VALUES ('This is important6', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
 INSERT INTO announcement (title, "content", valid_until)
-VALUES ('This is important7', 'Test content 2', 'December 20, 2020');
+VALUES ('This is important7', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
 INSERT INTO announcement (title, "content", valid_until)
-VALUES ('This is important8', 'Test content 2', 'December 20, 2020');
+VALUES ('This is important8', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
 INSERT INTO announcement (title, "content", valid_until)
-VALUES ('This is important9', 'Test content 2', 'December 20, 2020');
+VALUES ('This is important9', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
 INSERT INTO announcement (title, "content", valid_until)
-VALUES ('This is important10', 'Test content 2', 'December 20, 2020');
+VALUES ('This is important10', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
 INSERT INTO announcement (title, "content", valid_until)
-VALUES ('This is important11', 'Test content 2', 'December 20, 2020');
+VALUES ('This is important11', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
 INSERT INTO announcement (title, "content", valid_until)
-VALUES ('This is important12', 'Test content 2', 'December 20, 2020');
+VALUES ('This is important12', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
 
 INSERT INTO category ("name", "desc")
 VALUES ('Anak', 'Kategori ini merupakan kategori yang menampung pengumuman mengenai kebaktian sekolah minggu');

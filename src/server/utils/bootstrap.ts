@@ -9,6 +9,7 @@ import { BotService } from './../services/bot/base';
 import { LineBotServiceHub } from './../services/bot.hub';
 import config from './../config/env';
 import { StateRepositoryRedis } from '../repository/state';
+import { StringMap } from './types';
 
 /**
  * An interface which describes key-value mapping for bootstrapped
@@ -47,8 +48,9 @@ export function bootstrapApp(conn: Connection): ControllerList {
     categoryRepository,
   );
 
-  const serviceMap = new Map<string, BotService>();
-  serviceMap.set(announcementService.identifier, announcementService);
+  const serviceMap: StringMap = {};
+
+  serviceMap[announcementService.identifier] = announcementService;
 
   const serviceHub = new LineBotServiceHub(client, serviceMap, stateRepository);
 

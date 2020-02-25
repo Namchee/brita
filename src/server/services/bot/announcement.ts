@@ -36,24 +36,27 @@ export class BotAnnouncementService extends BotService {
       {
         type: 'button',
         label: REPLY.NEXT_ANNOUNCEMENT_LABEL,
-        text: REPLY.NEXT_ANNOUNCEMENT_LABEL,
+        text: REPLY.NEXT_ANNOUNCEMENT_TEXT,
       } as ButtonBody,
       {
         type: 'button',
         label: REPLY.RECHOOSE_CATEGORY_LABEL,
-        text: REPLY.RECHOOSE_CATEGORY_LABEL,
+        text: REPLY.RECHOOSE_CATEGORY_TEXT,
       } as ButtonBody,
       {
         type: 'button',
         label: REPLY.END_REQUEST_LABEL,
-        text: REPLY.END_REQUEST_LABEL,
+        text: REPLY.END_REQUEST_TEXT,
       } as ButtonBody,
     ],
   };
 
-  private static readonly INTRO_MESSAGE = {
+  private static readonly INTRO_MESSAGE: Message = {
     type: 'basic',
-    text: REPLY.SHOW_ANNOUNCEMENT,
+    body: [{
+      type: 'text',
+      text: REPLY.SHOW_ANNOUNCEMENT,
+    }],
   };
 
   /**
@@ -91,11 +94,12 @@ export class BotAnnouncementService extends BotService {
     {
       state,
       text,
+      timestamp,
       misc,
     }: BotServiceParameters,
   ): Promise<BotServiceResult> => {
     try {
-      return await this.handler[state]({ text, misc });
+      return await this.handler[state]({ text, timestamp, misc });
     } catch (err) {
       if (err instanceof UserError) {
         return {
@@ -160,15 +164,7 @@ export class BotAnnouncementService extends BotService {
     let messageText = REPLY.INPUT_CATEGORY + '\n';
 
     for (let i = 0; i < categories.length; i++) {
-      if (i & 1) {
-        messageText += '\t';
-      }
-
-      messageText += categories[i].name;
-
-      if (i & 1) {
-        messageText += '\n';
-      }
+      messageText += categories[i].name + '\n';
     }
 
     const messageBody: TextBody = {
@@ -193,12 +189,15 @@ export class BotAnnouncementService extends BotService {
   private handleSecondState = async (
     {
       text,
+      timestamp,
       misc,
     }: HandlerParameters,
   ): Promise<BotServiceResult> => {
-    if (!misc || text === REPLY.NEXT_ANNOUNCEMENT_LABEL.toLowerCase()) {
+    if (!misc || text === REPLY.NEXT_ANNOUNCEMENT_TEXT) {
       const category = misc?.category ||
         await this.categoryRepository.findByName(text);
+
+      category['misc'] = undefined;
 
       const page = misc?.page || 1;
 
@@ -206,7 +205,17 @@ export class BotAnnouncementService extends BotService {
         throw new UserError(REPLY.UNKNOWN_CATEGORY);
       }
 
-      const carousel = await this.generateAnnouncementCarousel(category, page);
+      const carousel = await this.generateAnnouncementCarousel(
+        category,
+        page,
+        timestamp || 0,
+      );
+
+      const messageArray = [carousel, BotAnnouncementService.PROMPT_MESSAGE];
+
+      if (carousel.type === 'carousel') {
+        messageArray.unshift(BotAnnouncementService.INTRO_MESSAGE);
+      }
 
       const cache: StringMap = {
         'category': category,
@@ -215,16 +224,12 @@ export class BotAnnouncementService extends BotService {
 
       return {
         state: 1,
-        message: [
-          BotAnnouncementService.INTRO_MESSAGE,
-          carousel,
-          BotAnnouncementService.PROMPT_MESSAGE,
-        ],
+        message: messageArray,
         misc: cache,
       };
     } else {
       switch (text) {
-        case REPLY.END_REQUEST_LABEL.toLowerCase(): {
+        case REPLY.END_REQUEST_TEXT: {
           return {
             state: 0,
             message: [{
@@ -237,19 +242,22 @@ export class BotAnnouncementService extends BotService {
             misc,
           };
         }
-        case REPLY.RECHOOSE_CATEGORY_LABEL.toLowerCase(): {
+        case REPLY.RECHOOSE_CATEGORY_TEXT: {
           return this.handleFirstState({ text: '', misc });
         }
         default: {
           return {
             state: 1,
-            message: [{
-              type: 'basic',
-              body: [{
-                type: 'text',
-                text: REPLY.UNIDENTIFIABLE,
-              }],
-            }],
+            message: [
+              {
+                type: 'basic',
+                body: [{
+                  type: 'text',
+                  text: REPLY.UNIDENTIFIABLE,
+                }],
+              },
+              BotAnnouncementService.PROMPT_MESSAGE,
+            ],
             misc,
           };
         }
@@ -263,15 +271,24 @@ export class BotAnnouncementService extends BotService {
    * @param {Category} category The requested category from user
    * @param {number} page Requested page for the announcements, used to limit
    * the amount of announcements returned
+   * @param {number} timestamp Time of the request in millisecond
    * @return {Promise<Message>} An announcement carousel message and
    * a prompt message
    */
   private generateAnnouncementCarousel = async (
     category: Category,
     page: number,
+    timestamp: number,
   ): Promise<Message> => {
     const announcements = await this.announcementRepository
-      .findByCategory(category, { limit: 10, offset: (page - 1) * 10 });
+      .findByCategory(
+        category,
+        {
+          limit: 10,
+          offset: (page - 1) * 10,
+          validUntil: new Date(timestamp),
+        },
+      );
 
     if (announcements.length === 0) {
       return {

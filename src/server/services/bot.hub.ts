@@ -60,6 +60,7 @@ export class LineBotServiceHub {
 
     const userId = event.source.userId.trim().toLowerCase();
     const text = event.message.text.trim().toLowerCase();
+    const timestamp = event.timestamp;
 
     const userState = await this.stateRepository.findById(userId);
 
@@ -85,6 +86,7 @@ export class LineBotServiceHub {
       {
         state,
         text,
+        timestamp,
         misc: userState?.misc,
       },
     );
