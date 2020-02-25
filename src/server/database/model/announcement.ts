@@ -20,7 +20,7 @@ export const AnnouncementEntity = new EntitySchema<Announcement>({
       length: 25,
       nullable: false,
     },
-    content: {
+    contents: {
       type: String,
       length: 300,
       nullable: false,

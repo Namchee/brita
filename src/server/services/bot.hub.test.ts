@@ -6,17 +6,13 @@ import {
   createUnsavedStateNonExistentServiceEvent,
   createUnsavedStateFinishedStateEvent,
   createUnsavedStateUnfinishedStateEvent,
-  createUnsavedStateUserErrorEvent,
   createUnsavedStatePushMessagesEvent,
-  createUnsavedStateServerErrorEvent,
-  createSavedStateBuggyServiceNameEvent,
   createSavedStateUnfinishedStateEvent,
   createSavedStateFinishedStateEvent,
 } from './bot.hub.test.util';
-import { BotService } from './bot/base';
 import { StateRepository } from './../repository/state';
 import { LineBotServiceHub } from './bot.hub';
-import { ServerError } from './../utils/error';
+import { StringMap } from '../utils/types';
 
 jest.mock('@line/bot-sdk', () => ({
   Client: jest.fn().mockImplementation(() => ({
@@ -35,8 +31,8 @@ describe('Bot hub unit test', () => {
     client = new Client({ channelAccessToken: 'a', channelSecret: 'b' });
 
     serviceMock = new ServiceMock();
-    const serviceMap = new Map<string, BotService>();
-    serviceMap.set(serviceMock.identifier, serviceMock);
+    const serviceMap: StringMap = {};
+    serviceMap[serviceMock.identifier] = serviceMock;
 
     stateRepository = new StateRepositoryMock();
 
@@ -86,31 +82,9 @@ describe('Bot hub unit test', () => {
         expect(result).toBe(undefined);
         expect(client.pushMessage).toBeCalledTimes(1);
       });
-
-      it('should reply when user error is thrown', async () => {
-        const event = createUnsavedStateUserErrorEvent();
-
-        const result = await hub.handleBotQuery(event);
-
-        expect(result).toBe(undefined);
-        expect(client.replyMessage).toBeCalledTimes(1);
-      });
-
-      it('should throw a server error', () => {
-        const event = createUnsavedStateServerErrorEvent();
-
-        expect(hub.handleBotQuery(event)).rejects.toBeInstanceOf(ServerError);
-        expect(client.replyMessage).toHaveBeenCalledTimes(0);
-      });
     });
 
     describe('State handling tests', () => {
-      it('should throw a server error caused by wrong service name', () => {
-        const event = createSavedStateBuggyServiceNameEvent();
-
-        expect(hub.handleBotQuery(event)).rejects.toBeInstanceOf(ServerError);
-      });
-
       it('should create new user state', async () => {
         jest.spyOn(stateRepository, 'create');
 

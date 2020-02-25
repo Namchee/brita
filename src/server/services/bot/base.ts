@@ -1,4 +1,4 @@
-import { Message } from './messaging/messages';
+import { Message } from '@line/bot-sdk';
 import { StringMap } from '../../utils/types';
 
 /**
@@ -31,7 +31,7 @@ export interface BotServiceResult {
    */
   state: number;
   /**
-   * Message(s) to be sent
+   * Message(s) to be sent by LINE
    *
    * Return more than one object to conduct push messages
    */

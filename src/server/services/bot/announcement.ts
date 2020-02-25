@@ -1,62 +1,56 @@
+import { Message, QuickReplyItem, FlexBubble } from '@line/bot-sdk';
 import {
   BotService,
   BotServiceParameters,
   BotServiceResult,
   HandlerParameters,
 } from './base';
-import {
-  Message,
-  TextBody,
-  QuickReplyItems,
-  CarouselBody,
-  ButtonBody,
-} from './messaging/messages';
 import { AnnouncementRepository } from './../../repository/announcement';
 import { UserError } from './../../utils/error';
-import { REPLY } from './messaging/reply';
+import { REPLY } from './utils/reply';
 import { CategoryRepository } from './../../repository/category';
 import { Category } from './../../entity/category';
 import { StringMap } from '../../utils/types';
+import {
+  generateQuickReplyObject,
+  generateBubbleContainer,
+  generateTextComponent,
+  generateCarouselContainer,
+  generateFlexMessage,
+} from './utils/formatter';
 
 /**
- * A class which provides service for handling announcement fetching
- * from a chat bot
+ * A class which provide services for serving announcements
+ * (with query support) to user
  */
 export class BotAnnouncementService extends BotService {
   private readonly announcementRepository: AnnouncementRepository;
   private readonly categoryRepository: CategoryRepository;
 
   private static readonly PROMPT_MESSAGE: Message = {
-    type: 'buttons',
-    body: [
-      {
-        type: 'text',
-        text: REPLY.PROMPT_ANNOUNCEMENT,
-      },
-      {
-        type: 'button',
-        label: REPLY.NEXT_ANNOUNCEMENT_LABEL,
-        text: REPLY.NEXT_ANNOUNCEMENT_TEXT,
-      } as ButtonBody,
-      {
-        type: 'button',
-        label: REPLY.RECHOOSE_CATEGORY_LABEL,
-        text: REPLY.RECHOOSE_CATEGORY_TEXT,
-      } as ButtonBody,
-      {
-        type: 'button',
-        label: REPLY.END_REQUEST_LABEL,
-        text: REPLY.END_REQUEST_TEXT,
-      } as ButtonBody,
-    ],
+    type: 'text',
+    quickReply: {
+      items: [
+        generateQuickReplyObject(
+          REPLY.NEXT_ANNOUNCEMENT_LABEL,
+          REPLY.NEXT_ANNOUNCEMENT_TEXT,
+        ),
+        generateQuickReplyObject(
+          REPLY.RECHOOSE_CATEGORY_LABEL,
+          REPLY.RECHOOSE_CATEGORY_TEXT,
+        ),
+        generateQuickReplyObject(
+          REPLY.END_REQUEST_LABEL,
+          REPLY.END_REQUEST_TEXT,
+        ),
+      ],
+    },
+    text: REPLY.PROMPT_ANNOUNCEMENT,
   };
 
   private static readonly INTRO_MESSAGE: Message = {
-    type: 'basic',
-    body: [{
-      type: 'text',
-      text: REPLY.SHOW_ANNOUNCEMENT,
-    }],
+    type: 'text',
+    text: REPLY.SHOW_ANNOUNCEMENT,
   };
 
   /**
@@ -105,11 +99,8 @@ export class BotAnnouncementService extends BotService {
         return {
           state: -1,
           message: [{
-            type: 'basic',
-            body: [{
-              type: 'text',
-              text: err.message,
-            }],
+            type: 'text',
+            text: err.message,
           }],
         };
       }
@@ -127,57 +118,45 @@ export class BotAnnouncementService extends BotService {
     }: HandlerParameters,
   ): Promise<BotServiceResult> => {
     if (misc) {
-      delete misc['category'];
-      delete misc['page'];
+      misc = undefined;
     }
 
     const categories = await this.categoryRepository.findAll();
 
-    /**
-     * Fallback case
-     *
-     * Show 'no category' message
-     */
+    // Fallback case when category is not present
     if (categories.length === 0) {
-      const body: TextBody = {
-        type: 'text',
-        text: REPLY.NO_CATEGORY,
-      };
-
       return {
         state: 0,
         message: [{
-          type: 'basic',
-          body: [body],
+          type: 'text',
+          text: REPLY.NO_ANNOUNCEMENT,
         }],
         misc,
       };
     }
 
-    const quickReplies: QuickReplyItems[] = categories.map((category) => {
-      return {
-        label: category.name,
-        text: category.name,
-      };
+    const quickReplies: QuickReplyItem[] = categories.map((category) => {
+      return generateQuickReplyObject(category.name, category.name);
     });
 
     let messageText = REPLY.INPUT_CATEGORY + '\n';
 
     for (let i = 0; i < categories.length; i++) {
-      messageText += categories[i].name + '\n';
-    }
+      if (i) {
+        messageText += '\n';
+      }
 
-    const messageBody: TextBody = {
-      type: 'text',
-      text: messageText,
-    };
+      messageText += categories[i].name;
+    }
 
     return {
       state: 1,
       message: [{
-        type: 'basic',
-        body: [messageBody],
-        quickReply: quickReplies,
+        type: 'text',
+        text: messageText,
+        quickReply: {
+          items: quickReplies,
+        },
       }],
       misc,
     };
@@ -197,7 +176,7 @@ export class BotAnnouncementService extends BotService {
       const category = misc?.category ||
         await this.categoryRepository.findByName(text);
 
-      category['misc'] = undefined;
+      category['desc'] = undefined;
 
       const page = misc?.page || 1;
 
@@ -205,21 +184,21 @@ export class BotAnnouncementService extends BotService {
         throw new UserError(REPLY.UNKNOWN_CATEGORY);
       }
 
-      const carousel = await this.generateAnnouncementCarousel(
+      const message = await this.generateAnnouncementCarousel(
         category,
         page,
         timestamp || 0,
       );
 
-      const messageArray = [carousel, BotAnnouncementService.PROMPT_MESSAGE];
+      const messageArray = [message, BotAnnouncementService.PROMPT_MESSAGE];
 
-      if (carousel.type === 'carousel') {
+      if (message.type === 'flex') {
         messageArray.unshift(BotAnnouncementService.INTRO_MESSAGE);
       }
 
       const cache: StringMap = {
         'category': category,
-        'page': carousel.type === 'basic' ? page : page + 1, // next page
+        'page': message.type === 'text' ? page : page + 1, // next page
       };
 
       return {
@@ -233,16 +212,14 @@ export class BotAnnouncementService extends BotService {
           return {
             state: 0,
             message: [{
-              type: 'basic',
-              body: [{
-                type: 'text',
-                text: REPLY.END_REQUEST_REPLY,
-              }],
+              type: 'text',
+              text: REPLY.END_REQUEST_REPLY,
             }],
             misc,
           };
         }
         case REPLY.RECHOOSE_CATEGORY_TEXT: {
+          misc = undefined;
           return this.handleFirstState({ text: '', misc });
         }
         default: {
@@ -250,11 +227,8 @@ export class BotAnnouncementService extends BotService {
             state: 1,
             message: [
               {
-                type: 'basic',
-                body: [{
-                  type: 'text',
-                  text: REPLY.UNIDENTIFIABLE,
-                }],
+                type: 'text',
+                text: REPLY.UNIDENTIFIABLE,
               },
               BotAnnouncementService.PROMPT_MESSAGE,
             ],
@@ -292,26 +266,26 @@ export class BotAnnouncementService extends BotService {
 
     if (announcements.length === 0) {
       return {
-        type: 'basic',
-        body: [{
-          type: 'text',
-          text: REPLY.NO_ANNOUNCEMENT,
-        }],
+        type: 'text',
+        text: REPLY.NO_ANNOUNCEMENT,
       };
     }
 
-    const carouselBody: CarouselBody[] = announcements.map((announcement) => {
-      return {
-        type: 'bubble',
-        header: announcement.title,
-        text: announcement.content,
-        tightPadding: true,
-      };
+    const bubbles: FlexBubble[] = announcements.map((announcement) => {
+      const header = generateTextComponent(
+        announcement.title,
+        'lg',
+        true,
+        true,
+      );
+
+      const body = generateTextComponent(announcement.contents);
+
+      return generateBubbleContainer([body], header, true, true);
     });
 
-    return {
-      type: 'carousel',
-      body: carouselBody,
-    };
+    const carouselContainer = generateCarouselContainer(bubbles);
+
+    return generateFlexMessage(carouselContainer);
   }
 }

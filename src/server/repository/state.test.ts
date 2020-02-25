@@ -45,11 +45,10 @@ describe('State repository unit test', () => {
       const stateData = {
         service: 's',
         state: 1,
-        text: 'c',
-        misc: new Map(),
+        misc: {},
       };
 
-      const insertResult = await repository.create('b', 's', 1, 'c', new Map());
+      const insertResult = await repository.create('b', 's', 1, {});
 
       expect(insertResult).toBe(true);
       expect(client.setex).toHaveBeenCalledWith(
@@ -60,7 +59,7 @@ describe('State repository unit test', () => {
     });
 
     it('should return false when key exist', async () => {
-      const insertResult = await repository.create('a', 's', 1, 'c', new Map());
+      const insertResult = await repository.create('a', 's', 1, {});
 
       expect(insertResult).toBe(false);
     });

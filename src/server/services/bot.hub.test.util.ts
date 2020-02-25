@@ -1,4 +1,4 @@
-import { WebhookEvent } from '@line/bot-sdk';
+import { WebhookEvent, Message } from '@line/bot-sdk';
 import {
   BotService,
   BotServiceResult,
@@ -6,13 +6,11 @@ import {
 } from './bot/base';
 import { StateRepository } from './../repository/state';
 import { State } from './../entity/state';
-import { UserError, ServerError } from './../utils/error';
-import {
-  createTextMessage,
-  createTextBody,
-} from './bot/messaging/messages';
 
-const fakeMessage = createTextMessage(createTextBody(''));
+const fakeMessage: Message = {
+  type: 'text',
+  text: '',
+};
 
 export class ServiceMock extends BotService {
   public constructor() {
@@ -22,28 +20,22 @@ export class ServiceMock extends BotService {
   public async handle(
     { text }: BotServiceParameters,
   ): Promise<BotServiceResult> {
-    const fragments = text.split(' ');
-
-    if (fragments[1] && fragments[1] === '1') {
+    if (text === '1') {
       return {
         state: 0,
         message: [fakeMessage],
       };
-    } else if (fragments[1] && fragments[1] === '2') {
+    } else if (text === '2' || text === 'pengumuman') {
       return {
         state: 1,
         message: [fakeMessage],
       };
-    } else if (fragments[1] && fragments[1] === '3') {
-      return {
-        state: 0,
-        message: [fakeMessage, fakeMessage],
-      };
-    } else if (fragments[1] && fragments[1] === '4') {
-      throw new UserError('');
     }
 
-    throw new ServerError('');
+    return {
+      state: 0,
+      message: [fakeMessage, fakeMessage],
+    };
   }
 }
 
@@ -54,16 +46,7 @@ export class StateRepositoryMock implements StateRepository {
         id,
         state: 0,
         service: 'pengumuman',
-        text: '',
-        misc: new Map(),
-      };
-    } else if (id === '11') {
-      return {
-        id: '11',
-        state: 1,
-        service: 'not_exist',
-        text: '',
-        misc: new Map(),
+        misc: {},
       };
     }
 
@@ -117,7 +100,7 @@ export function createUnsavedStateEvent(): WebhookEvent {
     timestamp: 1,
     message: {
       type: 'text',
-      text: 'Test text',
+      text: 'pengumuman',
       id: '1',
     },
     source: {
@@ -135,7 +118,7 @@ export function createUnsavedStateNonExistentServiceEvent(): WebhookEvent {
     timestamp: 1,
     message: {
       type: 'text',
-      text: 'Test text',
+      text: 'does_not_exist',
       id: '1',
     },
     source: {
@@ -153,7 +136,7 @@ export function createUnsavedStateFinishedStateEvent(): WebhookEvent {
     timestamp: 1,
     message: {
       type: 'text',
-      text: 'pengumuman 1',
+      text: '1',
       id: '1',
     },
     source: {
@@ -171,12 +154,12 @@ export function createUnsavedStateUnfinishedStateEvent(): WebhookEvent {
     timestamp: 1,
     message: {
       type: 'text',
-      text: 'pengumuman 2',
+      text: 'pengumuman',
       id: '1',
     },
     source: {
       type: 'user',
-      userId: '69',
+      userId: '12780r44',
     },
   };
 }
@@ -189,66 +172,12 @@ export function createUnsavedStatePushMessagesEvent(): WebhookEvent {
     timestamp: 1,
     message: {
       type: 'text',
-      text: 'pengumuman 3',
+      text: '3',
       id: '1',
     },
     source: {
       type: 'user',
-      userId: '69',
-    },
-  };
-}
-
-export function createUnsavedStateUserErrorEvent(): WebhookEvent {
-  return {
-    replyToken,
-    type: 'message',
-    mode: 'active',
-    timestamp: 1,
-    message: {
-      type: 'text',
-      text: 'pengumuman 4',
-      id: '1',
-    },
-    source: {
-      type: 'user',
-      userId: '69',
-    },
-  };
-}
-
-export function createUnsavedStateServerErrorEvent(): WebhookEvent {
-  return {
-    replyToken,
-    type: 'message',
-    mode: 'active',
-    timestamp: 1,
-    message: {
-      type: 'text',
-      text: 'pengumuman 5',
-      id: '1',
-    },
-    source: {
-      type: 'user',
-      userId: '69',
-    },
-  };
-}
-
-export function createSavedStateBuggyServiceNameEvent(): WebhookEvent {
-  return {
-    replyToken,
-    type: 'message',
-    mode: 'active',
-    timestamp: 1,
-    message: {
-      type: 'text',
-      text: '10',
-      id: '1',
-    },
-    source: {
-      type: 'user',
-      userId: '11',
+      userId: '1',
     },
   };
 }

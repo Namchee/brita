@@ -7,8 +7,7 @@ import {
 } from '@line/bot-sdk';
 import { StateRepository } from './../repository/state';
 import { BotService } from './bot/base';
-import { formatMessages } from './bot/messaging/formatter';
-import { REPLY } from './bot/messaging/reply';
+import { REPLY } from './bot/utils/reply';
 import { StringMap } from '../utils/types';
 
 /**
@@ -71,15 +70,12 @@ export class LineBotServiceHub {
       this.serviceMap[text];
 
     if (!service && !userState) {
-      const message = formatMessages([{
-        type: 'basic',
-        body: [{
-          type: 'text',
-          text: REPLY.UNIDENTIFIABLE,
-        }],
-      }]);
+      const message: Message = {
+        type: 'text',
+        text: REPLY.UNIDENTIFIABLE,
+      };
 
-      return this.sendMessage(event, message);
+      return this.sendMessage(event, [message]);
     }
 
     const queryResult = await service.handle(
@@ -97,12 +93,11 @@ export class LineBotServiceHub {
         service.identifier,
         queryResult.state,
         queryResult.misc,
+        !!userState,
       );
     }
 
-    const message = formatMessages(queryResult.message);
-
-    return this.sendMessage(event, message);
+    return this.sendMessage(event, queryResult.message);
   }
 
   private updateUserState = async (
@@ -110,9 +105,8 @@ export class LineBotServiceHub {
     serviceId: string,
     state: number,
     misc?: StringMap,
+    exist?: boolean,
   ): Promise<boolean> => {
-    const exist = await this.stateRepository.findById(userId);
-
     if (!exist) {
       if (state === 0) {
         return true;
@@ -140,9 +134,9 @@ export class LineBotServiceHub {
 
   private sendMessage = (
     event: MessageEvent,
-    message: Message | Message[],
+    message: Message[],
   ): Promise<MessageAPIResponseBase> => {
-    if (Array.isArray(message)) {
+    if (message.length > 1) {
       return this.client.pushMessage(
         event.source.userId || '',
         message,

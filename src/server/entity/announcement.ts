@@ -16,7 +16,7 @@ export interface Announcement extends Entity {
    *
    * It defines what the Announcement about
    */
-  content: string;
+  contents: string;
   /**
    * Announcement expiration Date
    *
