@@ -132,7 +132,7 @@ export class AnnouncementRepositoryTypeORM
    * Creates a new Announcement and save it in the database
    *
    * @param {string} title Announcement's title
-   * @param {string} content Announcement's content
+   * @param {string} contents Announcement's contents
    * @param {Date} validUntil Announcement's date
    * @param {Category[]} categories Announcement's categories
    * @return {Promise<Announcement>} The newly created Announcement
@@ -140,14 +140,14 @@ export class AnnouncementRepositoryTypeORM
    */
   public create = async (
     title: string,
-    content: string,
+    contents: string,
     validUntil: Date,
     categories: Category[],
   ): Promise<Announcement | null> => {
     try {
       const insertResult = await this.repository.insert({
         title,
-        content,
+        contents,
         validUntil,
         categories,
       });
@@ -182,7 +182,7 @@ export class AnnouncementRepositoryTypeORM
     {
       id,
       title,
-      content,
+      contents,
       validUntil,
       categories,
     }: Announcement,
@@ -191,7 +191,7 @@ export class AnnouncementRepositoryTypeORM
       id,
       {
         title,
-        content,
+        contents,
         validUntil,
         categories,
       },

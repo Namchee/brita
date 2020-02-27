@@ -78,26 +78,37 @@ export class LineBotServiceHub {
       return this.sendMessage(event, [message]);
     }
 
-    const queryResult = await service.handle(
-      {
-        state,
-        text,
-        timestamp,
-        misc: userState?.misc,
-      },
-    );
-
-    if (queryResult.state >= 0) {
-      await this.updateUserState(
-        userId,
-        service.identifier,
-        queryResult.state,
-        queryResult.misc,
-        !!userState,
+    try {
+      const queryResult = await service.handle(
+        {
+          state,
+          text,
+          timestamp,
+          misc: userState?.misc,
+        },
       );
-    }
 
-    return this.sendMessage(event, queryResult.message);
+      if (queryResult.state >= 0) {
+        await this.updateUserState(
+          userId,
+          service.identifier,
+          queryResult.state,
+          queryResult.misc,
+          !!userState,
+        );
+      }
+
+      return await this.sendMessage(event, queryResult.message);
+    } catch (err) {
+      const errorMessage: Message = {
+        type: 'text',
+        text: REPLY.SERVER_ERROR,
+      };
+
+      await this.sendMessage(event, [errorMessage]);
+
+      throw err;
+    }
   }
 
   private updateUserState = async (

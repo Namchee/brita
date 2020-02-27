@@ -1,307 +1,241 @@
 import { BotAnnouncementService } from './announcement';
-import { ServerError } from './../../utils/error';
 import {
   AnnouncementRepositoryMock,
   CategoryRepositoryMock,
   categories,
-  announcements,
 } from './announcement.test.util';
-import { CategoryRepository } from './../../repository/category';
-import { AnnouncementRepository } from './../../repository/announcement';
-import { StringMap } from '../../utils/types';
-import { CarouselBody } from './messaging/messages';
+import { BotServiceParameters } from './base';
+import { FlexMessage, FlexCarousel } from '@line/bot-sdk';
 
-describe('Bot service unit test', () => {
-  describe('Announcement service test', () => {
-    let announcementRepository: AnnouncementRepository;
-    let categoryRepository: CategoryRepository;
-    let botService: BotAnnouncementService;
+describe('Bot announcement service unit test', () => {
+  const categoryRepository = new CategoryRepositoryMock();
+  const announcementRepository = new AnnouncementRepositoryMock();
+  const service = new BotAnnouncementService(
+    announcementRepository,
+    categoryRepository,
+  );
 
-    beforeAll(() => {
-      announcementRepository = new AnnouncementRepositoryMock();
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-      categoryRepository = new CategoryRepositoryMock();
+  describe('First handler test', () => {
+    const params: BotServiceParameters = {
+      state: 0,
+      text: 'pengumuman',
+      timestamp: 1,
+      misc: {},
+    };
 
-      botService = new BotAnnouncementService(
-        announcementRepository,
-        categoryRepository,
-      );
+    it('should reply with text message when categories exists', async () => {
+      jest.spyOn(categoryRepository, 'findAll');
+
+      const result = await service.handle(params);
+
+      expect(categoryRepository.findAll).toHaveBeenCalledTimes(1);
+      expect(result.state).toBe(1);
+      expect(result.misc).toBeUndefined();
+      expect(result.message.length).toBe(1);
+
+      const actualMessage = result.message[0];
+
+      expect(actualMessage.type).toBe('text');
+      expect(actualMessage.quickReply).toBeDefined();
+      expect(actualMessage.quickReply?.items).toBeDefined();
+      expect(actualMessage.quickReply?.items.length).toBe(3);
     });
 
-    afterEach(() => {
-      jest.clearAllMocks();
+    it('should return empty notice when categories is empty', async () => {
+      const spy = jest.spyOn(categoryRepository, 'findAll');
+
+      spy.mockImplementation(() => Promise.resolve([]));
+
+      const result = await service.handle(params);
+
+      expect(categoryRepository.findAll).toHaveBeenCalledTimes(1);
+      expect(result.state).toBe(0);
+      expect(result.misc).toBeUndefined();
+      expect(result.message.length).toBe(1);
+
+      const actualMessage = result.message[0];
+
+      expect(actualMessage.type).toBe('text');
+      expect(actualMessage.quickReply).toBeUndefined();
+
+      spy.mockRestore();
     });
+  });
 
-    it('should throw a server error when state is negative', () => {
-      const serviceParams = {
-        state: -1,
-        text: '',
-      };
-
-      expect(botService.handle(serviceParams))
-        .rejects
-        .toBeInstanceOf(ServerError);
-    });
-
-    describe('First handler testing', () => {
-      it('should throw a server error when command mapping is wrong', () => {
-        const serviceParams = {
-          state: 0,
-          text: 'subscribe',
+  describe('Second handler test', () => {
+    describe('When cache has not been set', () => {
+      it('should return carousel when category is found', async () => {
+        const params: BotServiceParameters = {
+          state: 1,
+          text: categories[0].name,
+          timestamp: 1,
         };
 
-        expect(botService.handle(serviceParams))
-          .rejects
-          .toBeInstanceOf(ServerError);
+        const result = await service.handle(params);
+
+        expect(result.misc).toBeDefined();
+        expect(result.misc?.page).toBe(2);
+        expect(result.misc?.category.id).toBe(categories[0].id);
+        expect(result.state).toBe(1);
+        expect(result.message.length).toBe(3);
+        expect(result.message[0].type).toBe('text');
+        expect(result.message[1].type).toBe('flex');
+        expect(result.message[2].type).toBe('text');
+
+        const flexContainer = result.message[1] as FlexMessage;
+
+        expect(flexContainer.contents.type).toBe('carousel');
+
+        const carousel = flexContainer.contents as FlexCarousel;
+
+        expect(carousel.contents.length).toBe(10);
+        expect(result.message[2].quickReply).toBeDefined();
       });
 
-      it('should return when text message when no category is available',
-        async () => {
-          jest.spyOn(categoryRepository, 'findAll')
-            .mockImplementationOnce(() => Promise.resolve([]));
+      it('should re-ask category when category is not found', async () => {
+        const params: BotServiceParameters = {
+          state: 1,
+          text: categories[1].name,
+          timestamp: 1,
+        };
 
-          const serviceParams = {
-            state: 0,
-            text: 'pengumuman',
+        const result = await service.handle(params);
+
+        expect(result.state).toBe(1);
+        expect(result.message.length).toBe(2);
+        expect(result.misc).toBeUndefined();
+
+        expect(result.message[0].type).toBe('text');
+        expect(result.message[1].type).toBe('text');
+        expect(result.message[1].quickReply).toBeDefined();
+        expect(result.message[1].quickReply?.items).toBeDefined();
+        expect(result.message[1].quickReply?.items.length).toBe(3);
+      });
+    });
+
+    describe('When cache has been set', () => {
+      it('should end the request when user ends the request', async () => {
+        const params = {
+          state: 1,
+          text: 'akhiri',
+          timestamp: 1,
+          misc: { 'set': '' },
+        };
+
+        const result = await service.handle(params);
+
+        expect(result.state).toBe(0);
+        expect(result.message.length).toBe(1);
+        expect(result.message[0].type).toBe('text');
+      });
+
+      it(
+        'should rechoose category when user choose to reselect categories',
+        async () => {
+          const params = {
+            state: 1,
+            text: 'ganti',
+            timestamp: 1,
+            misc: { 'set': '' },
           };
 
-          const result = await botService.handle(serviceParams);
-
-          expect(result.state).toBe(0);
-          expect(result.message.length).toBe(1);
-          expect(result.message[0].type).toBe('basic');
-        });
-
-      it('should return list of categories when categories is available',
-        async () => {
-          const spy = jest.spyOn(categoryRepository, 'findAll');
-
-          const serviceParams = {
-            state: 0,
-            text: 'pengumuman',
-          };
-
-          const result = await botService.handle(serviceParams);
+          const result = await service.handle(params);
 
           expect(result.state).toBe(1);
+          expect(result.misc).toBeUndefined();
           expect(result.message.length).toBe(1);
-          expect(result.message[0].type).toBe('buttons');
-          expect(spy.mock.calls.length).toBe(1);
-        });
-    });
-
-    describe('Second handler testing', () => {
-      it('should throw a user error when category is not found', async () => {
-        const serviceParams = {
-          state: 1,
-          text: 'pengumuman Three',
-        };
-
-        const result = await botService.handle(serviceParams);
-
-        expect(result.state).toBe(-2);
-        expect(result.message.length).toBe(1);
-        expect(result.message[0].type).toBe('basic');
-      });
-
-      it('should request an amount of categories requested', async () => {
-        const spy = jest.spyOn(categoryRepository, 'findByName');
-
-        const serviceParams = {
-          state: 1,
-          text: 'pengumuman One',
-        };
-
-        const result = await botService.handle(serviceParams);
-
-        expect(result.state).toBe(2);
-        expect(result.message.length).toBe(1);
-        expect(result.message[0].type).toBe('basic');
-        expect(spy.mock.calls.length).toBe(1);
-      });
-    });
-
-    describe('Third handler testing', () => {
-      let misc: StringMap;
-
-      beforeAll(() => {
-        misc = new Map();
-        misc['category'] = categories[0];
-      });
-
-      it('should throw a server error when cache is not available',
-        async () => {
-          const serviceParams = {
-            state: 2,
-            text: 'pengumuman Three 10',
-          };
-
-          expect(botService.handle(serviceParams))
-            .rejects
-            .toBeInstanceOf(ServerError);
+          expect(result.message[0].type).toBe('text');
+          expect(result.message[0].quickReply).toBeDefined();
         });
 
       it(
-        'should throw a user error when inputted amount is not a number',
+        'should throw an error message when commands is unrecognized',
         async () => {
-          const serviceParams = {
-            state: 2,
-            text: 'pengumuman One Numberrr',
-            misc,
+          const params = {
+            state: 1,
+            text: 'unrecognized',
+            timestamp: 1,
+            misc: { 'set': '' },
           };
 
-          const result = await botService.handle(serviceParams);
+          const result = await service.handle(params);
 
-          expect(result.state).toBe(-2);
-          expect(result.message.length).toBe(1);
-        },
-      );
+          expect(result.state).toBe(1);
+          expect(result.message.length).toBe(2);
+          expect(result.message[0].type).toBe('text');
+          expect(result.message[0].quickReply).toBeUndefined();
+          expect(result.message[1].type).toBe('text');
+          expect(result.message[1].quickReply).toBeDefined();
+          expect(result.misc).toBeDefined();
+        });
 
-      it('should throw a user error when the requested amount is too much',
+      it(
+        'should return next set of announcement when user want to continue',
         async () => {
-          const serviceParams = {
-            state: 2,
-            text: 'pengumuman One 11',
-            misc,
+          const params = {
+            state: 1,
+            text: 'lanjutkan',
+            timestamp: 1,
+            misc: {
+              'category':
+              {
+                id: categories[0].id,
+              },
+              'page': 2,
+            },
           };
 
-          const result = await botService.handle(serviceParams);
+          const result = await service.handle(params);
 
-          expect(result.state).toBe(-2);
-          expect(result.message.length).toBe(1);
-        },
-      );
+          expect(result.misc).toBeDefined();
+          expect(result.misc?.page).toBe(3);
+          expect(result.misc?.category.id).toBe(categories[0].id);
+          expect(result.state).toBe(1);
+          expect(result.message.length).toBe(3);
+          expect(result.message[0].type).toBe('text');
+          expect(result.message[1].type).toBe('flex');
+          expect(result.message[2].type).toBe('text');
 
-      it('should throw a user error when the requested amount is below 1',
+          const flexContainer = result.message[1] as FlexMessage;
+
+          expect(flexContainer.contents.type).toBe('carousel');
+
+          const carousel = flexContainer.contents as FlexCarousel;
+
+          expect(carousel.contents.length).toBe(1);
+          expect(result.message[2].quickReply).toBeDefined();
+        });
+
+      it(
+        'should return empty message when no more announcements is available',
         async () => {
-          const serviceParams = {
-            state: 2,
-            text: 'pengumuman One -1',
-            misc,
+          const params = {
+            state: 1,
+            text: 'lanjutkan',
+            timestamp: 1,
+            misc: {
+              'category':
+              {
+                id: categories[0].id,
+              },
+              'page': 3,
+            },
           };
 
-          const result = await botService.handle(serviceParams);
+          const result = await service.handle(params);
 
-          expect(result.state).toBe(-2);
-          expect(result.message.length).toBe(1);
-        },
-      );
+          expect(result.misc).toBeUndefined();
+          expect(result.state).toBe(1);
+          expect(result.message.length).toBe(2);
+          expect(result.message[0].type).toBe('text');
+          expect(result.message[1].type).toBe('text');
 
-      it('should return list of all announcements', async () => {
-        const serviceParams = {
-          state: 2,
-          text: 'pengumuman One 3',
-          misc,
-        };
-
-        const result = await botService.handle(serviceParams);
-
-        expect(result.state).toBe(0);
-
-        const announcementText = result.message[1].body;
-
-        expect(announcementText.length).toBe(3);
-
-        for (let i = 0; i < announcementText.length; i++) {
-          expect(announcementText[i].type).toBe('bubble');
-        }
-      });
-
-      it('should return list of partial announcements', async () => {
-        const serviceParams = {
-          state: 2,
-          text: 'pengumuman One 2',
-          misc: misc,
-        };
-
-        const result = await botService.handle(serviceParams);
-
-        expect(result.state).toBe(0);
-
-        const announcementText = result.message[1].body as CarouselBody[];
-
-        expect(announcementText.length).toBe(2);
-
-        for (let i = 0; i < announcementText.length; i++) {
-          expect(announcementText[i].type).toBe('bubble');
-          expect(announcementText[i].header).toBe(announcements[i].title);
-          expect(announcementText[i].text).toBe(announcements[i].content);
-        }
-      });
-    });
-
-    // need a better name for this
-    describe('Multiple parameter from zero state testing', () => {
-      it('should return push message error', async () => {
-        const serviceParams = {
-          state: 0,
-          text: 'pengumuman Three',
-        };
-
-        const result = await botService.handle(serviceParams);
-
-        expect(result.state).toBe(1);
-
-        expect(result.message.length).toBe(2);
-        expect(result.message[0].type).toBe('basic');
-      });
-
-      it('should handle the state until it reached second state', async () => {
-        const serviceParams = {
-          state: 0,
-          text: 'pengumuman One',
-        };
-
-        const result = await botService.handle(serviceParams);
-
-        expect(result.state).toBe(2);
-        expect(result.message.length).toBe(1);
-        expect(result.misc).toBeDefined();
-      });
-
-      it('should handle the state until it finished the request', async () => {
-        const serviceParams = {
-          state: 0,
-          text: 'pengumuman One 2',
-        };
-
-        const result = await botService.handle(serviceParams);
-
-        expect(result.state).toBe(0);
-
-        const announcementText = result.message[1].body as CarouselBody[];
-
-        expect(announcementText.length).toBe(2);
-
-        for (let i = 0; i < announcementText.length; i++) {
-          expect(announcementText[i].type).toBe('bubble');
-          expect(announcementText[i].header).toBe(announcements[i].title);
-          expect(announcementText[i].text).toBe(announcements[i].content);
-        }
-      });
-    });
-
-    describe('Multiple parameters from non-zero state testing', () => {
-      it('should handle the state until it finished the request', async () => {
-        const serviceParams = {
-          state: 1,
-          text: 'pengumuman One 2',
-        };
-
-        const result = await botService.handle(serviceParams);
-
-        expect(result.state).toBe(0);
-
-        const announcementText = result.message[1].body as CarouselBody[];
-
-        expect(announcementText.length).toBe(2);
-
-        for (let i = 0; i < announcementText.length; i++) {
-          expect(announcementText[i].type).toBe('bubble');
-          expect(announcementText[i].header).toBe(announcements[i].title);
-          expect(announcementText[i].text).toBe(announcements[i].content);
-        }
-      });
+          expect(result.message[1].quickReply).toBeDefined();
+        });
     });
   });
 });

@@ -24,13 +24,6 @@ export interface Announcement extends Entity {
    */
   validUntil: Date;
   /**
-   * The importance of the Announcement
-   *
-   * If an Announcement is important, it will be prioritized
-   * when requested even if the expiration date is longer
-   */
-  important: boolean;
-  /**
    * Categories of the Announcement
    */
   categories?: Category[];

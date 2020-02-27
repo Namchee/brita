@@ -18,7 +18,7 @@ export enum REPLY {
   END_REQUEST_TEXT = 'Akhiri',
   END_REQUEST_REPLY = 'Baiklah. Terima kasih udah pakai Brita! Semoga harimu menyenangkan!',
   NO_ANNOUNCEMENT = 'Hmm... Saat ini, udah gak ada pengumuman lagi yang tersedia buat kategori tersebut.',
-  SERVER_ERROR = 'Terjadi masalah pada server, mohon coba lagi lain kali.',
+  SERVER_ERROR = 'Terjadi masalah pada server, mohon coba dalam beberapa saat lagi\n\nApabila error masih berlanjut, hubungi pengembang.',
 }
 
 /**

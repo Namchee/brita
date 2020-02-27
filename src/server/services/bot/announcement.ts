@@ -172,17 +172,24 @@ export class BotAnnouncementService extends BotService {
       misc,
     }: HandlerParameters,
   ): Promise<BotServiceResult> => {
-    if (!misc || text === REPLY.NEXT_ANNOUNCEMENT_TEXT) {
+    if (!misc || text === REPLY.NEXT_ANNOUNCEMENT_TEXT.toLowerCase()) {
       const category = misc?.category ||
         await this.categoryRepository.findByName(text);
+
+      if (!category) {
+        const result = await this.handleFirstState({ text });
+
+        result.message.unshift({
+          type: 'text',
+          text: REPLY.UNKNOWN_CATEGORY,
+        });
+
+        return result;
+      }
 
       category['desc'] = undefined;
 
       const page = misc?.page || 1;
-
-      if (!category) {
-        throw new UserError(REPLY.UNKNOWN_CATEGORY);
-      }
 
       const message = await this.generateAnnouncementCarousel(
         category,
@@ -204,21 +211,21 @@ export class BotAnnouncementService extends BotService {
       return {
         state: 1,
         message: messageArray,
-        misc: cache,
+        misc: message.type === 'flex' ? cache : undefined,
       };
     } else {
       switch (text) {
-        case REPLY.END_REQUEST_TEXT: {
+        case REPLY.END_REQUEST_TEXT.toLowerCase(): {
           return {
             state: 0,
             message: [{
               type: 'text',
               text: REPLY.END_REQUEST_REPLY,
             }],
-            misc,
+            misc: {},
           };
         }
-        case REPLY.RECHOOSE_CATEGORY_TEXT: {
+        case REPLY.RECHOOSE_CATEGORY_TEXT.toLowerCase(): {
           misc = undefined;
           return this.handleFirstState({ text: '', misc });
         }
