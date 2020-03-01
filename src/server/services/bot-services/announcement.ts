@@ -6,7 +6,6 @@ import {
   HandlerParameters,
 } from './base';
 import { AnnouncementRepository } from '../../repository/announcement';
-import { UserError } from '../../utils/error';
 import { REPLY } from './utils/reply';
 import { CategoryRepository } from '../../repository/category';
 import { Category } from '../../entity/category';
@@ -92,21 +91,7 @@ export class BotAnnouncementService extends BotService {
       misc,
     }: BotServiceParameters,
   ): Promise<BotServiceResult> => {
-    try {
-      return await this.handler[state]({ text, timestamp, misc });
-    } catch (err) {
-      if (err instanceof UserError) {
-        return {
-          state: -1,
-          message: [{
-            type: 'text',
-            text: err.message,
-          }],
-        };
-      }
-
-      throw err;
-    }
+    return await this.handler[state]({ text, timestamp, misc });
   }
 
   /**
