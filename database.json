@@ -14,5 +14,6 @@
     "host": "localhost",
     "port": "5432",
     "database": "brita"
-  }
+  },
+  "sql-file": true
 }
