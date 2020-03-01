@@ -1,0 +1,18 @@
+{
+  "test": {
+    "driver": "pg",
+    "user": "namchee",
+    "password": "pcmastercase",
+    "host": "localhost",
+    "port": "5432",
+    "database": "brita"
+  },
+  "dev": {
+    "driver": "pg",
+    "user": "namchee",
+    "password": "pcmastercase",
+    "host": "localhost",
+    "port": "5432",
+    "database": "brita"
+  }
+}

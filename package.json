@@ -11,7 +11,10 @@
     "build:server": "tsc",
     "clean": "rm -rf build",
     "start:dev": "node ./build/index.js",
-    "start": "pm2 start ./build/index.js"
+    "start": "pm2 start ./build/index.js",
+    "migration:create": "db-migrate create",
+    "migration:up": "db-migrate up -c 1",
+    "migration:down": "db-migrate down -c 1"
   },
   "author": "Namchee",
   "license": "ISC",
