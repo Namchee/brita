@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS category;
 CREATE TABLE IF NOT EXISTS announcement (
 	id SERIAL PRIMARY KEY,
 	title VARCHAR(25) UNIQUE NOT NULL,
-	"content" VARCHAR(250) NOT NULL,
+	"contents" VARCHAR(250) NOT NULL,
 	valid_until DATE NOT NULL
 );
 
@@ -39,38 +39,38 @@ CREATE VIEW category_with_count AS
 	FROM
 		category;
 		
-INSERT INTO announcement (title, "content", valid_until)
+INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('Test title', 'Test content', 'October 19, 2020');
 
-INSERT INTO announcement (title, "content", valid_until)
+INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('This is important', 'Test content', 'December 20, 2020');
 
 /**
  * Batched for testing
 */
-INSERT INTO announcement (title, "content", valid_until)
+INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('Lorem Ipsum Dolor', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'January 11, 2020');
-INSERT INTO announcement (title, "content", valid_until)
+INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('This is important2', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
-INSERT INTO announcement (title, "content", valid_until)
+INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('This is important3', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
-INSERT INTO announcement (title, "content", valid_until)
+INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('This is important4', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
-INSERT INTO announcement (title, "content", valid_until)
+INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('This is important5', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
-INSERT INTO announcement (title, "content", valid_until)
+INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('This is important6', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
-INSERT INTO announcement (title, "content", valid_until)
+INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('This is important7', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
-INSERT INTO announcement (title, "content", valid_until)
+INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('This is important8', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
-INSERT INTO announcement (title, "content", valid_until)
+INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('This is important9', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
-INSERT INTO announcement (title, "content", valid_until)
+INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('This is important10', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
-INSERT INTO announcement (title, "content", valid_until)
+INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('This is important11', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
-INSERT INTO announcement (title, "content", valid_until)
+INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('This is important12', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
 
 INSERT INTO category ("name", "desc")

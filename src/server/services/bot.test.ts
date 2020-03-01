@@ -9,9 +9,9 @@ import {
   createUnsavedStatePushMessagesEvent,
   createSavedStateUnfinishedStateEvent,
   createSavedStateFinishedStateEvent,
-} from './bot.hub.test.util';
-import { StateRepository } from './../repository/state';
-import { LineBotServiceHub } from './bot.hub';
+} from './test.util';
+import { StateRepository } from '../repository/state';
+import { LineBotServiceHub } from './bot';
 import { StringMap } from '../utils/types';
 
 jest.mock('@line/bot-sdk', () => ({

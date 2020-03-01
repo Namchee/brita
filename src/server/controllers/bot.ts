@@ -1,6 +1,6 @@
 import { Context, Next } from 'koa';
 import { Controller } from './base';
-import { LineBotServiceHub } from './../services/bot.hub';
+import { LineBotServiceHub } from '../services/bot';
 
 /**
  * Controller for handling LINE webhook endpoint

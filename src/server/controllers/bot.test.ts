@@ -1,7 +1,7 @@
 import { Client } from '@line/bot-sdk';
-import { LineBotServiceHub } from './../services/bot.hub';
-import { LineBotController } from './bot.controller';
-import { StateRepositoryMock } from './../services/bot.hub.test.util';
+import { LineBotServiceHub } from './../services/bot';
+import { LineBotController } from './bot';
+import { StateRepositoryMock } from './../services/bot.test.util';
 
 const sampleEvent = {
   'destination': 'xxxxxxxxxx',

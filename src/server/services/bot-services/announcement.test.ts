@@ -3,7 +3,7 @@ import {
   AnnouncementRepositoryMock,
   CategoryRepositoryMock,
   categories,
-} from './announcement.test.util';
+} from './../test.util';
 import { BotServiceParameters } from './base';
 import { FlexMessage, FlexCarousel } from '@line/bot-sdk';
 
