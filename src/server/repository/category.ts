@@ -3,7 +3,7 @@ import {
   EntityRepository as BaseEntityRepository,
   Repository,
 } from 'typeorm';
-import { TypeORMRepository, EntityRepository } from './base';
+import { TypeORMRepository, EntityRepository, PagingOptions } from './base';
 import { Category } from './../entity/category';
 import {
   CategoryEntity,
@@ -17,6 +17,13 @@ import {
  * this interface (including the mocked one)
  */
 export interface CategoryRepository extends EntityRepository<Category> {
+  /**
+   * Get all categories WITHOUT `count` for optimization purposes
+   *
+   * @param {PagingOptions=} options Pagination options
+   * @return {Promise<Category[]>} Array of categories
+   */
+  findAllWithoutCount(options?: PagingOptions): Promise<Category[]>;
   /**
    * Get a category by its name
    *
@@ -72,11 +79,29 @@ export class CategoryRepositoryTypeORM
    * Get all categories from the database, including the `count`
    * value
    *
+   * @param {PagingOptions=} options Pagination options
    * @return {Promise<Category[]>} Array of categories
    */
-  public findAll = async (): Promise<Category[]> => {
+  public findAll = async (options?: PagingOptions): Promise<Category[]> => {
     return await this.manager.getRepository(CategoryWithCount)
       .createQueryBuilder('category')
+      .limit(options?.limit)
+      .offset(options?.offset)
+      .getMany();
+  }
+
+  /**
+   * Get all categories WITHOUT `count` for optimization purposes
+   *
+   * @param {PagingOptions=} options Pagination options
+   * @return {Promise<Category[]>} Array of categories
+   */
+  public findAllWithoutCount = async (
+    options?: PagingOptions,
+  ): Promise<Category[]> => {
+    return await this.repository.createQueryBuilder('category')
+      .limit(options?.limit)
+      .offset(options?.offset)
       .getMany();
   }
 

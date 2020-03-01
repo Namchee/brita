@@ -121,7 +121,7 @@ export class BotAnnouncementService extends BotService {
       misc = undefined;
     }
 
-    const categories = await this.categoryRepository.findAll();
+    const categories = await this.categoryRepository.findAllWithoutCount();
 
     // Fallback case when category is not present
     if (categories.length === 0) {
