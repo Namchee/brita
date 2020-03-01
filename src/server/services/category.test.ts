@@ -1,11 +1,11 @@
-import { AnnouncementRepositoryMock, announcements } from './test.util';
-import { AnnouncementService } from './announcement';
+import { CategoryService } from './category';
+import { CategoryRepositoryMock, categories } from './test.util';
 import { PagingOptions } from '../repository/base';
 import { UserError } from '../utils/error';
 
-describe('Announcement REST service unit test', () => {
-  const repository = new AnnouncementRepositoryMock();
-  const service = new AnnouncementService(repository);
+describe('Category REST service unit test', () => {
+  const repository = new CategoryRepositoryMock();
+  const service = new CategoryService(repository);
 
   afterEach(() => {
     jest.clearAllMocks();
@@ -16,29 +16,30 @@ describe('Announcement REST service unit test', () => {
       jest.spyOn(repository, 'findAll');
     });
 
-    it('should return all announcements', async () => {
+    it('should return all categories', async () => {
       const result = await service.findAll();
 
-      expect(result).toStrictEqual(announcements);
+      expect(result).toStrictEqual(categories);
       expect(repository.findAll).toHaveBeenCalledTimes(1);
     });
 
     it(
-      'should return announcements subset when supplied with parameters',
+      'should return categories subset when supplied with parameters',
       async () => {
         const params: PagingOptions = {
-          limit: 2,
+          limit: 1,
           offset: 1,
         };
 
         const result = await service.findAll(params);
 
-        expect(result).toStrictEqual(announcements.slice(1, 3));
+        expect(result).toStrictEqual(categories.slice(1, 2));
         expect(repository.findAll).toHaveBeenCalledTimes(1);
         expect(repository.findAll).toHaveBeenCalledWith(params);
       });
 
-    it('should throw an error when invalid parameters are supplied',
+    it(
+      'should throw an error when supplied with wrong parameters',
       async () => {
         const params: any = {
           limit: 'a string lol',

@@ -226,21 +226,24 @@ export function createSavedStateFinishedStateEvent(): WebhookEvent {
 const tommorow = new Date();
 tommorow.setDate(tommorow.getDate() + 1);
 
-export const categories = [
+export const categories: Category[] = [
   {
     id: 1,
     name: 'One',
     desc: 'This is category one',
+    announcementCount: 1,
   },
   {
     id: 2,
     name: 'Two',
     desc: 'This is category two',
+    announcementCount: 1,
   },
   {
     id: 3,
     name: 'Three',
     desc: 'This is category three',
+    announcementCount: 1,
   },
 ];
 
@@ -250,18 +253,21 @@ export const announcements: Announcement[] = [
     title: 'Announcement One',
     contents: 'This is announcement one',
     validUntil: new Date(),
+    categories: [categories[0], categories[1]],
   },
   {
     id: 2,
     title: 'Announcement Two',
     contents: 'This is announcement two',
     validUntil: new Date(),
+    categories: [categories[0], categories[2]],
   },
   {
     id: 3,
     title: 'Announcement Three',
     contents: 'This is announcement three',
     validUntil: tommorow,
+    categories: [categories[1]],
   },
   {
     id: 3,
@@ -314,8 +320,10 @@ export const announcements: Announcement[] = [
 ];
 
 export class AnnouncementRepositoryMock implements AnnouncementRepository {
-  public findAll = async (): Promise<Announcement[]> => {
-    return announcements;
+  public findAll = async (options?: PagingOptions): Promise<Announcement[]> => {
+    return options ?
+      announcements.slice(options.offset, options.offset + options.limit) :
+      announcements;
   }
 
   public findByCategory = async (
@@ -352,8 +360,10 @@ export class AnnouncementRepositoryMock implements AnnouncementRepository {
 }
 
 export class CategoryRepositoryMock implements CategoryRepository {
-  public findAll = async (): Promise<Category[]> => {
-    return categories;
+  public findAll = async (options?: PagingOptions): Promise<Category[]> => {
+    return options ?
+      categories.slice(options.offset, options.offset + options.limit) :
+      categories;
   }
 
   public findByName = async (name: string): Promise<Category | null> => {
@@ -375,4 +385,3 @@ export class CategoryRepositoryMock implements CategoryRepository {
     return true;
   }
 }
-

@@ -4,7 +4,7 @@ import { Entity } from './../entity/base';
 /**
  * An object which represents pagination details for `find` methods
  *
- * Useful for bot environment
+ * Useful in bot environment, but can also be used in REST context
  */
 export interface PagingOptions {
   limit: number;

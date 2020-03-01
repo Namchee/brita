@@ -1,6 +1,7 @@
 import Koa, { Context } from 'koa';
 import chalk from 'chalk';
 import bodyParser from 'koa-bodyparser';
+import compress from 'koa-compress';
 import { init, captureException } from '@sentry/node';
 import { connectToDatabase } from './database/connection';
 import { generateRoutes } from './routes/router';
@@ -44,6 +45,7 @@ export async function createApp(): Promise<Koa> {
   const app = new Koa();
 
   app.use(bodyParser());
+  app.use(compress());
 
   if (process.env.NODE_ENV === 'production') {
     init({ dsn: config.dsn });

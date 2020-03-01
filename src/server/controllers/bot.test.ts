@@ -1,7 +1,7 @@
 import { Client } from '@line/bot-sdk';
 import { LineBotServiceHub } from './../services/bot';
 import { LineBotController } from './bot';
-import { StateRepositoryMock } from './../services/bot.test.util';
+import { StateRepositoryMock } from './../services/test.util';
 
 const sampleEvent = {
   'destination': 'xxxxxxxxxx',
@@ -34,7 +34,7 @@ const sampleEvent = {
   ],
 };
 
-jest.mock('./../services/bot.hub', () => ({
+jest.mock('./../services/bot', () => ({
   LineBotServiceHub: jest.fn().mockImplementation(() => ({
     handleBotQuery: jest.fn().mockImplementation(() => 'works'),
   })),
