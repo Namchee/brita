@@ -1,11 +1,10 @@
 import { Context, Next } from 'koa';
-import { Controller } from './base';
 import { LineBotServiceHub } from '../services/bot';
 
 /**
  * Controller for handling LINE webhook endpoint
  */
-export class LineBotController implements Controller {
+export class LineBotController {
   private readonly serviceHub: LineBotServiceHub;
 
   /**
@@ -21,9 +20,10 @@ export class LineBotController implements Controller {
    * Handles a webhook request with Koa's context
    *
    * @param {Context} ctx Koa context object
-   * @param {Next} next Next function
+   * @return {Promise<void>} Sets Koa response object and terminate the
+   * execution pipeline
    */
-  public handleRequest = async (ctx: Context, next: Next): Promise<void> => {
+  public handleRequest = async (ctx: Context): Promise<void> => {
     try {
       const botQueryResult = await Promise.all(
         ctx.request.body.events.map(this.serviceHub.handleBotQuery),

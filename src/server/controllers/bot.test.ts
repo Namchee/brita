@@ -40,56 +40,62 @@ jest.mock('./../services/bot', () => ({
   })),
 }));
 
-describe('Controller unit test', () => {
-  describe('LINE Controller unit test', () => {
-    const client = new Client({ channelAccessToken: 'a', channelSecret: 'b' });
-    const serviceMap = new Map();
-    const stateRepository = new StateRepositoryMock();
+describe('LINE Controller unit test', () => {
+  const baseCtx: any = {
+    response: {},
+  };
 
-    const serviceHub = new LineBotServiceHub(
-      client,
-      serviceMap,
-      stateRepository,
-    );
+  const client = new Client({ channelAccessToken: 'a', channelSecret: 'b' });
+  const serviceMap = new Map();
+  const stateRepository = new StateRepositoryMock();
 
-    const controller = new LineBotController(serviceHub);
+  const serviceHub = new LineBotServiceHub(
+    client,
+    serviceMap,
+    stateRepository,
+  );
 
-    it('should respond with 200', async () => {
-      const ctx: any = {
-        request: {
-          body: sampleEvent,
-        },
-        response: {},
-      };
+  const controller = new LineBotController(serviceHub);
 
-      await controller.handleRequest(ctx, () => Promise.resolve());
-
-      expect(ctx.response.status).toBe(200);
-      expect(ctx.response.body.length).toBe(2);
-      expect(serviceHub.handleBotQuery).toBeCalledTimes(2);
-    });
-
-    it('should respond with 500', async () => {
-      const spy = jest.spyOn(serviceHub, 'handleBotQuery');
-      const app = {
-        emit: jest.fn().mockImplementation(() => null),
-      };
-
-      const ctx: any = {
+  it('should respond with 200', async () => {
+    const ctx: any = {
+      request: {
         body: sampleEvent,
-        response: {},
-        app,
-      };
+      },
+    };
 
-      spy.mockImplementationOnce(() => {
-        throw new Error();
-      });
+    Object.assign(ctx, baseCtx);
 
-      await controller.handleRequest(ctx, () => Promise.resolve());
+    await controller.handleRequest(ctx);
 
-      expect(ctx.response.status).toBe(500);
-      expect(ctx.response.body).toBeNull;
-      expect(app.emit).toBeCalledTimes(1);
+    expect(ctx.response.status).toBe(200);
+    expect(ctx.response.body.length).toBe(2);
+    expect(serviceHub.handleBotQuery).toBeCalledTimes(2);
+  });
+
+  it('should respond with 500', async () => {
+    const spy = jest.spyOn(serviceHub, 'handleBotQuery');
+    const app = {
+      emit: jest.fn().mockImplementation(() => null),
+    };
+
+    const ctx: any = {
+      request: {
+        body: sampleEvent,
+      },
+      app,
+    };
+
+    Object.assign(ctx, baseCtx);
+
+    spy.mockImplementationOnce(() => {
+      throw new Error();
     });
+
+    await controller.handleRequest(ctx);
+
+    expect(ctx.response.status).toBe(500);
+    expect(ctx.response.body).toBeNull;
+    expect(app.emit).toBeCalledTimes(1);
   });
 });

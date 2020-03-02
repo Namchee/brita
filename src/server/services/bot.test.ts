@@ -28,7 +28,7 @@ describe('Bot hub unit test', () => {
   let hub: LineBotServiceHub;
 
   beforeAll(() => {
-    client = new Client({ channelAccessToken: 'a', channelSecret: 'b' });
+    client = new Client({} as any);
 
     serviceMock = new ServiceMock();
     const serviceMap: StringMap = {};
