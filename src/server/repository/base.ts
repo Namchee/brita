@@ -7,8 +7,14 @@ import { Entity } from './../entity/base';
  * Useful in bot environment, but can also be used in REST context
  */
 export interface PagingOptions {
-  limit: number;
-  offset: number;
+  /**
+   * Limits the number of entities returned
+   */
+  limit?: number;
+  /**
+   * Overrides default start value when finding entities
+   */
+  offset?: number;
 }
 
 /**

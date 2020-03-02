@@ -94,8 +94,6 @@ describe('LINE Controller unit test', () => {
 
     await controller.handleRequest(ctx);
 
-    expect(ctx.response.status).toBe(500);
-    expect(ctx.response.body).toBeNull;
     expect(app.emit).toBeCalledTimes(1);
   });
 });

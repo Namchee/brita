@@ -25,7 +25,11 @@ describe('Category REST controller unit test', () => {
     it('should respond with 200', async () => {
       jest.spyOn(service, 'findAll');
 
-      const ctx: any = {};
+      const ctx: any = {
+        request: {
+          query: {},
+        },
+      };
 
       Object.assign(ctx, baseCtx);
 
@@ -38,8 +42,6 @@ describe('Category REST controller unit test', () => {
     });
 
     it('should accept query parameters and pass it correctly', async () => {
-      jest.spyOn(service, 'findAll');
-
       const query = {
         limit: 1,
         offset: 1,
@@ -51,7 +53,7 @@ describe('Category REST controller unit test', () => {
         },
       };
 
-      Object.assign(ctx, query);
+      Object.assign(ctx, baseCtx);
 
       await controller.findAll(ctx);
 
@@ -69,7 +71,11 @@ describe('Category REST controller unit test', () => {
         throw new UserError('');
       });
 
-      const ctx: any = {};
+      const ctx: any = {
+        request: {
+          query: {},
+        },
+      };
 
       Object.assign(ctx, baseCtx);
 
@@ -94,6 +100,9 @@ describe('Category REST controller unit test', () => {
         };
 
         const ctx: any = {
+          request: {
+            query: {},
+          },
           app,
         };
 
@@ -101,10 +110,7 @@ describe('Category REST controller unit test', () => {
 
         await controller.findAll(ctx);
 
-        expect(ctx.response.status).toBe(500);
         expect(app.emit).toHaveBeenCalledTimes(1);
-        expect(ctx.response.body.data).toBeNull;
-        expect(ctx.response.body.error).toBe('');
       });
   });
 });

@@ -322,7 +322,10 @@ export const announcements: Announcement[] = [
 export class AnnouncementRepositoryMock implements AnnouncementRepository {
   public findAll = async (options?: PagingOptions): Promise<Announcement[]> => {
     return options ?
-      announcements.slice(options.offset, options.offset + options.limit) :
+      announcements.slice(
+        options.offset,
+        (options?.offset || 0) + (options?.limit || 0),
+      ) :
       announcements;
   }
 
@@ -362,8 +365,17 @@ export class AnnouncementRepositoryMock implements AnnouncementRepository {
 export class CategoryRepositoryMock implements CategoryRepository {
   public findAll = async (options?: PagingOptions): Promise<Category[]> => {
     return options ?
-      categories.slice(options.offset, options.offset + options.limit) :
+      categories.slice(
+        options.offset,
+        (options?.offset || 0) + (options?.limit || 0),
+      ) :
       categories;
+  }
+
+  public findAllWithoutCount = async (
+    options?: PagingOptions,
+  ): Promise<Category[]> => {
+    return await this.findAll(options);
   }
 
   public findByName = async (name: string): Promise<Category | null> => {

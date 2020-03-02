@@ -17,8 +17,8 @@ export class AnnouncementService {
    * Validation schema for `findAll` method
    */
   private static readonly FIND_ALL_SCHEMA = Joi.object({
-    limit: Joi.number().positive().required(),
-    offset: Joi.number().positive().required(),
+    limit: Joi.number().positive(),
+    offset: Joi.number().positive(),
   });
 
   /**

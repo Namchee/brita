@@ -111,6 +111,7 @@ export class CategoryRepositoryTypeORM
    * The comparison is done with strict equality, not `LIKE` clause
    *
    * As category name is unique, this method only return one category
+   *
    * @param {string} name Name of the category
    * @return {Promise<Category | null>} A category which satisfies the criterion
    * or `null` if it doesn't find it

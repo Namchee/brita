@@ -32,9 +32,6 @@ export class LineBotController {
       ctx.response.status = 200;
       ctx.response.body = botQueryResult;
     } catch (err) {
-      ctx.response.status = 500;
-      ctx.response.body = null;
-
       ctx.app.emit('error', err, ctx);
     }
   }

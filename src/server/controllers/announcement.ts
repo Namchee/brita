@@ -1,5 +1,6 @@
 import { AnnouncementService } from '../services/announcement';
 import { Context } from 'koa';
+import { UserError } from '../utils/error';
 
 /**
  * Controller class for Announcement REST API
@@ -26,6 +27,26 @@ export class AnnouncementController {
    * @return {Promise<void>} Sets the koa response object
    */
   public findAll = async (ctx: Context): Promise<void> => {
-    return;
+    try {
+      const result = await this.service.findAll(ctx.request.query);
+
+      ctx.response.status = 200;
+      ctx.response.body = {
+        data: result,
+        error: null,
+      };
+    } catch (err) {
+      if (err instanceof UserError) {
+        ctx.response.status = 400;
+        ctx.response.body = {
+          data: null,
+          error: err.message,
+        };
+
+        return;
+      }
+
+      ctx.app.emit('error', err, ctx);
+    }
   }
 }
