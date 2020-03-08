@@ -9,6 +9,10 @@ import { LineBotServiceHub } from '../services/bot';
 import config from './../config/env';
 import { StateRepositoryRedis } from '../repository/state';
 import { StringMap } from './types';
+import { AnnouncementController } from '../controllers/announcement';
+import { CategoryController } from '../controllers/category';
+import { AnnouncementService } from '../services/announcement';
+import { CategoryService } from '../services/category';
 
 /**
  * An interface which describes key-value mapping for bootstrapped
@@ -16,6 +20,8 @@ import { StringMap } from './types';
  */
 export interface ControllerList {
   lineController: LineBotController;
+  announcementController: AnnouncementController;
+  categoryController: CategoryController;
 }
 
 /**
@@ -42,18 +48,23 @@ export function bootstrapApp(conn: Connection): ControllerList {
   );
   const stateRepository = new StateRepositoryRedis(redisClient);
 
-  const announcementService = new BotAnnouncementService(
+  const botAnnouncementService = new BotAnnouncementService(
     announcementRepository,
     categoryRepository,
   );
 
+  const announcementService = new AnnouncementService(announcementRepository);
+  const categoryService = new CategoryService(categoryRepository);
+
   const serviceMap: StringMap = {};
 
-  serviceMap[announcementService.identifier] = announcementService;
+  serviceMap[botAnnouncementService.identifier] = botAnnouncementService;
 
   const serviceHub = new LineBotServiceHub(client, serviceMap, stateRepository);
 
   return {
     lineController: new LineBotController(serviceHub),
+    announcementController: new AnnouncementController(announcementService),
+    categoryController: new CategoryController(categoryService),
   };
 }

@@ -25,12 +25,12 @@ export interface AnnouncementRepository
   /**
    * Get all Announcement which satisfies the requested category
    *
-   * @param {Category} category Category criterion
+   * @param {Category} category Requested category id
    * @param {FindAnnouncementOptions=} options Options for pagination purposes
    * @return {Announcement[]} Array of announcements
    */
   findByCategory(
-    category: Category,
+    category: string,
     options?: FindAnnouncementOptions,
   ): Promise<Announcement[]>;
   /**
@@ -87,7 +87,7 @@ export class AnnouncementRepositoryTypeORM
         'categories.id',
         'categories.name',
       ])
-      .limit(options?.limit)
+      .take(options?.limit)
       .offset(options?.offset)
       .getMany();
   }
@@ -95,13 +95,13 @@ export class AnnouncementRepositoryTypeORM
   /**
    * Get all announcements which satisfies the requested category
    *
-   * @param {Category} category Requested category
+   * @param {Category} category Requested category's id
    * @param {FindAnnouncementOptions=} options Find announcement options
    * @return {Promise<Announcement[]>} Announcement array, which
    * satisfies the requested category
    */
   public findByCategory = async (
-    category: Category,
+    category: string,
     options?: FindAnnouncementOptions,
   ): Promise<Announcement[]> => {
     let query = this.repository
@@ -109,13 +109,13 @@ export class AnnouncementRepositoryTypeORM
       .innerJoin(
         'announcement.categories',
         'categories',
-        'categories.id = :id', { id: category.id })
+        'categories.id = :id', { id: category })
       .select([
         'announcement.title',
         'announcement.content',
         'announcement.validUntil',
       ])
-      .limit(options?.limit)
+      .take(options?.limit)
       .offset(options?.offset);
 
     if (options?.validUntil) {

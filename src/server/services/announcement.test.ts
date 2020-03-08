@@ -1,4 +1,8 @@
-import { AnnouncementRepositoryMock, announcements } from './test.util';
+import {
+  AnnouncementRepositoryMock,
+  announcements,
+  categories,
+} from './test.util';
 import { AnnouncementService } from './announcement';
 import { PagingOptions } from '../repository/base';
 import { UserError } from '../utils/error';
@@ -11,13 +15,14 @@ describe('Announcement REST service unit test', () => {
     jest.clearAllMocks();
   });
 
-  describe('findAll', () => {
+  describe('find', () => {
     beforeEach(() => {
       jest.spyOn(repository, 'findAll');
+      jest.spyOn(repository, 'findByCategory');
     });
 
     it('should return all announcements', async () => {
-      const result = await service.findAll();
+      const result = await service.find();
 
       expect(result).toStrictEqual(announcements);
       expect(repository.findAll).toHaveBeenCalledTimes(1);
@@ -31,7 +36,7 @@ describe('Announcement REST service unit test', () => {
           offset: 1,
         };
 
-        const result = await service.findAll(params);
+        const result = await service.find(params);
 
         expect(result).toStrictEqual(announcements.slice(1, 3));
         expect(repository.findAll).toHaveBeenCalledTimes(1);
@@ -45,8 +50,28 @@ describe('Announcement REST service unit test', () => {
           offset: 1,
         };
 
-        expect(service.findAll(params)).rejects.toBeInstanceOf(UserError);
+        expect(service.find(params)).rejects.toBeInstanceOf(UserError);
         expect(repository.findAll).toHaveBeenCalledTimes(0);
       });
+
+    it(
+      'should return correct announcements when category params is present',
+      async () => {
+        const params: any = {
+          limit: 10,
+          offset: 0,
+          category: categories[0].id,
+        };
+
+        const result = await service.find(params);
+
+        expect(result).toStrictEqual(announcements.slice(0, 10));
+        expect(repository.findByCategory).toBeCalledTimes(1);
+        expect(repository.findByCategory).toHaveBeenCalledWith(
+          categories[0].id,
+          { limit: 10, offset: 0 },
+        );
+      },
+    );
   });
 });

@@ -1,6 +1,5 @@
 import Joi from '@hapi/joi';
 import { CategoryRepository } from '../repository/category';
-import { PagingOptions } from '../repository/base';
 import { Category } from '../entity/category';
 import { UserError } from '../utils/error';
 
@@ -14,11 +13,11 @@ export class CategoryService {
   private readonly repository: CategoryRepository;
 
   /**
-   * Validation schema for `findAll` method
+   * Validation schema for `find` method
    */
-  private static readonly FIND_ALL_SCHEMA = Joi.object({
-    limit: Joi.number().positive().required(),
-    offset: Joi.number().positive().required(),
+  private static readonly FIND_SCHEMA = Joi.object({
+    limit: Joi.number().min(0),
+    offset: Joi.number().min(0),
   });
 
   /**
@@ -31,18 +30,35 @@ export class CategoryService {
   }
 
   /**
-   * Get all announcements from data source
+   * Get categories from data source with query criteria
    *
-   * @param {PagingOptions=} params Pagination options (optional)
+   * @param {object=} params Query criteria
    * @return {Promise<Category[]>} Array of categories
    */
-  public findAll = async (params?: PagingOptions): Promise<Category[]> => {
-    const validation = CategoryService.FIND_ALL_SCHEMA.validate(params);
+  public find = async (params?: any): Promise<Category[]> => {
+    if (params?.name) {
+      const validation = Joi.string().validate(params?.name);
+
+      if (validation.error) {
+        throw new UserError(validation.error.message);
+      }
+
+      const result = await this.repository.findByName(params?.name);
+
+      return result ? [result] : [];
+    }
+
+    const validation = CategoryService.FIND_SCHEMA.validate(params);
 
     if (validation.error) {
       throw new UserError(validation.error.message);
     }
 
-    return this.repository.findAll(params as PagingOptions);
+    const paginationOptions: any = {
+      limit: params?.limit,
+      offset: params?.offset,
+    };
+
+    return this.repository.findAll(paginationOptions);
   }
 }

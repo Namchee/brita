@@ -1,9 +1,6 @@
 import Router from '@koa/router';
 import { lineMiddleware } from './../utils/middleware';
 import { ControllerList } from './../utils/bootstrap';
-import { Context, Next } from 'koa';
-
-const ganteng = ['hai', 'sayang', 'ku'];
 
 /**
  * Generate a Koa router instance with predefined controllers
@@ -14,6 +11,7 @@ const ganteng = ['hai', 'sayang', 'ku'];
 export function generateRoutes(controllers: ControllerList): Router {
   const router = new Router();
 
+  // Define route for LINE webhook
   router.post(
     '/line-webhook',
     lineMiddleware,

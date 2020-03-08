@@ -4,7 +4,7 @@ import { UserError, ServerError } from '../utils/error';
 
 jest.mock('./../services/announcement', () => ({
   AnnouncementService: jest.fn().mockImplementation(() => ({
-    findAll: jest.fn().mockImplementation(() => []),
+    find: jest.fn().mockImplementation(() => []),
   })),
 }));
 
@@ -23,7 +23,7 @@ describe('Announcement REST controller unit test', () => {
 
   describe('GET findAll', () => {
     it('should respond with 200', async () => {
-      jest.spyOn(service, 'findAll');
+      jest.spyOn(service, 'find');
 
       const ctx: any = {
         request: {
@@ -33,12 +33,12 @@ describe('Announcement REST controller unit test', () => {
 
       Object.assign(ctx, baseCtx);
 
-      await controller.findAll(ctx);
+      await controller.find(ctx);
 
       expect(ctx.response.status).toBe(200);
       expect(ctx.response.body.data).toStrictEqual([]);
       expect(ctx.response.body.error).toBeNull;
-      expect(service.findAll).toHaveBeenCalledTimes(1);
+      expect(service.find).toHaveBeenCalledTimes(1);
     });
 
     it('should accept query parameters and pass it correctly', async () => {
@@ -53,17 +53,17 @@ describe('Announcement REST controller unit test', () => {
 
       Object.assign(ctx, baseCtx);
 
-      await controller.findAll(ctx);
+      await controller.find(ctx);
 
       expect(ctx.response.status).toBe(200);
       expect(ctx.response.body.data).toStrictEqual([]);
       expect(ctx.response.body.error).toBeNull;
-      expect(service.findAll).toHaveBeenCalledTimes(1);
-      expect(service.findAll).toHaveBeenCalledWith(ctx.request.query);
+      expect(service.find).toHaveBeenCalledTimes(1);
+      expect(service.find).toHaveBeenCalledWith(ctx.request.query);
     });
 
     it('should respond with an error when user error occured', async () => {
-      const spy = jest.spyOn(service, 'findAll');
+      const spy = jest.spyOn(service, 'find');
 
       spy.mockImplementation(() => {
         throw new UserError('');
@@ -77,7 +77,7 @@ describe('Announcement REST controller unit test', () => {
 
       Object.assign(ctx, baseCtx);
 
-      await controller.findAll(ctx);
+      await controller.find(ctx);
 
       expect(ctx.response.status).toBe(400);
       expect(ctx.response.body.data).toBeNull;
@@ -87,7 +87,7 @@ describe('Announcement REST controller unit test', () => {
     it(
       'should respond with server error when server error occurs',
       async () => {
-        const spy = jest.spyOn(service, 'findAll');
+        const spy = jest.spyOn(service, 'find');
 
         spy.mockImplementation(() => {
           throw new ServerError('');
@@ -106,7 +106,7 @@ describe('Announcement REST controller unit test', () => {
 
         Object.assign(ctx, baseCtx);
 
-        await controller.findAll(ctx);
+        await controller.find(ctx);
 
         expect(app.emit).toHaveBeenCalledTimes(1);
       });

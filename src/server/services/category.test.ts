@@ -11,13 +11,14 @@ describe('Category REST service unit test', () => {
     jest.clearAllMocks();
   });
 
-  describe('findAll', () => {
+  describe('find', () => {
     beforeEach(() => {
       jest.spyOn(repository, 'findAll');
+      jest.spyOn(repository, 'findByName');
     });
 
     it('should return all categories', async () => {
-      const result = await service.findAll();
+      const result = await service.find();
 
       expect(result).toStrictEqual(categories);
       expect(repository.findAll).toHaveBeenCalledTimes(1);
@@ -31,7 +32,7 @@ describe('Category REST service unit test', () => {
           offset: 1,
         };
 
-        const result = await service.findAll(params);
+        const result = await service.find(params);
 
         expect(result).toStrictEqual(categories.slice(1, 2));
         expect(repository.findAll).toHaveBeenCalledTimes(1);
@@ -46,8 +47,23 @@ describe('Category REST service unit test', () => {
           offset: 1,
         };
 
-        expect(service.findAll(params)).rejects.toBeInstanceOf(UserError);
+        expect(service.find(params)).rejects.toBeInstanceOf(UserError);
         expect(repository.findAll).toHaveBeenCalledTimes(0);
       });
+
+    it(
+      'should return correct category when supplied with name parameters',
+      async () => {
+        const params: any = {
+          name: categories[0].name,
+        };
+
+        const result = await service.find(params);
+
+        expect(result[0]).toStrictEqual(categories[0]);
+        expect(repository.findByName).toBeCalledTimes(1);
+        expect(repository.findByName).toHaveBeenCalledWith(categories[0].name);
+      },
+    );
   });
 });

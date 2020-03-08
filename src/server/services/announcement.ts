@@ -2,7 +2,6 @@ import Joi from '@hapi/joi';
 import { AnnouncementRepository } from '../repository/announcement';
 import { Announcement } from '../entity/announcement';
 import { UserError } from '../utils/error';
-import { PagingOptions } from '../repository/base';
 
 /**
  * Service for handling announcement REST API request
@@ -14,11 +13,12 @@ export class AnnouncementService {
   private readonly repository: AnnouncementRepository;
 
   /**
-   * Validation schema for `findAll` method
+   * Validation schema for `find` method
    */
-  private static readonly FIND_ALL_SCHEMA = Joi.object({
-    limit: Joi.number().positive(),
-    offset: Joi.number().positive(),
+  private static readonly FIND_SCHEMA = Joi.object({
+    limit: Joi.number().min(0),
+    offset: Joi.number().min(0),
+    category: Joi.string(),
   });
 
   /**
@@ -31,18 +31,25 @@ export class AnnouncementService {
   }
 
   /**
-   * Get all announcements from data source
+   * Get announcements from data source by query criteria
    *
-   * @param {PagingOptions=} params Pagination options (optional)
+   * @param {object} params Request query criteria
    * @return {Promise<Announcement[]>} Array of announcements
    */
-  public findAll = async (params?: PagingOptions): Promise<Announcement[]> => {
-    const validation = AnnouncementService.FIND_ALL_SCHEMA.validate(params);
+  public find = async (params?: any): Promise<Announcement[]> => {
+    const validation = AnnouncementService.FIND_SCHEMA.validate(params);
 
     if (validation.error) {
       throw new UserError(validation.error.message);
     }
 
-    return this.repository.findAll(params as PagingOptions);
+    const paginationOptions = {
+      limit: params?.limit,
+      offset: params?.offset,
+    };
+
+    return params?.category ?
+      this.repository.findByCategory(params.category, paginationOptions) :
+      this.repository.findAll(paginationOptions);
   }
 }

@@ -228,19 +228,19 @@ tommorow.setDate(tommorow.getDate() + 1);
 
 export const categories: Category[] = [
   {
-    id: 1,
+    id: '1',
     name: 'One',
     desc: 'This is category one',
     announcementCount: 1,
   },
   {
-    id: 2,
+    id: '2',
     name: 'Two',
     desc: 'This is category two',
     announcementCount: 1,
   },
   {
-    id: 3,
+    id: '3',
     name: 'Three',
     desc: 'This is category three',
     announcementCount: 1,
@@ -249,70 +249,70 @@ export const categories: Category[] = [
 
 export const announcements: Announcement[] = [
   {
-    id: 1,
+    id: '1',
     title: 'Announcement One',
     contents: 'This is announcement one',
     validUntil: new Date(),
     categories: [categories[0], categories[1]],
   },
   {
-    id: 2,
+    id: '2',
     title: 'Announcement Two',
     contents: 'This is announcement two',
     validUntil: new Date(),
     categories: [categories[0], categories[2]],
   },
   {
-    id: 3,
+    id: '3',
     title: 'Announcement Three',
     contents: 'This is announcement three',
     validUntil: tommorow,
     categories: [categories[1]],
   },
   {
-    id: 3,
+    id: '3',
     title: 'Announcement Three',
     contents: 'This is announcement three',
     validUntil: tommorow,
   },
   {
-    id: 3,
+    id: '3',
     title: 'Announcement Three',
     contents: 'This is announcement three',
     validUntil: tommorow,
   },
   {
-    id: 3,
+    id: '3',
     title: 'Announcement Three',
     contents: 'This is announcement three',
     validUntil: tommorow,
   },
   {
-    id: 3,
+    id: '3',
     title: 'Announcement Three',
     contents: 'This is announcement three',
     validUntil: tommorow,
   },
   {
-    id: 3,
+    id: '3',
     title: 'Announcement Three',
     contents: 'This is announcement three',
     validUntil: tommorow,
   },
   {
-    id: 3,
+    id: '3',
     title: 'Announcement Three',
     contents: 'This is announcement three',
     validUntil: tommorow,
   },
   {
-    id: 3,
+    id: '3',
     title: 'Announcement Three',
     contents: 'This is announcement three',
     validUntil: tommorow,
   },
   {
-    id: 3,
+    id: '3',
     title: 'Announcement Three',
     contents: 'This is announcement three',
     validUntil: tommorow,
@@ -321,19 +321,21 @@ export const announcements: Announcement[] = [
 
 export class AnnouncementRepositoryMock implements AnnouncementRepository {
   public findAll = async (options?: PagingOptions): Promise<Announcement[]> => {
-    return options ?
-      announcements.slice(
+    if (options && options.offset && options.limit) {
+      return announcements.slice(
         options.offset,
-        (options?.offset || 0) + (options?.limit || 0),
-      ) :
-      announcements;
+        (options.offset || 0) + (options.limit || 0),
+      );
+    }
+
+    return announcements;
   }
 
   public findByCategory = async (
-    category: Category,
+    category: string,
     options?: PagingOptions,
   ): Promise<Announcement[]> => {
-    if (category.id === categories[0].id) {
+    if (category === categories[0].id) {
       if (options && options?.offset === 0) {
         return announcements.slice(0, 10);
       } else if (options?.offset === 10) {
@@ -364,7 +366,7 @@ export class AnnouncementRepositoryMock implements AnnouncementRepository {
 
 export class CategoryRepositoryMock implements CategoryRepository {
   public findAll = async (options?: PagingOptions): Promise<Category[]> => {
-    return options ?
+    return options && options.offset && options.limit ?
       categories.slice(
         options.offset,
         (options?.offset || 0) + (options?.limit || 0),

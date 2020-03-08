@@ -21,14 +21,14 @@ export class AnnouncementController {
   }
 
   /**
-   * Get all announcements from the app
+   * Get announcements from the app by query criteria
    *
    * @param {Context} ctx Koa context object
    * @return {Promise<void>} Sets the koa response object
    */
-  public findAll = async (ctx: Context): Promise<void> => {
+  public find = async (ctx: Context): Promise<void> => {
     try {
-      const result = await this.service.findAll(ctx.request.query);
+      const result = await this.service.find(ctx.request.query);
 
       ctx.response.status = 200;
       ctx.response.body = {

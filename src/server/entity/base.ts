@@ -10,5 +10,5 @@ export interface Entity {
    * Must be unique per entity to differentiate
    * it from other entity
    */
-  id: string | number;
+  id: string;
 }

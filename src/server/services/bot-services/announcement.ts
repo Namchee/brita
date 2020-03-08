@@ -173,6 +173,7 @@ export class BotAnnouncementService extends BotService {
       }
 
       category['desc'] = undefined;
+      category['name'] = undefined;
 
       const page = misc?.page || 1;
 
@@ -248,7 +249,7 @@ export class BotAnnouncementService extends BotService {
   ): Promise<Message> => {
     const announcements = await this.announcementRepository
       .findByCategory(
-        category,
+        category.id,
         {
           limit: 10,
           offset: (page - 1) * 10,
