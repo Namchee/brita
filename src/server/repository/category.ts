@@ -29,7 +29,7 @@ export interface CategoryRepository extends EntityRepository<Category> {
    *
    * As category name is unique, this method only return one category
    * @param {string} name Name of the category
-   * @return {Promise<Category>} A category which satisfies the criterion
+   * @return {Promise<Category>} A category which satisfies the criteron
    * or `null` if it doesn't find it
    */
   findByName(
@@ -142,7 +142,7 @@ export class CategoryRepositoryTypeORM
         desc,
       });
 
-      return (insertResult.generatedMaps[0]) as Category;
+      return insertResult.generatedMaps[0] as Category;
     } catch (err) {
       return null;
     }
@@ -153,12 +153,12 @@ export class CategoryRepositoryTypeORM
    *
    * If a category is deleted, the announcement will NOT be dropped
    *
-   * @param {string} id ID of target category
+   * @param {number} id ID of target category
    * @return {Promise<boolean>} `true` if deletion is successful,
    * `false` otherwise
    */
-  public delete = async (id: string): Promise<boolean> => {
-    const deleteResult = await this.repository.delete({ id });
+  public delete = async (id: number): Promise<boolean> => {
+    const deleteResult = await this.repository.delete(id);
 
     return !!deleteResult.affected;
   }

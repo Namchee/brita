@@ -55,11 +55,11 @@ export interface Repository<T extends Entity> {
   /**
    * Deletes an Entity from the database
    *
-   * @param {string} id Entity's identifier
+   * @param {number} id Entity's identifier
    * @return {Promise<boolean>} `true` if the entity exists and
    * the deletion is successful, `false` otherwise
    */
-  delete(id: string): Promise<boolean>;
+  delete(id: number): Promise<boolean>;
   /**
    * Updates an Entity in the database with new data
    *

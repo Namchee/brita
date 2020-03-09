@@ -21,7 +21,7 @@ describe('Announcement REST controller unit test', () => {
     jest.clearAllMocks();
   });
 
-  describe('GET findAll', () => {
+  describe('find', () => {
     it('should respond with 200', async () => {
       jest.spyOn(service, 'find');
 

@@ -384,17 +384,14 @@ export class CategoryRepositoryMock implements CategoryRepository {
     return (name === categories[0].name) ? categories[0] : null;
   }
 
-  // we don't need this
   create = async () => {
-    return null;
+    return {} as Category;
   }
 
-  // we don't need this
   delete = async () => {
     return true;
   }
 
-  // we don't need this
   update = async () => {
     return true;
   }

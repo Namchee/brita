@@ -22,14 +22,14 @@ describe('Announcement REST service unit test', () => {
     });
 
     it('should return all announcements', async () => {
-      const result = await service.find();
+      const result = await service.find({});
 
       expect(result).toStrictEqual(announcements);
       expect(repository.findAll).toHaveBeenCalledTimes(1);
     });
 
     it(
-      'should return announcements subset when supplied with parameters',
+      'should return announcements subset when supplied with pagination params',
       async () => {
         const params: PagingOptions = {
           limit: 2,
@@ -55,7 +55,7 @@ describe('Announcement REST service unit test', () => {
       });
 
     it(
-      'should return correct announcements when category params is present',
+      'should return correct announcements when supplied with category params',
       async () => {
         const params: any = {
           limit: 10,

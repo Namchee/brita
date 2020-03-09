@@ -161,12 +161,12 @@ export class AnnouncementRepositoryTypeORM
   /**
    * Deletes an announcement from the database
    *
-   * @param {string} id ID of target announcement
+   * @param {number} id ID of target announcement
    * @return {Promise<boolean>} `true` if deletion is successful,
    * `false` otherwise
    */
-  public delete = async (id: string): Promise<boolean> => {
-    const deleteResult = await this.repository.delete({ id });
+  public delete = async (id: number): Promise<boolean> => {
+    const deleteResult = await this.repository.delete(id);
 
     return !!deleteResult.affected;
   }

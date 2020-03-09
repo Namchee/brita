@@ -36,7 +36,7 @@ export class AnnouncementService {
    * @param {object} params Request query criteria
    * @return {Promise<Announcement[]>} Array of announcements
    */
-  public find = async (params?: any): Promise<Announcement[]> => {
+  public find = async (params: any): Promise<Announcement[]> => {
     const validation = AnnouncementService.FIND_SCHEMA.validate(params);
 
     if (validation.error) {
@@ -44,8 +44,8 @@ export class AnnouncementService {
     }
 
     const paginationOptions = {
-      limit: params?.limit,
-      offset: params?.offset,
+      limit: params.limit,
+      offset: params.offset,
     };
 
     return params?.category ?
