@@ -22,6 +22,7 @@ interface FindAnnouncementOptions extends PagingOptions {
  */
 export interface AnnouncementRepository
   extends EntityRepository<Announcement> {
+  findById(id: string): Promise<Announcement | null>;
   /**
    * Get all Announcement which satisfies the requested category
    *
@@ -90,6 +91,17 @@ export class AnnouncementRepositoryTypeORM
       .take(options?.limit)
       .offset(options?.offset)
       .getMany();
+  }
+
+  public findById = async (id: number): Promise<Announcement | null> => {
+    return await this.repository.createQueryBuilder('announcement')
+      .select([
+        'announcement.title',
+        'announcement.content',
+        'announcement.validUntil',
+      ])
+      .where('announcement.id = :id', { id })
+      .getOne() || null;
   }
 
   /**

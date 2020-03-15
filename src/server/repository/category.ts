@@ -18,6 +18,14 @@ import {
  */
 export interface CategoryRepository extends EntityRepository<Category> {
   /**
+   * Check if a category exist in data source
+   *
+   * @param {number} id Identifier if the category
+   * @return {Promise<boolean>} `true` if category exists, `false`
+   * otherwise
+   */
+  exist(id: number): Promise<boolean>;
+  /**
    * Get all categories WITHOUT `count` for optimization purposes
    *
    * @param {PagingOptions=} options Pagination options
@@ -73,6 +81,19 @@ export class CategoryRepositoryTypeORM
    */
   protected get repository(): Repository<Category> {
     return this.manager.getRepository(CategoryEntity);
+  }
+
+  /**
+   * Check if a category exists in data source
+   *
+   * @param {number} id Identifier of the category
+   * @return {Promise<boolean>} `true` if category exists, `false`
+   * otherwise
+   */
+  public exist = async (id: number): Promise<boolean> => {
+    const count = await this.repository.findOne(id);
+
+    return !!count;
   }
 
   /**
@@ -178,7 +199,7 @@ export class CategoryRepositoryTypeORM
     }: Category,
   ): Promise<boolean> => {
     const updateResult = await this.repository.update(
-      { id },
+      id,
       {
         name,
         desc,

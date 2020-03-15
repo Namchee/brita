@@ -3,6 +3,7 @@ import { CategoryRepository } from '../repository/category';
 import { Category } from '../entity/category';
 import { UserError } from '../utils/error';
 import { PagingOptions } from '../repository/base';
+import { CATEGORY_ERROR_MESSAGE, ERROR_MESSAGE } from './err.msg';
 
 /**
  * Service for handling category REST request
@@ -17,17 +18,30 @@ export class CategoryService {
    * Validation schema for `find` method
    */
   private static readonly FIND_SCHEMA = Joi.object({
-    limit: Joi.number().min(0),
-    offset: Joi.number().min(0),
+    limit: Joi.number().error(() => ERROR_MESSAGE.LIMIT_IS_NUMBER)
+      .min(1).error(() => ERROR_MESSAGE.LIMIT_MINIMUM_ONE),
+    offset: Joi.number().error(() => ERROR_MESSAGE.OFFSET_IS_NUMBER)
+      .min(0).error(() => ERROR_MESSAGE.OFFSET_NON_NEGATIVE),
   });
 
+  /**
+   * Validation schema for `create` method
+   */
   private static readonly CREATE_SCHEMA = Joi.object({
-    name: Joi.string().min(3).max(25).regex(/^[a-zA-Z ]/).required(),
-    desc: Joi.string().min(10).max(100).required(),
+    name: Joi.string().error(() => CATEGORY_ERROR_MESSAGE.NAME_IS_STRING)
+      .required().error(() => CATEGORY_ERROR_MESSAGE.NAME_IS_REQUIRED)
+      .min(3).error(() => CATEGORY_ERROR_MESSAGE.NAME_MINIMUM_LIMIT)
+      .max(25).error(() => CATEGORY_ERROR_MESSAGE.NAME_MAXIMUM_LIMIT)
+      .regex(/^[a-zA-Z ]/).error(() => CATEGORY_ERROR_MESSAGE.NAME_ONLY_ALPHA),
+    desc: Joi.string().error(() => CATEGORY_ERROR_MESSAGE.DESC_IS_STRING)
+      .required().error(() => CATEGORY_ERROR_MESSAGE.DESC_IS_REQUIRED)
+      .min(10).error(() => CATEGORY_ERROR_MESSAGE.DESC_MINIMUM_LIMIT)
+      .max(100).error(() => CATEGORY_ERROR_MESSAGE.DESC_MAXIMUM_LIMIT),
   });
 
   private static readonly UPDATE_SCHEMA = CategoryService.CREATE_SCHEMA.keys({
-    id: Joi.number().required(),
+    id: Joi.number().error(() => CATEGORY_ERROR_MESSAGE.ID_IS_NUMBER)
+      .required().error(() => CATEGORY_ERROR_MESSAGE.ID_IS_REQUIRED),
   });
 
   /**
