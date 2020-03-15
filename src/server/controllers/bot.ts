@@ -1,4 +1,4 @@
-import { Context, Next } from 'koa';
+import { Context } from 'koa';
 import { LineBotServiceHub } from '../services/bot';
 
 /**

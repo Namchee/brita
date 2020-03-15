@@ -21,7 +21,7 @@ export class AnnouncementController {
   }
 
   /**
-   * Get announcements from the app by query criteria
+   * Controller function to get announcements from the app by query criteria
    *
    * @param {Context} ctx Koa context object
    * @return {Promise<void>} Sets the koa response object
@@ -35,6 +35,96 @@ export class AnnouncementController {
         data: result,
         error: null,
       };
+    } catch (err) {
+      if (err instanceof UserError) {
+        ctx.response.status = 400;
+        ctx.response.body = {
+          data: null,
+          error: err.message,
+        };
+
+        return;
+      }
+
+      ctx.app.emit('error', err, ctx);
+    }
+  }
+
+  /**
+   * Controller function to create a new announcement in the app
+   *
+   * @param {Context} ctx Koa's context object
+   * @return {Promise<void>} Sets the response body
+   */
+  public create = async (ctx: Context): Promise<void> => {
+    try {
+      const result = await this.service.create(ctx.request.body);
+
+      ctx.response.status = 201;
+      ctx.response.body = {
+        data: result,
+        error: null,
+      };
+    } catch (err) {
+      if (err instanceof UserError) {
+        ctx.response.status = 400;
+        ctx.response.body = {
+          data: null,
+          error: err.message,
+        };
+
+        return;
+      }
+
+      ctx.app.emit('error', err, ctx);
+    }
+  }
+
+  /**
+   * Controller function to delete an announcement from the app
+   *
+   * @param {Context} ctx Koa's context object
+   * @return {Promise<void>} Sets the response body
+   */
+  public delete = async (ctx: Context): Promise<void> => {
+    try {
+      await this.service.delete(ctx.params);
+
+      ctx.response.status = 203;
+      ctx.response.body = null;
+    } catch (err) {
+      if (err instanceof UserError) {
+        ctx.response.status = 400;
+        ctx.response.body = {
+          data: null,
+          error: err.message,
+        };
+
+        return;
+      }
+
+      ctx.app.emit('error', err, ctx);
+    }
+  }
+
+  /**
+   * Controller function to update an announcement in the app
+   * with new data
+   *
+   * @param {Context} ctx Koa's context object
+   * @return {Promise<void>} Sets the response body
+   */
+  public update = async (ctx: Context): Promise<void> => {
+    try {
+      const payload = {
+        id: ctx.params,
+        ...ctx.request.body,
+      };
+
+      const result = await this.service.update(payload);
+
+      ctx.response.status = result ? 204 : 404;
+      ctx.response.body = null;
     } catch (err) {
       if (err instanceof UserError) {
         ctx.response.status = 400;

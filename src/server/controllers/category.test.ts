@@ -6,7 +6,7 @@ jest.mock('./../services/category', () => ({
   CategoryService: jest.fn().mockImplementation(() => ({
     findAll: jest.fn().mockImplementation(() => []),
     findByName: jest.fn().mockImplementation(() => null),
-    create: jest.fn().mockImplementation(() => null),
+    create: jest.fn().mockImplementation(() => Promise.resolve({})),
     update: jest.fn().mockImplementation(() => true),
     delete: jest.fn().mockImplementation(() => true),
   })),
@@ -178,7 +178,7 @@ describe('Category REST controller unit test', () => {
   });
 
   describe('create', () => {
-    it('should respond with 200', async () => {
+    it('should respond with 201', async () => {
       jest.spyOn(service, 'create');
 
       const ctx: any = {
@@ -191,8 +191,8 @@ describe('Category REST controller unit test', () => {
 
       await controller.create(ctx);
 
-      expect(ctx.response.status).toBe(200);
-      expect(ctx.response.body.data).toStrictEqual(null);
+      expect(ctx.response.status).toBe(201);
+      expect(ctx.response.body.data).toStrictEqual({});
       expect(ctx.response.body.error).toBeNull;
       expect(service.create).toBeCalledTimes(1);
       expect(service.create).toBeCalledWith({});
@@ -247,10 +247,11 @@ describe('Category REST controller unit test', () => {
   });
 
   describe('update', () => {
-    it('should respond with 200', async () => {
+    it('should respond with 204', async () => {
       jest.spyOn(service, 'update');
 
       const ctx: any = {
+        params: '123',
         request: {
           body: {},
         },
@@ -260,11 +261,32 @@ describe('Category REST controller unit test', () => {
 
       await controller.update(ctx);
 
-      expect(ctx.response.status).toBe(200);
-      expect(ctx.response.body.data).toStrictEqual(true);
-      expect(ctx.response.body.error).toBeNull;
+      expect(ctx.response.status).toBe(204);
+      expect(ctx.response.body).toBeNull;
       expect(service.update).toBeCalledTimes(1);
-      expect(service.update).toBeCalledWith({});
+      expect(service.update).toBeCalledWith({ id: ctx.params });
+    });
+
+    it('should respond with 404 when entity is not found', async () => {
+      const spy = jest.spyOn(service, 'update');
+
+      spy.mockImplementation(() => Promise.resolve(false));
+
+      const ctx: any = {
+        params: '123',
+        request: {
+          body: {},
+        },
+      };
+
+      Object.assign(ctx, baseCtx);
+
+      await controller.update(ctx);
+
+      expect(ctx.response.status).toBe(404);
+      expect(ctx.response.body).toBeNull;
+      expect(service.update).toBeCalledTimes(1);
+      expect(service.update).toBeCalledWith({ id: ctx.params });
     });
 
     it('should respond with an error when user error occured', async () => {
@@ -316,8 +338,29 @@ describe('Category REST controller unit test', () => {
   });
 
   describe('delete', () => {
-    it('should respond with 200', async () => {
-      jest.spyOn(service, 'delete');
+    it(
+      'should respond with 204 when deletion performed successfully',
+      async () => {
+        jest.spyOn(service, 'delete');
+
+        const ctx: any = {
+          params: 'asd',
+        };
+
+        Object.assign(ctx, baseCtx);
+
+        await controller.delete(ctx);
+
+        expect(ctx.response.status).toBe(204);
+        expect(ctx.response.body).toBeNull;
+        expect(service.delete).toBeCalledTimes(1);
+        expect(service.delete).toBeCalledWith(ctx.params);
+      });
+
+    it('should respond with 404 when the entity is not found', async () => {
+      const spy = jest.spyOn(service, 'delete');
+
+      spy.mockImplementation(() => Promise.resolve(false));
 
       const ctx: any = {
         params: 'asd',
@@ -327,11 +370,10 @@ describe('Category REST controller unit test', () => {
 
       await controller.delete(ctx);
 
-      expect(ctx.response.status).toBe(200);
-      expect(ctx.response.body.data).toStrictEqual(true);
-      expect(ctx.response.body.error).toBeNull;
+      expect(ctx.response.status).toBe(404);
+      expect(ctx.response.body).toBeNull;
       expect(service.delete).toBeCalledTimes(1);
-      expect(service.delete).toBeCalledWith('asd');
+      expect(service.delete).toBeCalledWith(ctx.params);
     });
 
     it('should respond with an error when user error occured', async () => {

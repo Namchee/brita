@@ -90,7 +90,7 @@ export class CategoryController {
     try {
       const result = await this.service.create(ctx.request.body);
 
-      ctx.response.status = 200;
+      ctx.response.status = 201;
       ctx.response.body = {
         data: result,
         error: null,
@@ -120,11 +120,8 @@ export class CategoryController {
     try {
       const result = await this.service.delete(ctx.params);
 
-      ctx.response.status = 200;
-      ctx.response.body = {
-        data: result,
-        error: null,
-      };
+      ctx.response.status = result ? 204 : 404;
+      ctx.response.body = null;
     } catch (err) {
       if (err instanceof UserError) {
         ctx.response.status = 400;
@@ -148,13 +145,15 @@ export class CategoryController {
    */
   public update = async (ctx: Context): Promise<void> => {
     try {
-      const result = await this.service.update(ctx.request.body);
-
-      ctx.response.status = 200;
-      ctx.response.body = {
-        data: result,
-        error: null,
+      const payload = {
+        id: ctx.params,
+        ...ctx.request.body,
       };
+
+      const result = await this.service.update(payload);
+
+      ctx.response.status = result ? 204 : 404;
+      ctx.response.body = null;
     } catch (err) {
       if (err instanceof UserError) {
         ctx.response.status = 400;
