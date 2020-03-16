@@ -53,7 +53,10 @@ export function bootstrapApp(conn: Connection): ControllerList {
     categoryRepository,
   );
 
-  const announcementService = new AnnouncementService(announcementRepository);
+  const announcementService = new AnnouncementService(
+    announcementRepository,
+    categoryRepository,
+  );
   const categoryService = new CategoryService(categoryRepository);
 
   const serviceMap: StringMap = {};

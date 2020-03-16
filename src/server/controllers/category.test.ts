@@ -102,7 +102,9 @@ describe('Category REST controller unit test', () => {
       };
 
       const ctx: any = {
-        params: 'xxx',
+        request: {
+          query: {},
+        },
         app,
       };
 
@@ -110,6 +112,7 @@ describe('Category REST controller unit test', () => {
 
       await controller.findAll(ctx);
 
+      expect(service.findAll).toBeCalledTimes(1);
       expect(app.emit).toHaveBeenCalledTimes(1);
     });
   });
@@ -119,7 +122,9 @@ describe('Category REST controller unit test', () => {
       jest.spyOn(service, 'findByName');
 
       const ctx: any = {
-        params: 'asdasd',
+        params: {
+          name: 'asdasd',
+        },
       };
 
       Object.assign(ctx, baseCtx);
@@ -141,7 +146,9 @@ describe('Category REST controller unit test', () => {
       });
 
       const ctx: any = {
-        params: 'asda',
+        params: {
+          name: 'asda',
+        },
       };
 
       Object.assign(ctx, baseCtx);
@@ -165,7 +172,9 @@ describe('Category REST controller unit test', () => {
       };
 
       const ctx: any = {
-        params: 'asd',
+        params: {
+          name: 'asda',
+        },
         app,
       };
 
@@ -251,7 +260,9 @@ describe('Category REST controller unit test', () => {
       jest.spyOn(service, 'update');
 
       const ctx: any = {
-        params: '123',
+        params: {
+          id: '123',
+        },
         request: {
           body: {},
         },
@@ -264,7 +275,7 @@ describe('Category REST controller unit test', () => {
       expect(ctx.response.status).toBe(204);
       expect(ctx.response.body).toBeNull;
       expect(service.update).toBeCalledTimes(1);
-      expect(service.update).toBeCalledWith({ id: ctx.params });
+      expect(service.update).toBeCalledWith({ id: ctx.params.id });
     });
 
     it('should respond with 404 when entity is not found', async () => {
@@ -273,7 +284,9 @@ describe('Category REST controller unit test', () => {
       spy.mockImplementation(() => Promise.resolve(false));
 
       const ctx: any = {
-        params: '123',
+        params: {
+          id: '123',
+        },
         request: {
           body: {},
         },
@@ -286,7 +299,7 @@ describe('Category REST controller unit test', () => {
       expect(ctx.response.status).toBe(404);
       expect(ctx.response.body).toBeNull;
       expect(service.update).toBeCalledTimes(1);
-      expect(service.update).toBeCalledWith({ id: ctx.params });
+      expect(service.update).toBeCalledWith({ id: ctx.params.id });
     });
 
     it('should respond with an error when user error occured', async () => {
@@ -297,6 +310,9 @@ describe('Category REST controller unit test', () => {
       });
 
       const ctx: any = {
+        params: {
+          id: '123',
+        },
         request: {
           body: {},
         },
@@ -344,7 +360,9 @@ describe('Category REST controller unit test', () => {
         jest.spyOn(service, 'delete');
 
         const ctx: any = {
-          params: 'asd',
+          params: {
+            id: 'asd',
+          },
         };
 
         Object.assign(ctx, baseCtx);
@@ -354,7 +372,7 @@ describe('Category REST controller unit test', () => {
         expect(ctx.response.status).toBe(204);
         expect(ctx.response.body).toBeNull;
         expect(service.delete).toBeCalledTimes(1);
-        expect(service.delete).toBeCalledWith(ctx.params);
+        expect(service.delete).toBeCalledWith(ctx.params.id);
       });
 
     it('should respond with 404 when the entity is not found', async () => {
@@ -363,7 +381,9 @@ describe('Category REST controller unit test', () => {
       spy.mockImplementation(() => Promise.resolve(false));
 
       const ctx: any = {
-        params: 'asd',
+        params: {
+          id: 'asd',
+        },
       };
 
       Object.assign(ctx, baseCtx);
@@ -373,7 +393,7 @@ describe('Category REST controller unit test', () => {
       expect(ctx.response.status).toBe(404);
       expect(ctx.response.body).toBeNull;
       expect(service.delete).toBeCalledTimes(1);
-      expect(service.delete).toBeCalledWith(ctx.params);
+      expect(service.delete).toBeCalledWith(ctx.params.id);
     });
 
     it('should respond with an error when user error occured', async () => {
@@ -384,7 +404,9 @@ describe('Category REST controller unit test', () => {
       });
 
       const ctx: any = {
-        params: 'asd',
+        params: {
+          id: 'asd',
+        },
       };
 
       Object.assign(ctx, baseCtx);
@@ -408,7 +430,9 @@ describe('Category REST controller unit test', () => {
       };
 
       const ctx: any = {
-        params: 'asd',
+        params: {
+          id: 'asd',
+        },
         app,
       };
 

@@ -58,7 +58,7 @@ export class CategoryController {
    */
   public findByName = async (ctx: Context): Promise<void> => {
     try {
-      const result = await this.service.findByName(ctx.params);
+      const result = await this.service.findByName(ctx.params.name);
 
       ctx.response.status = 200;
       ctx.response.body = {
@@ -118,7 +118,7 @@ export class CategoryController {
    */
   public delete = async (ctx: Context): Promise<void> => {
     try {
-      const result = await this.service.delete(ctx.params);
+      const result = await this.service.delete(ctx.params.id);
 
       ctx.response.status = result ? 204 : 404;
       ctx.response.body = null;
@@ -146,7 +146,7 @@ export class CategoryController {
   public update = async (ctx: Context): Promise<void> => {
     try {
       const payload = {
-        id: ctx.params,
+        id: ctx.params.id,
         ...ctx.request.body,
       };
 

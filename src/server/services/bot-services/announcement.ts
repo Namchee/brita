@@ -17,6 +17,7 @@ import {
   generateCarouselContainer,
   generateFlexMessage,
 } from './utils/formatter';
+import { Announcement } from '../../entity/announcement';
 
 /**
  * A class which provide services for serving announcements
@@ -264,18 +265,19 @@ export class BotAnnouncementService extends BotService {
       };
     }
 
-    const bubbles: FlexBubble[] = announcements.map((announcement) => {
-      const header = generateTextComponent(
-        announcement.title,
-        'lg',
-        true,
-        true,
-      );
+    const bubbles: FlexBubble[] = announcements.map(
+      (announcement: Announcement) => {
+        const header = generateTextComponent(
+          announcement.title,
+          'lg',
+          true,
+          true,
+        );
 
-      const body = generateTextComponent(announcement.contents);
+        const body = generateTextComponent(announcement.contents);
 
-      return generateBubbleContainer([body], header, true, true);
-    });
+        return generateBubbleContainer([body], header, true, true);
+      });
 
     const carouselContainer = generateCarouselContainer(bubbles);
 

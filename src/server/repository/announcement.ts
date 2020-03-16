@@ -22,16 +22,23 @@ interface FindAnnouncementOptions extends PagingOptions {
  */
 export interface AnnouncementRepository
   extends EntityRepository<Announcement> {
-  findById(id: string): Promise<Announcement | null>;
+  /**
+    * Get an announcement by its identifier from the data source
+    *
+    * @param {number} ID Identifier of the announcement
+    * @return {Promise<Announcement | null>} Announcement entity if found,
+    * `null` otherwise
+    */
+  findById(id: number): Promise<Announcement | null>;
   /**
    * Get all Announcement which satisfies the requested category
    *
-   * @param {Category} category Requested category id
+   * @param {Category} category Requested category identfier
    * @param {FindAnnouncementOptions=} options Options for pagination purposes
    * @return {Announcement[]} Array of announcements
    */
   findByCategory(
-    category: string,
+    category: number,
     options?: FindAnnouncementOptions,
   ): Promise<Announcement[]>;
   /**
@@ -83,7 +90,7 @@ export class AnnouncementRepositoryTypeORM
       )
       .select([
         'announcement.title',
-        'announcement.content',
+        'announcement.contents',
         'announcement.validUntil',
         'categories.id',
         'categories.name',
@@ -107,13 +114,13 @@ export class AnnouncementRepositoryTypeORM
   /**
    * Get all announcements which satisfies the requested category
    *
-   * @param {Category} category Requested category's id
+   * @param {Category} category Requested category's identifier
    * @param {FindAnnouncementOptions=} options Find announcement options
    * @return {Promise<Announcement[]>} Announcement array, which
    * satisfies the requested category
    */
   public findByCategory = async (
-    category: string,
+    category: number,
     options?: FindAnnouncementOptions,
   ): Promise<Announcement[]> => {
     let query = this.repository

@@ -88,9 +88,9 @@ export class AnnouncementController {
    */
   public delete = async (ctx: Context): Promise<void> => {
     try {
-      await this.service.delete(ctx.params);
+      const result = await this.service.delete(ctx.params.id);
 
-      ctx.response.status = 203;
+      ctx.response.status = result ? 204 : 404;
       ctx.response.body = null;
     } catch (err) {
       if (err instanceof UserError) {
@@ -117,7 +117,7 @@ export class AnnouncementController {
   public update = async (ctx: Context): Promise<void> => {
     try {
       const payload = {
-        id: ctx.params,
+        id: ctx.params.id,
         ...ctx.request.body,
       };
 

@@ -4,6 +4,7 @@ import { Entity } from './base';
  * An interface which represents single Category entity
  */
 export interface Category extends Entity {
+  id: number;
   /**
    * Name of the Category
    *

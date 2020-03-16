@@ -65,10 +65,16 @@ export class AnnouncementService {
   /**
    * Constructor for AnnouncementService
    *
-   * @param {AnnouncementRepository} repository Data source for announcement
+   * @param {AnnouncementRepository} announcementRepository
+   * Data source for announcements
+   * @param {categoryRepository} categoryRepository Data source for categories
    */
-  public constructor(repository: AnnouncementRepository) {
-    this.announcementRepository = repository;
+  public constructor(
+    announcementRepository: AnnouncementRepository,
+    categoryRepository: CategoryRepository,
+  ) {
+    this.announcementRepository = announcementRepository;
+    this.categoryRepository = categoryRepository;
   }
 
   /**

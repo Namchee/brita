@@ -5,6 +5,7 @@ import { Category } from './category';
  * An interface which represents single Announcement entity
  */
 export interface Announcement extends Entity {
+  id: number;
   /**
    * Title for the Announcement
    *
