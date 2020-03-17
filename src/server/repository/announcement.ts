@@ -95,7 +95,7 @@ export class AnnouncementRepositoryTypeORM
         'categories.id',
         'categories.name',
       ])
-      .take(options?.limit)
+      .limit(options?.limit)
       .offset(options?.offset)
       .getMany();
   }
@@ -134,7 +134,7 @@ export class AnnouncementRepositoryTypeORM
         'announcement.content',
         'announcement.validUntil',
       ])
-      .take(options?.limit)
+      .limit(options?.limit)
       .offset(options?.offset);
 
     if (options?.validUntil) {

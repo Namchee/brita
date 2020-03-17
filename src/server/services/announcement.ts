@@ -4,6 +4,15 @@ import { Announcement } from '../entity/announcement';
 import { UserError } from '../utils/error';
 import { CategoryRepository } from '../repository/category';
 import { ERROR_MESSAGE, ANNOUNCEMENT_ERROR_MESSAGE } from './err.msg';
+import { Category } from '../entity/category';
+
+interface AnnouncementDTO {
+  'id': number;
+  'title': string;
+  'contents': string;
+  'valid_until': number;
+  'categories'?: Category[];
+}
 
 /**
  * Service for handling announcement REST API request
@@ -26,28 +35,30 @@ export class AnnouncementService {
   private static readonly FIND_SCHEMA = Joi.object({
     limit: Joi.number().error(() => ERROR_MESSAGE.LIMIT_IS_NUMBER)
       .min(1).error(() => ERROR_MESSAGE.LIMIT_MINIMUM_ONE),
-    offset: Joi.number().error(() => ERROR_MESSAGE.OFFSET_IS_NUMBER)
+    start: Joi.number().error(() => ERROR_MESSAGE.OFFSET_IS_NUMBER)
       .min(0).error(() => ERROR_MESSAGE.OFFSET_NON_NEGATIVE),
     category: Joi.number()
       .error(() => ANNOUNCEMENT_ERROR_MESSAGE.CATEGORY_IS_NUMBER),
   });
 
   private static readonly CREATE_SCHEMA = Joi.object({
-    title: Joi.string().error(() => ANNOUNCEMENT_ERROR_MESSAGE.TITLE_IS_STRING)
+    'title': Joi.string()
+      .error(() => ANNOUNCEMENT_ERROR_MESSAGE.TITLE_IS_STRING)
       .required().error(() => ANNOUNCEMENT_ERROR_MESSAGE.TITLE_IS_REQUIRED)
       .min(3).error(() => ANNOUNCEMENT_ERROR_MESSAGE.TITLE_MINIMUM_LIMIT)
       .max(25).error(() => ANNOUNCEMENT_ERROR_MESSAGE.TITLE_MAXIMUM_LIMIT)
       .regex(/^[a-zA-Z0-9 -,.]/)
       .error(() => ANNOUNCEMENT_ERROR_MESSAGE.TITLE_CHARACTER_LIMIT),
-    contents: Joi.string()
+    'contents': Joi.string()
       .error(() => ANNOUNCEMENT_ERROR_MESSAGE.CONTENTS_IS_STRING)
       .required().error(() => ANNOUNCEMENT_ERROR_MESSAGE.CONTENTS_IS_REQUIRED)
       .min(10).error(() => ANNOUNCEMENT_ERROR_MESSAGE.CONTENTS_MINIMUM_LIMIT)
       .max(250).error(() => ANNOUNCEMENT_ERROR_MESSAGE.CONTENTS_MAXIMUM_LIMIT),
-    validUntil: Joi.date().error(() => ANNOUNCEMENT_ERROR_MESSAGE.VALID_IS_DATE)
+    'valid_until': Joi.date()
+      .error(() => ANNOUNCEMENT_ERROR_MESSAGE.VALID_IS_DATE)
       .iso().error(() => ANNOUNCEMENT_ERROR_MESSAGE.VALID_IS_ISO)
       .required().error(() => ANNOUNCEMENT_ERROR_MESSAGE.VALID_IS_REQUIRED),
-    categories: Joi.array()
+    'categories': Joi.array()
       .error(() => ANNOUNCEMENT_ERROR_MESSAGE.CATEGORIES_IS_ARRAY)
       .required().error(() => ANNOUNCEMENT_ERROR_MESSAGE.CATEGORIES_IS_REQUIRED)
       .min(1).error(() => ANNOUNCEMENT_ERROR_MESSAGE.CATEGORIES_MINIMUM_LIMIT)
@@ -81,9 +92,9 @@ export class AnnouncementService {
    * Get announcements from data source by query criteria
    *
    * @param {object} params Request query criteria
-   * @return {Promise<Announcement[]>} Array of announcements
+   * @return {Promise<AnnouncementDTO[]>} Array of announcements
    */
-  public find = async (params: any): Promise<Announcement[]> => {
+  public find = async (params: any): Promise<AnnouncementDTO[]> => {
     const validation = AnnouncementService.FIND_SCHEMA.validate(params);
 
     if (validation.error) {
@@ -92,24 +103,32 @@ export class AnnouncementService {
 
     const paginationOptions = {
       limit: params.limit,
-      offset: params.offset,
+      offset: params.start,
     };
 
-    return params?.category ?
-      this.announcementRepository.findByCategory(
+    if (params.category) {
+      const announcements = await this.announcementRepository.findByCategory(
         params.category,
         paginationOptions,
-      ) :
-      this.announcementRepository.findAll(paginationOptions);
+      );
+
+      return announcements.map(announcement => this.toDTO(announcement));
+    }
+
+    const announcements = await this.announcementRepository.findAll(
+      paginationOptions,
+    );
+
+    return announcements.map(announcement => this.toDTO(announcement));
   }
 
   /**
    * Creates a new announcement in the app
    *
    * @param {object} params Announcement's data
-   * @return {Promise<Announcement>} Newly created Announcement
+   * @return {Promise<AnnouncementDTO>} Newly created Announcement
    */
-  public create = async (params: any): Promise<Announcement> => {
+  public create = async (params: any): Promise<AnnouncementDTO> => {
     const validation = AnnouncementService.CREATE_SCHEMA.validate(params);
 
     if (validation.error) {
@@ -121,7 +140,7 @@ export class AnnouncementService {
     const insertResult = await this.announcementRepository.create(
       params.title,
       params.content,
-      new Date(params.validUntil),
+      new Date(params['valid_until']),
       params.categories,
     );
 
@@ -129,7 +148,7 @@ export class AnnouncementService {
       throw new UserError(ANNOUNCEMENT_ERROR_MESSAGE.TITLE_ALREADY_EXIST);
     }
 
-    return insertResult;
+    return this.toDTO(insertResult);
   }
 
   /**
@@ -182,7 +201,7 @@ export class AnnouncementService {
    * @return {Promise<void>} Will throw an Error if data is invalid
    */
   private async checkAnnouncementValidity(params: any): Promise<void> {
-    const validDate = new Date(params.validUntil);
+    const validDate = new Date(params['valid_until']);
 
     if (validDate.getTime() < Date.now()) {
       throw new UserError(ANNOUNCEMENT_ERROR_MESSAGE.VALID_IS_LATER);
@@ -197,5 +216,22 @@ export class AnnouncementService {
     if (categories.some((category => !category))) {
       throw new UserError(ANNOUNCEMENT_ERROR_MESSAGE.CATEGORY_NOT_EXIST);
     }
+  }
+
+  /**
+   * Converts Announcement Entity to REST API DTO, which
+   * uses underscore case
+   *
+   * @param {Announcement} entity Announcement entity
+   * @return {AnnouncementDTO} Announcement REST API DTO
+   */
+  private toDTO(entity: Announcement): AnnouncementDTO {
+    return {
+      'id': entity.id,
+      'title': entity.title,
+      'contents': entity.contents,
+      'valid_until': entity.validUntil.getTime(),
+      'categories': entity.categories,
+    };
   }
 }

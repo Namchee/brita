@@ -2,7 +2,6 @@ import Joi from '@hapi/joi';
 import { CategoryRepository } from '../repository/category';
 import { Category } from '../entity/category';
 import { UserError } from '../utils/error';
-import { PagingOptions } from '../repository/base';
 import { CATEGORY_ERROR_MESSAGE, ERROR_MESSAGE } from './err.msg';
 
 /**
@@ -20,7 +19,7 @@ export class CategoryService {
   private static readonly FIND_SCHEMA = Joi.object({
     limit: Joi.number().error(() => ERROR_MESSAGE.LIMIT_IS_NUMBER)
       .min(1).error(() => ERROR_MESSAGE.LIMIT_MINIMUM_ONE),
-    offset: Joi.number().error(() => ERROR_MESSAGE.OFFSET_IS_NUMBER)
+    start: Joi.number().error(() => ERROR_MESSAGE.OFFSET_IS_NUMBER)
       .min(0).error(() => ERROR_MESSAGE.OFFSET_NON_NEGATIVE),
   });
 
@@ -66,7 +65,12 @@ export class CategoryService {
       throw new UserError(validation.error.message);
     }
 
-    return this.repository.findAll(params as PagingOptions);
+    const paginationOptions = {
+      limit: params.limit,
+      offset: params.start,
+    };
+
+    return this.repository.findAll(paginationOptions);
   }
 
   /**

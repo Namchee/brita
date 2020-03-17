@@ -365,6 +365,8 @@ export class AnnouncementRepositoryMock implements AnnouncementRepository {
 }
 
 export class CategoryRepositoryMock implements CategoryRepository {
+  public exist = async () => true;
+
   public findAll = async (options?: PagingOptions): Promise<Category[]> => {
     return options && options.offset && options.limit ?
       categories.slice(

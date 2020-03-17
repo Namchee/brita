@@ -19,9 +19,9 @@ export interface Announcement extends Entity {
    */
   contents: string;
   /**
-   * Announcement expiration Date
+   * Announcement expiration date
    *
-   * An Announcement will be deleted if passed this value
+   * Always store this on UTC timezone
    */
   validUntil: Date;
   /**

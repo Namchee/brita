@@ -1,9 +1,9 @@
 /* eslint-disable max-len */
 export enum ERROR_MESSAGE {
-  LIMIT_IS_NUMBER = '"limit" harus merupakan sebuah angka',
+  LIMIT_IS_NUMBER = 'Opsi "limit" harus merupakan sebuah angka',
   LIMIT_MINIMUM_ONE = 'Jumlah kategori minimum yang diizinkan untuk diminta adalah 1 buah',
-  OFFSET_NON_NEGATIVE = '"offset" harus merupakan sebuah bilangan non-negatif',
-  OFFSET_IS_NUMBER = '"offset" harus merupakan sebuah bilangan',
+  OFFSET_NON_NEGATIVE = 'Opsi "start" harus merupakan sebuah bilangan non-negatif',
+  OFFSET_IS_NUMBER = 'Opsi "start" harus merupakan sebuah bilangan',
 }
 
 export enum CATEGORY_ERROR_MESSAGE {

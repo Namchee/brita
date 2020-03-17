@@ -1,5 +1,6 @@
 DROP INDEX IF EXISTS "category_name_index";
 DROP VIEW IF EXISTS category_with_count;
+DROP TABLE IF EXISTS administrator;
 DROP TABLE IF EXISTS announcement_categories;
 DROP TABLE IF EXISTS announcement;
 DROP TABLE IF EXISTS category;
@@ -124,3 +125,17 @@ VALUES (12, 2);
 
 INSERT INTO announcement_categories
 VALUES (13, 2);
+
+CREATE TABLE IF NOT EXISTS administrator (
+	id SERIAL PRIMARY KEY,
+	"name" VARCHAR(100),
+	email VARCHAR(100) NOT NULL,
+	profile_pic VARCHAR(200),
+	is_root BOOLEAN NOT NULL,
+	is_active BOOLEAN NOT NULL
+);
+
+INSERT INTO administrator (email, is_root, is_active)
+VALUES ('cristophernamchee12@gmail.com', true, false);
+
+

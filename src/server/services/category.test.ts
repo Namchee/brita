@@ -1,6 +1,5 @@
 import { CategoryService } from './category';
 import { CategoryRepositoryMock, categories } from './test.util';
-import { PagingOptions } from '../repository/base';
 import { UserError } from '../utils/error';
 
 describe('Category REST service unit test', () => {
@@ -27,9 +26,9 @@ describe('Category REST service unit test', () => {
     it(
       'should return categories subset when supplied with parameters',
       async () => {
-        const params: PagingOptions = {
+        const params: any = {
           limit: 1,
-          offset: 1,
+          start: 1,
         };
 
         const result = await service.findAll(params);
@@ -44,7 +43,7 @@ describe('Category REST service unit test', () => {
       async () => {
         const params: any = {
           limit: 'a string lol',
-          offset: 1,
+          start: 1,
         };
 
         expect(service.findAll(params)).rejects.toBeInstanceOf(UserError);
