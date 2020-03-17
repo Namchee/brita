@@ -89,6 +89,7 @@ export class AnnouncementRepositoryTypeORM
         'categories',
       )
       .select([
+        'announcement.id',
         'announcement.title',
         'announcement.contents',
         'announcement.validUntil',
@@ -103,6 +104,7 @@ export class AnnouncementRepositoryTypeORM
   public findById = async (id: number): Promise<Announcement | null> => {
     return await this.repository.createQueryBuilder('announcement')
       .select([
+        'announcement.id',
         'announcement.title',
         'announcement.content',
         'announcement.validUntil',
