@@ -47,3 +47,19 @@ export enum ANNOUNCEMENT_ERROR_MESSAGE {
   VALID_IS_LATER = 'Waktu berlaku pengumuman harus lebih tua dari hari ini',
   VALID_HAS_EXPIRED = 'Pengumuman sudah tidak berlaku lagi. Silahkan membuat pengumuman baru'
 }
+
+export enum USER_ERROR_MESSAGE {
+  EMAIL_IS_STRING = 'Email harus merupakan sebuah string',
+  EMAIL_IS_EMAIL = 'Email harus merupakan sebuah email yang valid',
+  EMAIL_IS_REQUIRED = 'Email harus ada',
+  EMAIL_ALREADY_EXIST = 'Akun dengan email yang sama sudah ada',
+  EMAIL_GOOGLE_NOT_EXIST = 'Akun Google ini belum didaftarkan pada sistem',
+  TOKEN_IS_STRING = 'ID token harus merupakan sebuah string',
+  TOKEN_IS_TOKEN = 'ID token harus merupakan sebuah token JWT',
+  TOKEN_IS_REQUIRED = 'ID token harus ada',
+  TOKEN_INVALID = 'ID token anda tidak valid. Mohon perbaiki ID token anda',
+  ADMINISTRATOR_IS_ROOT = 'Anda tidak dapat menghapus administrator utama',
+  CREATE_ONLY_ROOT = 'Pembuatan administrator baru hanya dapat dilakukan oleh administrator utama',
+  DELETE_ONLY_ROOT = 'Penghapusan administrator hanya dapat dilakukan oleh administrator utama',
+  USER_ACTIVE_ONLY = 'Hanya administrator yang sudah aktif yang dapat menggunakan fitur ini',
+}

@@ -6,7 +6,6 @@
         "src"
     ],
     "env": {
-        "NODE_ENV": "development",
-        "DEBUG": "koa*"
+        "NODE_ENV": "development"
     }
 }

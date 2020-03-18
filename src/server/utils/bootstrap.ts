@@ -13,6 +13,11 @@ import { AnnouncementController } from '../controllers/announcement';
 import { CategoryController } from '../controllers/category';
 import { AnnouncementService } from '../services/announcement';
 import { CategoryService } from '../services/category';
+import { UserRepositoryTypeORM } from '../repository/user';
+import { UserService } from '../services/user';
+import { UserController } from '../controllers/user';
+import { AuthenticationMiddleware } from './middleware';
+import { OAuth2Client } from 'google-auth-library';
 
 /**
  * An interface which describes key-value mapping for bootstrapped
@@ -22,6 +27,9 @@ export interface ControllerList {
   lineController: LineBotController;
   announcementController: AnnouncementController;
   categoryController: CategoryController;
+  userController: UserController;
+
+  authMiddleware: AuthenticationMiddleware;
 }
 
 /**
@@ -40,6 +48,9 @@ export function bootstrapApp(conn: Connection): ControllerList {
   const client = new Client(lineConfig);
   const redisClient = new Redis(config.redisUrl);
 
+  const userRepository = conn.getCustomRepository(
+    UserRepositoryTypeORM,
+  );
   const announcementRepository = conn.getCustomRepository(
     AnnouncementRepositoryTypeORM,
   );
@@ -58,6 +69,11 @@ export function bootstrapApp(conn: Connection): ControllerList {
     categoryRepository,
   );
   const categoryService = new CategoryService(categoryRepository);
+  const userService = new UserService(
+    userRepository,
+  );
+
+  const oauthClient = new OAuth2Client(config.oauthToken);
 
   const serviceMap: StringMap = {};
 
@@ -69,5 +85,7 @@ export function bootstrapApp(conn: Connection): ControllerList {
     lineController: new LineBotController(serviceHub),
     announcementController: new AnnouncementController(announcementService),
     categoryController: new CategoryController(categoryService),
+    userController: new UserController(userService),
+    authMiddleware: new AuthenticationMiddleware(oauthClient, userRepository),
   };
 }

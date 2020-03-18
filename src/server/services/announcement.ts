@@ -19,17 +19,6 @@ interface AnnouncementDTO {
  */
 export class AnnouncementService {
   /**
-   * Announcement data source, a.k.a repository
-   */
-  private readonly announcementRepository: AnnouncementRepository;
-  /**
-   * Category data source, a.k.a repository
-   *
-   * Used to check if a category exists in the app or not
-   */
-  private readonly categoryRepository: CategoryRepository;
-
-  /**
    * Validation schema for `find` method
    */
   private static readonly FIND_SCHEMA = Joi.object({
@@ -43,14 +32,14 @@ export class AnnouncementService {
 
   private static readonly CREATE_SCHEMA = Joi.object({
     'title': Joi.string()
-      .error(() => ANNOUNCEMENT_ERROR_MESSAGE.TITLE_IS_STRING)
-      .required().error(() => ANNOUNCEMENT_ERROR_MESSAGE.TITLE_IS_REQUIRED)
-      .min(3).error(() => ANNOUNCEMENT_ERROR_MESSAGE.TITLE_MINIMUM_LIMIT)
-      .max(25).error(() => ANNOUNCEMENT_ERROR_MESSAGE.TITLE_MAXIMUM_LIMIT)
+      .error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.TITLE_IS_STRING))
+      .required().error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.TITLE_IS_REQUIRED))
+      .min(3).error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.TITLE_MINIMUM_LIMIT))
+      .max(25).error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.TITLE_MAXIMUM_LIMIT))
       .regex(/^[a-zA-Z0-9 -,.]/)
-      .error(() => ANNOUNCEMENT_ERROR_MESSAGE.TITLE_CHARACTER_LIMIT),
+      .error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.TITLE_CHARACTER_LIMIT)),
     'contents': Joi.string()
-      .error(() => ANNOUNCEMENT_ERROR_MESSAGE.CONTENTS_IS_STRING)
+      .error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.CONTENTS_IS_STRING))
       .required().error(() => ANNOUNCEMENT_ERROR_MESSAGE.CONTENTS_IS_REQUIRED)
       .min(10).error(() => ANNOUNCEMENT_ERROR_MESSAGE.CONTENTS_MINIMUM_LIMIT)
       .max(250).error(() => ANNOUNCEMENT_ERROR_MESSAGE.CONTENTS_MAXIMUM_LIMIT),
@@ -81,12 +70,9 @@ export class AnnouncementService {
    * @param {categoryRepository} categoryRepository Data source for categories
    */
   public constructor(
-    announcementRepository: AnnouncementRepository,
-    categoryRepository: CategoryRepository,
-  ) {
-    this.announcementRepository = announcementRepository;
-    this.categoryRepository = categoryRepository;
-  }
+    private readonly announcementRepository: AnnouncementRepository,
+    private readonly categoryRepository: CategoryRepository,
+  ) { }
 
   /**
    * Get announcements from data source by query criteria
@@ -140,7 +126,7 @@ export class AnnouncementService {
     const insertResult = await this.announcementRepository.create(
       params.title,
       params.content,
-      new Date(params['valid_until']),
+      new Date(params.valid_until),
       params.categories,
     );
 
@@ -227,11 +213,11 @@ export class AnnouncementService {
    */
   private toDTO(entity: Announcement): AnnouncementDTO {
     return {
-      'id': entity.id,
-      'title': entity.title,
-      'contents': entity.contents,
-      'valid_until': entity.validUntil.getTime(),
-      'categories': entity.categories,
+      id: entity.id,
+      title: entity.title,
+      contents: entity.contents,
+      valid_until: entity.validUntil.getTime(),
+      categories: entity.categories,
     };
   }
 }

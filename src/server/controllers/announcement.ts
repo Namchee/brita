@@ -7,18 +7,11 @@ import { UserError } from '../utils/error';
  */
 export class AnnouncementController {
   /**
-   * Services which the controller calls from
-   */
-  private readonly service: AnnouncementService;
-
-  /**
    * Constructor for AnnouncementController
    *
    * @param {AnnouncementService} service Announcement services
    */
-  public constructor(service: AnnouncementService) {
-    this.service = service;
-  }
+  public constructor(private readonly service: AnnouncementService) { }
 
   /**
    * Controller function to get announcements from the app by query criteria
@@ -30,18 +23,18 @@ export class AnnouncementController {
     try {
       const result = await this.service.find(ctx.request.query);
 
-      ctx.response.status = 200;
       ctx.response.body = {
         data: result,
         error: null,
       };
+      ctx.response.status = 200;
     } catch (err) {
       if (err instanceof UserError) {
-        ctx.response.status = 400;
         ctx.response.body = {
           data: null,
           error: err.message,
         };
+        ctx.response.status = 400;
 
         return;
       }
@@ -60,18 +53,18 @@ export class AnnouncementController {
     try {
       const result = await this.service.create(ctx.request.body);
 
-      ctx.response.status = 201;
       ctx.response.body = {
         data: result,
         error: null,
       };
+      ctx.response.status = 201;
     } catch (err) {
       if (err instanceof UserError) {
-        ctx.response.status = 400;
         ctx.response.body = {
           data: null,
           error: err.message,
         };
+        ctx.response.status = 400;
 
         return;
       }
@@ -90,15 +83,15 @@ export class AnnouncementController {
     try {
       const result = await this.service.delete(ctx.params.id);
 
-      ctx.response.status = result ? 204 : 404;
       ctx.response.body = null;
+      ctx.response.status = result ? 204 : 404;
     } catch (err) {
       if (err instanceof UserError) {
-        ctx.response.status = 400;
         ctx.response.body = {
           data: null,
           error: err.message,
         };
+        ctx.response.status = 400;
 
         return;
       }
@@ -123,15 +116,15 @@ export class AnnouncementController {
 
       const result = await this.service.update(payload);
 
-      ctx.response.status = result ? 204 : 404;
       ctx.response.body = null;
+      ctx.response.status = result ? 204 : 404;
     } catch (err) {
       if (err instanceof UserError) {
-        ctx.response.status = 400;
         ctx.response.body = {
           data: null,
           error: err.message,
         };
+        ctx.response.status = 400;
 
         return;
       }

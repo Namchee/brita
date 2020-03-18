@@ -21,6 +21,12 @@ export function generateRoutes(controllers: ControllerList): Router {
   );
   // Define router for REST API
   router.use('/api', apiRoute.routes());
+  // Special route for handling logins
+  router.post(
+    '/login',
+    controllers.authMiddleware.authenticateUser,
+    controllers.userController.login,
+  );
 
   return router;
 }

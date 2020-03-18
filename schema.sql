@@ -137,5 +137,3 @@ CREATE TABLE IF NOT EXISTS administrator (
 
 INSERT INTO administrator (email, is_root, is_active)
 VALUES ('cristophernamchee12@gmail.com', true, false);
-
-

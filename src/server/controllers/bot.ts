@@ -29,8 +29,8 @@ export class LineBotController {
         ctx.request.body.events.map(this.serviceHub.handleBotQuery),
       );
 
-      ctx.response.status = 200;
       ctx.response.body = botQueryResult;
+      ctx.response.status = 200;
     } catch (err) {
       ctx.app.emit('error', err, ctx);
     }

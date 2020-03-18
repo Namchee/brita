@@ -9,11 +9,6 @@ import { CATEGORY_ERROR_MESSAGE, ERROR_MESSAGE } from './err.msg';
  */
 export class CategoryService {
   /**
-   * Data source for categories, a.k.a repository
-   */
-  private readonly repository: CategoryRepository;
-
-  /**
    * Validation schema for `find` method
    */
   private static readonly FIND_SCHEMA = Joi.object({
@@ -48,9 +43,7 @@ export class CategoryService {
    *
    * @param {CategoryRepository} repository Data source for categories
    */
-  public constructor(repository: CategoryRepository) {
-    this.repository = repository;
-  }
+  public constructor(private readonly repository: CategoryRepository) { }
 
   /**
    * Get categories from data source with query criteria

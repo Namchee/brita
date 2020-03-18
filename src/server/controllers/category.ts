@@ -7,18 +7,11 @@ import { UserError } from '../utils/error';
  */
 export class CategoryController {
   /**
-   * Services which the controller calls from
-   */
-  private readonly service: CategoryService;
-
-  /**
    * Constructor for CategoryController
    *
    * @param {CategoryService} service Category services
    */
-  public constructor(service: CategoryService) {
-    this.service = service;
-  }
+  public constructor(private readonly service: CategoryService) { }
 
   /**
    * Get all categories from the app
@@ -30,18 +23,18 @@ export class CategoryController {
     try {
       const result = await this.service.findAll(ctx.request.query);
 
-      ctx.response.status = 200;
       ctx.response.body = {
         data: result,
         error: null,
       };
+      ctx.response.status = 200;
     } catch (err) {
       if (err instanceof UserError) {
-        ctx.response.status = 400;
         ctx.response.body = {
           data: null,
           error: err.message,
         };
+        ctx.response.status = 400;
 
         return;
       }
@@ -60,18 +53,18 @@ export class CategoryController {
     try {
       const result = await this.service.findByName(ctx.params.name);
 
-      ctx.response.status = 200;
       ctx.response.body = {
         data: result,
         error: null,
       };
+      ctx.response.status = 200;
     } catch (err) {
       if (err instanceof UserError) {
-        ctx.response.status = 400;
         ctx.response.body = {
           data: null,
           error: err.message,
         };
+        ctx.response.status = 400;
 
         return;
       }
@@ -90,18 +83,18 @@ export class CategoryController {
     try {
       const result = await this.service.create(ctx.request.body);
 
-      ctx.response.status = 201;
       ctx.response.body = {
         data: result,
         error: null,
       };
+      ctx.response.status = 201;
     } catch (err) {
       if (err instanceof UserError) {
-        ctx.response.status = 400;
         ctx.response.body = {
           data: null,
           error: err.message,
         };
+        ctx.response.status = 400;
 
         return;
       }
@@ -120,15 +113,15 @@ export class CategoryController {
     try {
       const result = await this.service.delete(ctx.params.id);
 
-      ctx.response.status = result ? 204 : 404;
       ctx.response.body = null;
+      ctx.response.status = result ? 204 : 404;
     } catch (err) {
       if (err instanceof UserError) {
-        ctx.response.status = 400;
         ctx.response.body = {
           data: null,
           error: err.message,
         };
+        ctx.response.status = 400;
 
         return;
       }
@@ -152,15 +145,15 @@ export class CategoryController {
 
       const result = await this.service.update(payload);
 
-      ctx.response.status = result ? 204 : 404;
       ctx.response.body = null;
+      ctx.response.status = result ? 204 : 404;
     } catch (err) {
       if (err instanceof UserError) {
-        ctx.response.status = 400;
         ctx.response.body = {
           data: null,
           error: err.message,
         };
+        ctx.response.status = 400;
 
         return;
       }

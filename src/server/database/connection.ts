@@ -2,6 +2,7 @@ import { createConnection, Connection } from 'typeorm';
 import config from './../config/env';
 import { AnnouncementEntity } from './model/announcement';
 import { CategoryEntity, CategoryWithCount } from './model/category';
+import { UserEntity } from './model/user';
 
 /**
  * Connects to a database based on configuration URL
@@ -16,6 +17,7 @@ export function connectToDatabase(): Promise<Connection> {
       AnnouncementEntity,
       CategoryEntity,
       CategoryWithCount,
+      UserEntity,
     ],
   });
 }

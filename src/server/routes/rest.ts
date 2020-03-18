@@ -10,6 +10,8 @@ import { ControllerList } from '../utils/bootstrap';
 function generateV1APIRoute(controllers: ControllerList): Router {
   const v1Router = new Router();
 
+  // const authMiddleware = controllers.authMiddleware;
+
   const categoryController = controllers.categoryController;
 
   v1Router.get('/categories', categoryController.findAll);
@@ -24,6 +26,12 @@ function generateV1APIRoute(controllers: ControllerList): Router {
   v1Router.post('/announcements', announcementController.create);
   v1Router.delete('/announcements/:id', announcementController.delete);
   v1Router.patch('/announcements/:id', announcementController.update);
+
+  const userController = controllers.userController;
+
+  v1Router.get('/users', userController.find);
+  v1Router.post('/users', userController.create);
+  v1Router.delete('/users/:id', userController.delete);
 
   return v1Router;
 }

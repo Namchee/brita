@@ -44,4 +44,8 @@ export default {
    * State lifetime
    */
   expirationTime: Number(process.env.EXPIRATION_TIME) || 1000 * 60 * 5,
+  /**
+   * Google's OAuth2 API token ID
+   */
+  oauthToken: process.env.OAUTH_TOKEN || '',
 };

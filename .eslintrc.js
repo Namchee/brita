@@ -45,12 +45,14 @@ module.exports = {
         'requireForBlockBody': true,
       },
     ],
-    'require-jsdoc': 'off',
-    'valid-jsdoc': 'off',
-    'new-cap': 'off',
+    'require-jsdoc': 'off', // prefer eslint-plugin-jsdoc
+    'valid-jsdoc': 'off', // prefer eslint-plugin-jsdoc
     '@typescript-eslint/no-explicit-any': 'off',
-    'no-invalid-this': 'off',
-    'require-atomic-updates': 'off',
-    '@typescript-eslint/no-var-requires': 'off'
+    'no-invalid-this': 'off', // prevent arrow functions `this` errors
+    '@typescript-eslint/no-var-requires': 'off', // prefer ES6 modules
+    '@typescript-eslint/camelcase': 'off', // underscore case is good for entities
+    'camelcase': 'off', // underscore case is good for entities,
+    'new-cap': 'off', // allow decorator to have caps,
+    'require-atomic-updates': 'off', // remove false alarm 
   },
 };
