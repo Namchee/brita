@@ -18,6 +18,8 @@ export enum CATEGORY_ERROR_MESSAGE {
   DESC_IS_REQUIRED = 'Deskripsi kategori harus ada',
   ID_IS_NUMBER = 'ID kategori harus merupakan sebuah angka',
   ID_IS_REQUIRED = 'ID kategori harus ada',
+  COUNT_IS_BOOLEAN = 'Opsi "count" harus merupakan sebuah boolean',
+  COUNT_UNAMBIGUOUS_BOOLEAN = 'Opsi "count" hanya boleh berisi nilai `true` atau `false`',
 }
 
 export enum ANNOUNCEMENT_ERROR_MESSAGE {

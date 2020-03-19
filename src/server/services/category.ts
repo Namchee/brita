@@ -16,6 +16,10 @@ export class CategoryService {
       .min(1).error(new Error(ERROR_MESSAGE.LIMIT_MINIMUM_ONE)),
     start: Joi.number().error(new Error(ERROR_MESSAGE.OFFSET_IS_NUMBER))
       .min(0).error(new Error(ERROR_MESSAGE.OFFSET_NON_NEGATIVE)),
+    count: Joi.boolean()
+      .error(new Error(CATEGORY_ERROR_MESSAGE.COUNT_IS_BOOLEAN))
+      .allow(true, false)
+      .error(new Error(CATEGORY_ERROR_MESSAGE.COUNT_UNAMBIGUOUS_BOOLEAN)),
   });
 
   /**
@@ -64,7 +68,9 @@ export class CategoryService {
       offset: params.start,
     };
 
-    return this.repository.findAll(paginationOptions);
+    return params.count === 'true' ?
+      await this.repository.findAll(paginationOptions) :
+      await this.repository.findAllWithoutCount(paginationOptions);
   }
 
   /**
@@ -83,7 +89,7 @@ export class CategoryService {
       throw new UserError(validation.error.message);
     }
 
-    return this.repository.findByName(name);
+    return await this.repository.findByName(name);
   }
 
   /**

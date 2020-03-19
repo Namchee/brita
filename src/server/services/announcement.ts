@@ -80,7 +80,7 @@ export class AnnouncementService {
    * Get announcements from data source by query criteria
    *
    * @param {object} params Request query criteria
-   * @return {Promise<AnnouncementDTO[]>} Array of announcements
+   * @return {Promise<Announcement[]>} Array of announcements
    */
   public find = async (params: any): Promise<Announcement[]> => {
     const validation = AnnouncementService.FIND_SCHEMA.validate(params);
@@ -111,7 +111,7 @@ export class AnnouncementService {
    * Creates a new announcement in the app
    *
    * @param {object} params Announcement's data
-   * @return {Promise<AnnouncementDTO>} Newly created Announcement
+   * @return {Promise<Announcement>} Newly created Announcement
    */
   public create = async (params: any): Promise<Announcement> => {
     const validation = AnnouncementService.CREATE_SCHEMA.validate(params);
