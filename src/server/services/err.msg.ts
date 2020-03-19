@@ -31,9 +31,9 @@ export enum ANNOUNCEMENT_ERROR_MESSAGE {
   CONTENTS_IS_REQUIRED = 'Isi pengumuman harus ada',
   CONTENTS_MINIMUM_LIMIT = 'Isi pengumuman minimal terdiri dari 10 karakter',
   CONTENTS_MAXIMUM_LIMIT = 'Isi pengumuman maksimal terdiri dari 250 karakter',
-  VALID_IS_DATE = 'Waktu berlaku pengumuman harus merupakan tanggal',
-  VALID_IS_ISO = 'Waktu berlaku pengumuman harus merupakan tanggal dengan format ISO string',
-  VALID_IS_REQUIRED = 'Waktu berlaku pengumuman harus ada',
+  VALID_IS_DATE = 'Tanggal berlaku pengumuman harus merupakan tanggal',
+  VALID_IS_ISO = 'Tanggal berlaku pengumuman harus merupakan tanggal dengan format ISO string',
+  VALID_IS_REQUIRED = 'Tanggal berlaku pengumuman harus ada',
   CATEGORIES_IS_ARRAY = 'Daftar kategori pengumuman harus merupakan sebuah array',
   CATEGORIES_IS_REQUIRED = 'Daftar kategori pengumuman harus ada',
   CATEGORIES_IS_ID_ARRAY = 'Daftar kategori pengumuman harus merupakan sebuah array ID berupa angka',
@@ -45,7 +45,7 @@ export enum ANNOUNCEMENT_ERROR_MESSAGE {
   ANNOUNCEMENT_NOT_EXIST = 'Pengumuman yang anda ingin diubah tidak ada',
   CATEGORY_NOT_EXIST = 'Satu atau lebih kategori tidak ada',
   VALID_IS_LATER = 'Waktu berlaku pengumuman harus lebih tua dari hari ini',
-  VALID_HAS_EXPIRED = 'Pengumuman sudah tidak berlaku lagi. Silahkan membuat pengumuman baru'
+  VALID_HAS_EXPIRED = 'Pengumuman sudah tidak berlaku lagi. Silahkan membuat pengumuman baru',
 }
 
 export enum USER_ERROR_MESSAGE {

@@ -51,8 +51,7 @@ module.exports = {
     'no-invalid-this': 'off', // prevent arrow functions `this` errors
     '@typescript-eslint/no-var-requires': 'off', // prefer ES6 modules
     '@typescript-eslint/camelcase': 'off', // underscore case is good for entities
-    'camelcase': 'off', // underscore case is good for entities,
-    'new-cap': 'off', // allow decorator to have caps,
+    'new-cap': 'off', // allow decorator to have caps
     'require-atomic-updates': 'off', // remove false alarm 
   },
 };

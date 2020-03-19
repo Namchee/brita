@@ -20,6 +20,9 @@ export class AnnouncementService {
       .min(0).error(new Error(ERROR_MESSAGE.OFFSET_NON_NEGATIVE)),
     category: Joi.number()
       .error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.CATEGORY_IS_NUMBER)),
+    valid_until: Joi.date()
+      .error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.VALID_IS_DATE))
+      .iso().error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.VALID_IS_ISO)),
   });
 
   private static readonly CREATE_SCHEMA = Joi.object({
@@ -86,20 +89,21 @@ export class AnnouncementService {
       throw new UserError(validation.error.message);
     }
 
-    const paginationOptions = {
+    const findOptions = {
       limit: params.limit,
       offset: params.start,
+      validUntil: new Date(params.valid_until),
     };
 
     if (params.category) {
       return await this.announcementRepository.findByCategory(
         params.category,
-        paginationOptions,
+        findOptions,
       );
     }
 
     return await this.announcementRepository.findAll(
-      paginationOptions,
+      findOptions,
     );
   }
 

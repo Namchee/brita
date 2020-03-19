@@ -81,8 +81,10 @@ export class AnnouncementRepositoryTypeORM
    *
    * @return {Promise<Announcement[]>} Announcement array
    */
-  public findAll = async (options?: PagingOptions): Promise<Announcement[]> => {
-    return await this.repository
+  public findAll = async (
+    options?: FindAnnouncementOptions,
+  ): Promise<Announcement[]> => {
+    let query = this.repository
       .createQueryBuilder('announcement')
       .innerJoinAndSelect(
         'announcement.categories',
@@ -97,8 +99,16 @@ export class AnnouncementRepositoryTypeORM
         'categories.name',
       ])
       .limit(options?.limit)
-      .offset(options?.offset)
-      .getMany();
+      .offset(options?.offset);
+
+    if (options?.validUntil) {
+      query = query.where(
+        'announcement.valid_until >= :dateNow',
+        { dateNow: options.validUntil },
+      );
+    }
+
+    return await query.getMany();
   }
 
   public findById = async (id: number): Promise<Announcement | null> => {

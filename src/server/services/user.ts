@@ -8,7 +8,7 @@ import { TokenPayload } from 'google-auth-library';
 export interface BritaTokenPayload extends TokenPayload {
   name: string;
   email: string;
-  profile_pic: string;
+  'profile_pic': string;
 }
 
 export class UserService {
