@@ -17,7 +17,7 @@ export const AnnouncementEntity = new EntitySchema<Announcement>({
     title: {
       type: String,
       unique: true,
-      length: 25,
+      length: 50,
       nullable: false,
     },
     contents: {

@@ -12,30 +12,31 @@ export class CategoryService {
    * Validation schema for `find` method
    */
   private static readonly FIND_SCHEMA = Joi.object({
-    limit: Joi.number().error(() => ERROR_MESSAGE.LIMIT_IS_NUMBER)
-      .min(1).error(() => ERROR_MESSAGE.LIMIT_MINIMUM_ONE),
-    start: Joi.number().error(() => ERROR_MESSAGE.OFFSET_IS_NUMBER)
-      .min(0).error(() => ERROR_MESSAGE.OFFSET_NON_NEGATIVE),
+    limit: Joi.number().error(new Error(ERROR_MESSAGE.LIMIT_IS_NUMBER))
+      .min(1).error(new Error(ERROR_MESSAGE.LIMIT_MINIMUM_ONE)),
+    start: Joi.number().error(new Error(ERROR_MESSAGE.OFFSET_IS_NUMBER))
+      .min(0).error(new Error(ERROR_MESSAGE.OFFSET_NON_NEGATIVE)),
   });
 
   /**
    * Validation schema for `create` method
    */
   private static readonly CREATE_SCHEMA = Joi.object({
-    name: Joi.string().error(() => CATEGORY_ERROR_MESSAGE.NAME_IS_STRING)
-      .required().error(() => CATEGORY_ERROR_MESSAGE.NAME_IS_REQUIRED)
-      .min(3).error(() => CATEGORY_ERROR_MESSAGE.NAME_MINIMUM_LIMIT)
-      .max(25).error(() => CATEGORY_ERROR_MESSAGE.NAME_MAXIMUM_LIMIT)
-      .regex(/^[a-zA-Z ]/).error(() => CATEGORY_ERROR_MESSAGE.NAME_ONLY_ALPHA),
-    desc: Joi.string().error(() => CATEGORY_ERROR_MESSAGE.DESC_IS_STRING)
-      .required().error(() => CATEGORY_ERROR_MESSAGE.DESC_IS_REQUIRED)
-      .min(10).error(() => CATEGORY_ERROR_MESSAGE.DESC_MINIMUM_LIMIT)
-      .max(100).error(() => CATEGORY_ERROR_MESSAGE.DESC_MAXIMUM_LIMIT),
+    name: Joi.string().error(new Error(CATEGORY_ERROR_MESSAGE.NAME_IS_STRING))
+      .required().error(new Error(CATEGORY_ERROR_MESSAGE.NAME_IS_REQUIRED))
+      .min(3).error(new Error(CATEGORY_ERROR_MESSAGE.NAME_MINIMUM_LIMIT))
+      .max(25).error(new Error(CATEGORY_ERROR_MESSAGE.NAME_MAXIMUM_LIMIT))
+      .regex(/^[a-zA-Z ]/)
+      .error(new Error(CATEGORY_ERROR_MESSAGE.NAME_ONLY_ALPHA)),
+    desc: Joi.string().error(new Error(CATEGORY_ERROR_MESSAGE.DESC_IS_STRING))
+      .required().error(new Error(CATEGORY_ERROR_MESSAGE.DESC_IS_REQUIRED))
+      .min(10).error(new Error(CATEGORY_ERROR_MESSAGE.DESC_MINIMUM_LIMIT))
+      .max(100).error(new Error(CATEGORY_ERROR_MESSAGE.DESC_MAXIMUM_LIMIT)),
   });
 
   private static readonly UPDATE_SCHEMA = CategoryService.CREATE_SCHEMA.keys({
-    id: Joi.number().error(() => CATEGORY_ERROR_MESSAGE.ID_IS_NUMBER)
-      .required().error(() => CATEGORY_ERROR_MESSAGE.ID_IS_REQUIRED),
+    id: Joi.number().error(new Error(CATEGORY_ERROR_MESSAGE.ID_IS_NUMBER))
+      .required().error(new Error(CATEGORY_ERROR_MESSAGE.ID_IS_REQUIRED)),
   });
 
   /**

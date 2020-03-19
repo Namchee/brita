@@ -13,9 +13,9 @@ export interface BritaTokenPayload extends TokenPayload {
 
 export class UserService {
   private static readonly CREATE_SCHEMA = Joi.object().keys({
-    email: Joi.string().error(() => USER_ERROR_MESSAGE.EMAIL_IS_STRING)
-      .required().error(() => USER_ERROR_MESSAGE.EMAIL_IS_REQUIRED)
-      .email().error(() => USER_ERROR_MESSAGE.EMAIL_IS_EMAIL),
+    email: Joi.string().error(new Error(USER_ERROR_MESSAGE.EMAIL_IS_STRING))
+      .required().error(new Error(USER_ERROR_MESSAGE.EMAIL_IS_REQUIRED))
+      .email().error(new Error(USER_ERROR_MESSAGE.EMAIL_IS_EMAIL)),
   });
 
   public constructor(

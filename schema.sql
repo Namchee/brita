@@ -42,7 +42,7 @@ CREATE VIEW category_with_count AS
 		category;
 		
 INSERT INTO announcement (title, "contents", valid_until)
-VALUES ('Test title', 'Test content', 'October 19, 2020');
+VALUES ('Test title', 'Test content', '2020-10-20');
 
 INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('This is important', 'Test content', 'December 20, 2020');
@@ -51,7 +51,7 @@ VALUES ('This is important', 'Test content', 'December 20, 2020');
  * Batched for testing
 */
 INSERT INTO announcement (title, "contents", valid_until)
-VALUES ('Lorem Ipsum Dolor', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'January 11, 2020');
+VALUES ('Lorem Ipsum Dolor', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', '2020-01-11');
 INSERT INTO announcement (title, "contents", valid_until)
 VALUES ('This is important2', 'Lorem Ipsum dolor sil amet sil vous plait dos nu get', 'December 20, 2020');
 INSERT INTO announcement (title, "contents", valid_until)
