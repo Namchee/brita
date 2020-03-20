@@ -7,8 +7,7 @@
     "refresh": "rm -rf node_modules/ && npm i",
     "test:unit": "jest",
     "dev": "nodemon",
-    "build": "npm run clean && npm run build:server",
-    "build:server": "tsc",
+    "build": "npm run clean && tsc",
     "clean": "rm -rf build",
     "start:dev": "node ./build/index.js",
     "start": "pm2 start ./build/index.js",
@@ -58,7 +57,7 @@
     "pm2": "^4.2.3",
     "ts-jest": "^25.0.0",
     "ts-node": "^8.5.4",
-    "typescript": "^3.7.3",
+    "typescript": "^3.8.3",
     "typesync": "^0.6.1"
   }
 }

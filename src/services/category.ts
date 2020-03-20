@@ -53,7 +53,7 @@ export class CategoryService {
       desc: params.desc !== 'false',
     };
 
-    return params.count === 'true' ?
+    return params.count !== 'false' ?
       await this.repository.findAll(paginationOptions) :
       await this.repository.findAllWithoutCount(paginationOptions);
   }

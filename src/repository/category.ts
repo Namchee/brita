@@ -55,6 +55,7 @@ export class CategoryRepositoryTypeORM
     const fields = [
       'category.id',
       'category.name',
+      'category.announcementCount',
     ];
 
     if (options?.desc) {
