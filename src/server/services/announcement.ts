@@ -18,8 +18,8 @@ export class AnnouncementService {
       .min(1).error(new Error(ERROR_MESSAGE.LIMIT_MINIMUM_ONE)),
     start: Joi.number().error(new Error(ERROR_MESSAGE.OFFSET_IS_NUMBER))
       .min(0).error(new Error(ERROR_MESSAGE.OFFSET_NON_NEGATIVE)),
-    category: Joi.number()
-      .error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.CATEGORY_IS_NUMBER)),
+    category: Joi.string()
+      .error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.CATEGORY_IS_STRING)),
     valid_until: Joi.date()
       .error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.VALID_IS_DATE))
       .iso().error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.VALID_IS_ISO)),
@@ -92,12 +92,20 @@ export class AnnouncementService {
     const findOptions = {
       limit: params.limit,
       offset: params.start,
-      validUntil: new Date(params.valid_until),
+      validUntil: params.valid_until ? new Date(params.valid_until) : undefined,
     };
 
     if (params.category) {
-      return await this.announcementRepository.findByCategory(
+      const category = await this.categoryRepository.findByName(
         params.category,
+      );
+
+      if (!category) {
+        return [];
+      }
+
+      return await this.announcementRepository.findByCategory(
+        category.id,
         findOptions,
       );
     }
@@ -199,7 +207,7 @@ export class AnnouncementService {
     );
 
     if (categories.some((category => !category))) {
-      throw new UserError(ANNOUNCEMENT_ERROR_MESSAGE.CATEGORY_NOT_EXIST);
+      throw new UserError(ANNOUNCEMENT_ERROR_MESSAGE.CATEGORIES_NOT_EXIST);
     }
   }
 }

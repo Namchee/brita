@@ -13,18 +13,18 @@ export class UserController {
     try {
       const result = await this.userService.find();
 
-      ctx.response.status = 200;
       ctx.response.body = {
         data: result,
         error: null,
       };
+      ctx.response.status = 200;
     } catch (err) {
       if (err instanceof UserError) {
-        ctx.response.status = 400;
         ctx.response.body = {
           data: null,
           error: err.message,
         };
+        ctx.response.status = err.status;
 
         return;
       }
@@ -42,18 +42,18 @@ export class UserController {
         payload,
       );
 
-      ctx.response.status = 201;
       ctx.response.body = {
         data: result,
         error: null,
       };
+      ctx.response.status = 201;
     } catch (err) {
       if (err instanceof UserError) {
-        ctx.response.status = 400;
         ctx.response.body = {
           data: null,
           error: err.message,
         };
+        ctx.response.status = err.status;
 
         return;
       }
@@ -71,18 +71,18 @@ export class UserController {
         payload,
       );
 
-      ctx.response.status = result ? 204 : 404;
       ctx.response.body = {
         data: result,
         error: null,
       };
+      ctx.response.status = result ? 204 : 404;
     } catch (err) {
       if (err instanceof UserError) {
-        ctx.response.status = 400;
         ctx.response.body = {
           data: null,
           error: err.message,
         };
+        ctx.response.status = err.status;
 
         return;
       }
@@ -97,15 +97,15 @@ export class UserController {
 
       const result = await this.userService.activateAccount(payload);
 
-      ctx.response.status = result ? 204 : 404;
       ctx.response.body = null;
+      ctx.response.status = result ? 204 : 404;
     } catch (err) {
       if (err instanceof UserError) {
-        ctx.response.status = 400;
         ctx.response.body = {
           data: null,
           error: err.message,
         };
+        ctx.response.status = err.status;
 
         return;
       }

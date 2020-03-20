@@ -116,7 +116,7 @@ export class AnnouncementRepositoryTypeORM
       .select([
         'announcement.id',
         'announcement.title',
-        'announcement.content',
+        'announcement.contents',
         'announcement.validUntil',
       ])
       .where('announcement.id = :id', { id })
@@ -143,7 +143,7 @@ export class AnnouncementRepositoryTypeORM
         'categories.id = :id', { id: category })
       .select([
         'announcement.title',
-        'announcement.content',
+        'announcement.contents',
         'announcement.validUntil',
       ])
       .limit(options?.limit)

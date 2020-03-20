@@ -20,10 +20,12 @@ export enum CATEGORY_ERROR_MESSAGE {
   ID_IS_REQUIRED = 'ID kategori harus ada',
   COUNT_IS_BOOLEAN = 'Opsi "count" harus merupakan sebuah boolean',
   COUNT_UNAMBIGUOUS_BOOLEAN = 'Opsi "count" hanya boleh berisi nilai `true` atau `false`',
+  DESC_IS_BOOLEAN = 'Opsi "desc" harus merupakan sebuah boolean',
+  DESC_UNAMBIGUOUS_BOOLEAN = 'Opsi "desc" hanya boleh berisi nilai `true` atau `false`',
 }
 
 export enum ANNOUNCEMENT_ERROR_MESSAGE {
-  CATEGORY_IS_NUMBER = 'Kategori harus merupakan sebuah ID berupa angka',
+  CATEGORY_IS_STRING = 'Kategori harus merupakan nama dari kategori yang ingin dicari',
   TITLE_IS_STRING = 'Judul pengumuman harus merupakan sebuah string',
   TITLE_IS_REQUIRED = 'Judul pengumuman harus ada',
   TITLE_MINIMUM_LIMIT = 'Judul pengumuman minimal terdiri dari 3 karakter',
@@ -45,7 +47,8 @@ export enum ANNOUNCEMENT_ERROR_MESSAGE {
   ID_IS_NUMBER = 'ID pengumuman harus merupakan sebuah angka',
   TITLE_ALREADY_EXIST = 'Pengumuman dengan judul yang sama sudah ada. Mohon ubah judul pengumuman anda',
   ANNOUNCEMENT_NOT_EXIST = 'Pengumuman yang anda ingin diubah tidak ada',
-  CATEGORY_NOT_EXIST = 'Satu atau lebih kategori tidak ada',
+  CATEGORIES_NOT_EXIST = 'Satu atau lebih kategori tidak ada',
+  CATEGORY_NOT_EXIST = 'Kategori yang diminta tidak ada',
   VALID_IS_LATER = 'Waktu berlaku pengumuman harus lebih tua dari hari ini',
   VALID_HAS_EXPIRED = 'Pengumuman sudah tidak berlaku lagi. Silahkan membuat pengumuman baru',
 }

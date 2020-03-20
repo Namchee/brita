@@ -34,37 +34,7 @@ export class CategoryController {
           data: null,
           error: err.message,
         };
-        ctx.response.status = 400;
-
-        return;
-      }
-
-      ctx.app.emit('error', err, ctx);
-    }
-  }
-
-  /**
-   * Get a category by its name from the app
-   *
-   * @param {Context} ctx Koa's context object
-   * @return {Promise<void>} Sets the response object
-   */
-  public findByName = async (ctx: Context): Promise<void> => {
-    try {
-      const result = await this.service.findByName(ctx.params.name);
-
-      ctx.response.body = {
-        data: result,
-        error: null,
-      };
-      ctx.response.status = 200;
-    } catch (err) {
-      if (err instanceof UserError) {
-        ctx.response.body = {
-          data: null,
-          error: err.message,
-        };
-        ctx.response.status = 400;
+        ctx.response.status = err.status;
 
         return;
       }
@@ -94,7 +64,7 @@ export class CategoryController {
           data: null,
           error: err.message,
         };
-        ctx.response.status = 400;
+        ctx.response.status = err.status;
 
         return;
       }
@@ -121,7 +91,7 @@ export class CategoryController {
           data: null,
           error: err.message,
         };
-        ctx.response.status = 400;
+        ctx.response.status = err.status;
 
         return;
       }
@@ -153,7 +123,7 @@ export class CategoryController {
           data: null,
           error: err.message,
         };
-        ctx.response.status = 400;
+        ctx.response.status = err.status;
 
         return;
       }

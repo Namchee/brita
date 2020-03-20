@@ -34,7 +34,7 @@ export class AnnouncementController {
           data: null,
           error: err.message,
         };
-        ctx.response.status = 400;
+        ctx.response.status = err.status;
 
         return;
       }
@@ -64,7 +64,7 @@ export class AnnouncementController {
           data: null,
           error: err.message,
         };
-        ctx.response.status = 400;
+        ctx.response.status = err.status;
 
         return;
       }
@@ -91,7 +91,7 @@ export class AnnouncementController {
           data: null,
           error: err.message,
         };
-        ctx.response.status = 400;
+        ctx.response.status = err.status;
 
         return;
       }
@@ -124,7 +124,7 @@ export class AnnouncementController {
           data: null,
           error: err.message,
         };
-        ctx.response.status = 400;
+        ctx.response.status = err.status;
 
         return;
       }

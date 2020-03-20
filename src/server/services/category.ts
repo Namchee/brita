@@ -4,13 +4,7 @@ import { Category } from '../entity/category';
 import { UserError } from '../utils/error';
 import { CATEGORY_ERROR_MESSAGE, ERROR_MESSAGE } from './err.msg';
 
-/**
- * Service for handling category REST request
- */
 export class CategoryService {
-  /**
-   * Validation schema for `find` method
-   */
   private static readonly FIND_SCHEMA = Joi.object({
     limit: Joi.number().error(new Error(ERROR_MESSAGE.LIMIT_IS_NUMBER))
       .min(1).error(new Error(ERROR_MESSAGE.LIMIT_MINIMUM_ONE)),
@@ -20,11 +14,12 @@ export class CategoryService {
       .error(new Error(CATEGORY_ERROR_MESSAGE.COUNT_IS_BOOLEAN))
       .allow(true, false)
       .error(new Error(CATEGORY_ERROR_MESSAGE.COUNT_UNAMBIGUOUS_BOOLEAN)),
+    desc: Joi.boolean()
+      .error(new Error(CATEGORY_ERROR_MESSAGE.DESC_IS_BOOLEAN))
+      .allow(true, false)
+      .error(new Error(CATEGORY_ERROR_MESSAGE.DESC_UNAMBIGUOUS_BOOLEAN)),
   });
 
-  /**
-   * Validation schema for `create` method
-   */
   private static readonly CREATE_SCHEMA = Joi.object({
     name: Joi.string().error(new Error(CATEGORY_ERROR_MESSAGE.NAME_IS_STRING))
       .required().error(new Error(CATEGORY_ERROR_MESSAGE.NAME_IS_REQUIRED))
@@ -43,19 +38,8 @@ export class CategoryService {
       .required().error(new Error(CATEGORY_ERROR_MESSAGE.ID_IS_REQUIRED)),
   });
 
-  /**
-   * Constructor for CategoryService
-   *
-   * @param {CategoryRepository} repository Data source for categories
-   */
   public constructor(private readonly repository: CategoryRepository) { }
 
-  /**
-   * Get categories from data source with query criteria
-   *
-   * @param {object=} params Query criteria
-   * @return {Promise<Category[]>} Array of categories
-   */
   public findAll = async (params: any): Promise<Category[]> => {
     const validation = CategoryService.FIND_SCHEMA.validate(params);
 
@@ -66,6 +50,7 @@ export class CategoryService {
     const paginationOptions = {
       limit: params.limit,
       offset: params.start,
+      desc: params.desc !== 'false',
     };
 
     return params.count === 'true' ?
@@ -73,31 +58,6 @@ export class CategoryService {
       await this.repository.findAllWithoutCount(paginationOptions);
   }
 
-  /**
-   * Get categories by its name from the data source
-   * This method will perform a search with equality operator, not
-   * SQL's `LIKE` operator
-   *
-   * @param {string} name Name of the category
-   * @return {Promise<Category | null>} A category with exactly same name
-   * as the parameters if found, `null` otherwise
-   */
-  public findByName = async (name: string): Promise<Category | null> => {
-    const validation = Joi.string().validate(name);
-
-    if (validation.error) {
-      throw new UserError(validation.error.message);
-    }
-
-    return await this.repository.findByName(name);
-  }
-
-  /**
-   * Create a new category entity and save it in the database
-   *
-   * @param {object} body Category's data
-   * @return {Category} Newly created category
-   */
   public create = async (body: any): Promise<Category> => {
     const validation = CategoryService.CREATE_SCHEMA.validate(body);
 
@@ -114,24 +74,10 @@ export class CategoryService {
     return insertResult;
   }
 
-  /**
-   * Deletes an entity from the database
-   *
-   * @param {number} id Category's ID
-   * @return {Promise<boolean>} `true` if deletion performed successfully
-   * (number of affected > 0), `false` otherwise
-   */
   public delete = async (id: number): Promise<boolean> => {
     return await this.repository.delete(id);
   }
 
-  /**
-   * Updates an entity on the database
-   *
-   * @param {object} body Category data
-   * @return {Promise<boolean>} `true` if update performed successfully
-   * (number of affected > 0), `false` otherwise
-   */
   public update = async (body: any): Promise<boolean> => {
     const validation = CategoryService.UPDATE_SCHEMA.validate(body);
 

@@ -15,7 +15,6 @@ function generateV1APIRoute(controllers: ControllerList): Router {
   const categoryController = controllers.categoryController;
 
   v1Router.get('/categories', categoryController.findAll);
-  v1Router.get('/categories/:name', categoryController.findByName);
   v1Router.post('/categories', categoryController.create);
   v1Router.delete('/categories/:id', categoryController.delete);
   v1Router.patch('/categories/:id', categoryController.update);

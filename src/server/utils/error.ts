@@ -10,21 +10,14 @@
  */
 export class ServerError extends Error {
   /**
-   * HTTP status indicator for this error
-   */
-  public readonly status: number;
-
-  /**
    * Constructor for ServerError
    * @param {string} message Error message, preferably the reason
    * why the error occured
    * @param {number=} status A HTTP status indicator. The default value
    * is `500`
    */
-  public constructor(message: string, status?: number) {
+  public constructor(message: string, public readonly status = 400) {
     super(`ServerError: ${message}`);
-
-    this.status = status || 500;
   }
 }
 
@@ -38,11 +31,13 @@ export class ServerError extends Error {
  */
 export class UserError extends Error {
   /**
-   * Constructor for ServerError
+   * Constructor for UserError
+   *
    * @param {string} message Error message, preferably the reason
    * why the error occured
+   * @param {number=400} status Status code for error response
    */
-  public constructor(message: string) {
+  public constructor(message: string, public readonly status = 400) {
     super(message);
   }
 }
