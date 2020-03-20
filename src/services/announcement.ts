@@ -101,7 +101,7 @@ export class AnnouncementService {
       );
 
       if (!category) {
-        return [];
+        throw new UserError(ANNOUNCEMENT_ERROR_MESSAGE.CATEGORY_NOT_EXIST, 404);
       }
 
       return await this.announcementRepository.findByCategory(
