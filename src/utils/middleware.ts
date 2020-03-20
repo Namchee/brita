@@ -1,38 +1,10 @@
 import chalk from 'chalk';
-import crypto from 'crypto';
 import { Context, Next } from 'koa';
 import config from './../config/env';
 import { OAuth2Client } from 'google-auth-library';
 import { UserRepository } from '../repository/user';
 import { BritaTokenPayload } from '../services/user';
 import { UserError } from './error';
-
-/**
- * Koa middleware for LINE client signature validation
- *
- * @param {Context} ctx Koa Context object, must contain 'X-Line-Signature'
- * @param {Next} next Koa next function
- * @return {Promise<any>} Execute next middleware function if signature matches
- * or respond with `401` if signature doesn't match
- */
-export async function lineMiddleware(ctx: Context, next: Next): Promise<any> {
-  const channelSecret = config.secretToken;
-  const body = JSON.stringify(ctx.request.body);
-
-  const signature = crypto
-    .createHmac('SHA256', channelSecret)
-    .update(body).digest('base64');
-
-  if (ctx.request.header['x-line-signature'] === signature) {
-    await next();
-  } else {
-    ctx.response.status = 401;
-    ctx.response.body = {
-      data: null,
-      error: 'Unauthorized request for bot endpoint access',
-    };
-  }
-}
 
 /**
  * Koa middleware for HTTP request-response logging

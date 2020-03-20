@@ -21,10 +21,10 @@
     "resolveJsonModule": true,
   },
   "include": [
-    "src/server/**/*"
+    "src/**/*"
   ],
   "exclude": [
     "node_modules",
-    "src/server/**/*.test.ts"
+    "src/**/*.test.ts"
   ]
 }

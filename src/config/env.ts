@@ -25,25 +25,9 @@ export default {
    */
   dbUrl: process.env.DB_URL || '',
   /**
-   * Redis server connection string
-   */
-  redisUrl: process.env.REDIS_URL || '',
-  /**
    * Sentry.io DSN for identification purposes
    */
   dsn: process.env.DSN || '',
-  /**
-   * LINE Channel access token
-   */
-  accessToken: process.env.CHANNEL_ACCESS_TOKEN || '',
-  /**
-   * LINE channel secret token
-   */
-  secretToken: process.env.SECRET_TOKEN || '',
-  /**
-   * State lifetime
-   */
-  expirationTime: Number(process.env.EXPIRATION_TIME) || 1000 * 60 * 5,
   /**
    * Google's OAuth2 API token ID
    */

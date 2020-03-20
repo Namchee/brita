@@ -13,10 +13,10 @@ export class ServerError extends Error {
    * Constructor for ServerError
    * @param {string} message Error message, preferably the reason
    * why the error occured
-   * @param {number=} status A HTTP status indicator. The default value
+   * @param {number=500} status A HTTP status indicator. The default value
    * is `500`
    */
-  public constructor(message: string, public readonly status = 400) {
+  public constructor(message: string, public readonly status = 500) {
     super(`ServerError: ${message}`);
   }
 }

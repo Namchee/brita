@@ -1,7 +1,7 @@
 {
     "verbose": true,
     "ext": ".ts",
-    "exec": "ts-node ./src/server/index.ts",
+    "exec": "ts-node ./src/index.ts",
     "watch": [
         "src"
     ],
