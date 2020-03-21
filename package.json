@@ -29,6 +29,7 @@
     "koa-bodyparser": "^4.2.1",
     "koa-compress": "^3.0.0",
     "pg": "^7.17.0",
+    "pm2": "^4.2.3",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.22"
   },
@@ -55,7 +56,6 @@
     "faker": "^4.1.0",
     "jest": "^25.1.0",
     "nodemon": "^2.0.2",
-    "pm2": "^4.2.3",
     "ts-jest": "^25.0.0",
     "ts-node": "^8.5.4",
     "typescript": "^3.8.3",
