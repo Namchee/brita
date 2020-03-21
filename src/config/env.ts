@@ -1,7 +1,7 @@
-import { config as loadConfig, DotenvConfigOutput } from 'dotenv';
-
 if (process.env.NODE_ENV !== 'production') {
-  const config: DotenvConfigOutput = loadConfig();
+  const dotenv = require('dotenv');
+
+  const config = dotenv.load();
 
   if (config.error && process.env.NODE_ENV === 'development') {
     throw new Error('Cannot load environment variables');
