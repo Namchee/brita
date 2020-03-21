@@ -10,7 +10,8 @@
     "build": "npm run clean && tsc",
     "clean": "rm -rf build",
     "start:dev": "node ./build/index.js",
-    "start": "pm2 start ./build/index.js",
+    "start": "cross-env NODE_ENV=production pm2 start ./build/index.js",
+    "stop": "pm2 stop ./build/index.js",
     "migration:create": "db-migrate create",
     "migration:up": "db-migrate up -c 1",
     "migration:down": "db-migrate down -c 1"

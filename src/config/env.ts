@@ -23,7 +23,7 @@ export default {
   /**
    * Database URL connection string
    */
-  dbUrl: process.env.DB_URL || '',
+  dbUrl: process.env.DATABASE_URL || '',
   /**
    * Sentry.io DSN for identification purposes
    */
