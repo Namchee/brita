@@ -1,4 +1,3 @@
-import chalk from 'chalk';
 import { Context, Next } from 'koa';
 import config from './../config/env';
 import { OAuth2Client } from 'google-auth-library';
@@ -13,6 +12,7 @@ import { UserError } from './error';
  * @return {Promise<any>} Executes next middleware function in the pipeline
  */
 export async function logger(ctx: Context, next: Next): Promise<any> {
+  const chalk = require('chalk');
   const startTime = process.hrtime();
   const startMs = startTime[0] * 1000 + startTime[1] / 1000000;
 

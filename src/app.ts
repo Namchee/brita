@@ -1,5 +1,4 @@
 import Koa, { Context } from 'koa';
-import chalk from 'chalk';
 import bodyParser from 'koa-bodyparser';
 import compress from 'koa-compress';
 import { init, captureException } from '@sentry/node';
@@ -7,7 +6,6 @@ import { connectToDatabase } from './database/connection';
 import { generateRoutes } from './routes/router';
 import { bootstrapApp } from './utils/bootstrap';
 import config from './config/env';
-import { logger } from './utils/middleware';
 
 /**
  * Error handling middleware for Koa
@@ -23,6 +21,7 @@ function errorHandler(err: Error, ctx: Context): void {
   };
 
   if (process.env.NODE_ENV === 'development') {
+    const chalk = require('chalk');
     console.error(chalk.redBright(err.stack));
   } else {
     captureException(err);
@@ -50,6 +49,7 @@ export async function createApp(): Promise<Koa> {
   if (process.env.NODE_ENV === 'production') {
     init({ dsn: config.dsn });
   } else {
+    const logger = require('./utils/middleware').logger;
     app.use(logger);
   }
 
