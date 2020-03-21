@@ -9,8 +9,8 @@
     "dev": "nodemon",
     "build": "npm run clean && tsc",
     "clean": "rm -rf build",
-    "start": "pm2 start build/index.js",
-    "stop": "pm2 stop build/index.js",
+    "start": "node build/index.js",
+    "stop": "node build/index.js",
     "migration:create": "db-migrate create",
     "migration:up": "db-migrate up -c 1",
     "migration:down": "db-migrate down -c 1"
