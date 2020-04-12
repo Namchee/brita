@@ -51,6 +51,9 @@ export enum ANNOUNCEMENT_ERROR_MESSAGE {
   CATEGORY_NOT_EXIST = 'Kategori yang diminta tidak ada',
   VALID_IS_LATER = 'Waktu berlaku pengumuman harus lebih tua dari hari ini',
   VALID_HAS_EXPIRED = 'Pengumuman sudah tidak berlaku lagi. Silahkan membuat pengumuman baru',
+  IDS_IS_REQUIRED = 'Parameter ID harus ada',
+  IDS_IS_ARRAY = 'Parameter ID harus merupakan sebuah array',
+  IDS_IS_NUMBER_ARRAY = 'Parameter ID harus merupakan sebuah array ID berupa angka'
 }
 
 export enum USER_ERROR_MESSAGE {

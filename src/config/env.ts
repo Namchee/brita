@@ -1,7 +1,7 @@
 if (process.env.NODE_ENV !== 'production') {
   const dotenv = require('dotenv');
 
-  const config = dotenv.load();
+  const config = dotenv.config();
 
   if (config.error && process.env.NODE_ENV === 'development') {
     throw new Error('Cannot load environment variables');

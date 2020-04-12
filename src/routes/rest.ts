@@ -24,6 +24,7 @@ function generateV1APIRoute(controllers: ControllerList): Router {
   v1Router.get('/announcements', announcementController.find);
   v1Router.post('/announcements', announcementController.create);
   v1Router.delete('/announcements/:id', announcementController.delete);
+  v1Router.delete('/announcements', announcementController.batchDelete);
   v1Router.patch('/announcements/:id', announcementController.update);
 
   const userController = controllers.userController;

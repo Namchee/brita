@@ -57,6 +57,7 @@ export interface AnnouncementRepository
     date: Date,
     categories: Category[],
   ): Promise<Announcement | null>;
+  batchDelete(ids: number[]): Promise<boolean>;
 }
 
 /**
@@ -108,7 +109,7 @@ export class AnnouncementRepositoryTypeORM
       );
     }
 
-    return await query.getMany();
+    return query.getMany();
   }
 
   public findById = async (id: number): Promise<Announcement | null> => {
@@ -156,7 +157,7 @@ export class AnnouncementRepositoryTypeORM
       );
     }
 
-    return await query.getMany();
+    return query.getMany();
   }
 
   /**
@@ -229,5 +230,20 @@ export class AnnouncementRepositoryTypeORM
     );
 
     return !!updateResult.affected;
+  }
+
+  public batchDelete = async (ids: number[]): Promise<boolean> => {
+    return this.manager.transaction(async (manager): Promise<boolean> => {
+      const repository = manager.getRepository(AnnouncementEntity);
+
+      try {
+        await Promise.all(ids.map(id => repository.delete(id)));
+
+        return true;
+      } catch (err) {
+        console.error(err);
+        return false;
+      }
+    });
   }
 }

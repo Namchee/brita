@@ -101,6 +101,36 @@ export class AnnouncementController {
   }
 
   /**
+   * Controller function to delete announcements from the app
+   * If one of them fail, the request will fail
+   *
+   * @param {Context} ctx Koa's context object
+   * @return {Promise<void>} Sets the response body
+   */
+  public batchDelete = async (ctx: Context): Promise<void> => {
+    try {
+      const result = await this.service.batchDelete(
+        ctx.request.query.ids.split(','),
+      );
+
+      ctx.response.body = null;
+      ctx.response.status = result ? 204 : 404;
+    } catch (err) {
+      if (err instanceof UserError) {
+        ctx.response.body = {
+          data: null,
+          error: err.message,
+        };
+        ctx.response.status = err.status;
+
+        return;
+      }
+
+      ctx.app.emit('error', err, ctx);
+    }
+  }
+
+  /**
    * Controller function to update an announcement in the app
    * with new data
    *
