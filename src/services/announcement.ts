@@ -66,8 +66,6 @@ export class AnnouncementService {
 
   private static readonly BATCH_DELETE_SCHEMA = Joi.array()
     .error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.IDS_IS_ARRAY))
-    .required()
-    .error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.IDS_IS_REQUIRED))
     .items(Joi.number().integer())
     .error(new Error(ANNOUNCEMENT_ERROR_MESSAGE.IDS_IS_NUMBER_ARRAY));
 
@@ -171,7 +169,13 @@ export class AnnouncementService {
    * `false` otherwise
    */
   public batchDelete = async (params: any): Promise<boolean> => {
-    const validation = AnnouncementService.BATCH_DELETE_SCHEMA.validate(params);
+    const ids = params.ids;
+
+    if (!ids) {
+      throw new UserError(ANNOUNCEMENT_ERROR_MESSAGE.IDS_IS_REQUIRED);
+    }
+
+    const validation = AnnouncementService.BATCH_DELETE_SCHEMA.validate(ids);
 
     if (validation.error) {
       throw new UserError(validation.error.message);

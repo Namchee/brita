@@ -13,3 +13,5 @@ jspm_packages
 .vscode
 
 build/
+
+database.json

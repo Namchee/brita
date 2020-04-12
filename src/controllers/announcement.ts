@@ -109,9 +109,7 @@ export class AnnouncementController {
    */
   public batchDelete = async (ctx: Context): Promise<void> => {
     try {
-      const result = await this.service.batchDelete(
-        ctx.request.query.ids.split(','),
-      );
+      const result = await this.service.batchDelete(ctx.request.query);
 
       ctx.response.body = null;
       ctx.response.status = result ? 204 : 404;
