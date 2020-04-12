@@ -75,7 +75,7 @@ export class CategoryService {
   }
 
   public delete = async (id: number): Promise<boolean> => {
-    return await this.repository.delete(id);
+    return this.repository.delete(id);
   }
 
   public update = async (body: any): Promise<boolean> => {
@@ -85,6 +85,6 @@ export class CategoryService {
       throw new UserError(validation.error.message);
     }
 
-    return await this.repository.update(body as Category);
+    return this.repository.update(body as Category);
   }
 }

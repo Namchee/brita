@@ -62,7 +62,7 @@ export class CategoryRepositoryTypeORM
       fields.push('category.desc');
     }
 
-    return await this.manager.getRepository(CategoryWithCount)
+    return this.manager.getRepository(CategoryWithCount)
       .createQueryBuilder('category')
       .select(fields)
       .limit(options?.limit)
@@ -82,7 +82,7 @@ export class CategoryRepositoryTypeORM
       fields.push('category.desc');
     }
 
-    return await this.repository.createQueryBuilder('category')
+    return this.repository.createQueryBuilder('category')
       .select(fields)
       .limit(options?.limit)
       .offset(options?.offset)

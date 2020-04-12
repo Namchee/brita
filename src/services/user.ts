@@ -26,7 +26,7 @@ export class UserService {
    * Get all administrator from the data source
    */
   public find = async (): Promise<User[]> => {
-    return await this.repository.findAll();
+    return this.repository.findAll();
   }
 
   public create = async (
@@ -98,7 +98,7 @@ export class UserService {
       return true;
     }
 
-    return await this.repository.update({
+    return this.repository.update({
       id: administrator.id,
       name: params.name,
       profilePic: params.profile_pic,

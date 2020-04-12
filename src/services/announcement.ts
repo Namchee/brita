@@ -109,13 +109,13 @@ export class AnnouncementService {
         throw new UserError(ANNOUNCEMENT_ERROR_MESSAGE.CATEGORY_NOT_EXIST, 404);
       }
 
-      return await this.announcementRepository.findByCategory(
+      return this.announcementRepository.findByCategory(
         category.id,
         findOptions,
       );
     }
 
-    return await this.announcementRepository.findAll(
+    return this.announcementRepository.findAll(
       findOptions,
     );
   }
@@ -212,7 +212,7 @@ export class AnnouncementService {
 
     await this.checkAnnouncementValidity(params);
 
-    return await this.announcementRepository.update(params as Announcement);
+    return this.announcementRepository.update(params as Announcement);
   }
 
   /**

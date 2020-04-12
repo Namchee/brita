@@ -35,7 +35,7 @@ export class UserRepositoryTypeORM
   }
 
   public findAll = async (): Promise<User[]> => {
-    return await this.repository.find();
+    return this.repository.find();
   }
 
   public findById = async (id: number): Promise<User | null> => {
